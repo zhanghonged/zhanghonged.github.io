@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="python,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="filecmp可以实现文件、目录、遍历子目录的差异对比功能。">
+<meta name="keywords" content="python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python标准库模块filecmp使用">
+<meta property="og:url" content="http://zhanghonged.github.io/2016/12/16/python标准库模块filecmp使用/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="filecmp可以实现文件、目录、遍历子目录的差异对比功能。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-11-07T08:36:53.375Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python标准库模块filecmp使用">
+<meta name="twitter:description" content="filecmp可以实现文件、目录、遍历子目录的差异对比功能。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2016/12/16/python标准库模块filecmp使用/">
+
+
+
+
+
+  <title>python标准库模块filecmp使用 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2016/12/16/python标准库模块filecmp使用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">python标准库模块filecmp使用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-16T10:44:06+08:00">
+                2016-12-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python/" itemprop="url" rel="index">
+                    <span itemprop="name">python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>filecmp可以实现文件、目录、遍历子目录的差异对比功能。</p>
+<a id="more"></a>
+<h2 id="filecmp介绍"><a href="#filecmp介绍" class="headerlink" title="filecmp介绍"></a>filecmp介绍</h2><p>filecmp提供了三个操作方法，分别是cmp(单文件对比)、cmpfiles(多文件对比)、dircmp(目录对比)。</p>
+<ul>
+<li><strong>单文件对比</strong>，采用filecmp.cmp(f1，f2[，shallow])方法，比较文件名为f1和f2的文件，相同返回True，不同返回False。shallow默认为True，意思是只根据os.stat()方法返回的文件基本信息进行对比，比如最后访问时间、修改时间、状态改变时间等。会忽略文件内容的对比，当shallow为False时，会同时进行os.stat()和文件内容的对比。</li>
+<li><strong>多文件对比</strong>，采用filecmp.cmpfiles(dir1，dir2，common[，shallow])，对比dir1和dir2目录给定的文件清单，该方法返回文件名的三个列表：分别为匹配、不匹配和错误。匹配包含匹配的文件列表，不匹配则反之，错误列表包含了目录不存在的文件、不具备读权限或其他原因导致的不能比较的文件清单。</li>
+<li><strong>目录对比</strong>，通过filecmp.dircmp(dir1，dir2[，ignore[，hide]])类创建一个目录比较对象，其中dir1和dir2是参加比较的目录名。ignore是文件名忽略的列表，并默认为[‘RCS’，’CVS’，’tgs’];hide代表隐藏的列表，默认为[os.curdir，os.pardir]。dircmp类可以获得目录比较的详细信息，比如只有在dir1目录中存在的文件，dir1和dir2    都存在的子目录、匹配的文件等，同时支持递归。</li>
+</ul>
+<h2 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h2><h3 id="单文件对比filecmp-cpm"><a href="#单文件对比filecmp-cpm" class="headerlink" title="单文件对比filecmp.cpm"></a>单文件对比filecmp.cpm</h3><p>使用实例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">import filecmp</span><br><span class="line">r = filecmp.cmp(‘/file/bisect1.py’，’/file/bisect1.py’)</span><br><span class="line">print(r)</span><br><span class="line">r = filecmp.cmp(‘/file/bisect1.py’，’/file/bisect2.py’)</span><br><span class="line">print(r)</span><br><span class="line"></span><br><span class="line">Result:</span><br><span class="line">Ture</span><br><span class="line">False</span><br></pre></td></tr></table></figure></p>
+<h3 id="多文件对比filecmp-cmpfiles"><a href="#多文件对比filecmp-cmpfiles" class="headerlink" title="多文件对比filecmp.cmpfiles"></a>多文件对比filecmp.cmpfiles</h3><p>使用实例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">import filecmp</span><br><span class="line">r = filecmp.cmpfiles(dir1，dir2’，[‘1.txt’，’2.py’，’3.py’])</span><br><span class="line"></span><br><span class="line">Result:</span><br><span class="line">([‘1.txt’，’2.py’]，[‘3.py’]，[])</span><br></pre></td></tr></table></figure></p>
+<h3 id="目录对比filecmp-dircmp"><a href="#目录对比filecmp-dircmp" class="headerlink" title="目录对比filecmp.dircmp"></a>目录对比filecmp.dircmp</h3><p>dircmp提供了三个方法用于报告比较的结果：</p>
+<ul>
+<li>report()：只比较指定文件夹中的内容（文件与文件夹）</li>
+<li>report_partial_closure()：比较文件夹及第一级子文件夹的内容</li>
+<li>report_full_closure()：递归比较所有的文件夹的内容</li>
+</ul>
+<p>dircmp还提供了下面这些属性用于获取比较的详细结果：</p>
+<ul>
+<li>left：左目录；</li>
+<li>right：右目录；</li>
+<li>left_list：左边目录中的文件与及目录列表；</li>
+<li>right_list：右边目录中的文件及目录列表；</li>
+<li>common：两边目录中都存在的文件或目录；</li>
+<li>left_only：只在左目录中存在的文件或目录；</li>
+<li>right_only：只在右目录中存在的文件或目录；</li>
+<li>common_dirs：两边目录中都存在的子目录；</li>
+<li>common_files：两边目录中都存在的子文件；</li>
+<li>common_funny：两边目录中都存在的子目录，通过os.stat()比较；</li>
+<li>same_files：匹配相同的文件；</li>
+<li>diff_files：不匹配的文件；</li>
+<li>funny_files：两边目录都存在，但无法比较的文件；</li>
+<li>subdirs：将common_dirs目录名映射到新的dircmp对象，格式为字典；</li>
+</ul>
+<h2 id="脚本练习-检验源和备份目录差异并同步"><a href="#脚本练习-检验源和备份目录差异并同步" class="headerlink" title="脚本练习-检验源和备份目录差异并同步"></a>脚本练习-检验源和备份目录差异并同步</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/env python</span><br><span class="line">#coding=utf-8</span><br><span class="line"></span><br><span class="line">import os，sys，re，time</span><br><span class="line">import filecmp</span><br><span class="line">import shutil</span><br><span class="line"></span><br><span class="line">def compareme(dir1， dir2):</span><br><span class="line">    loglist=[]</span><br><span class="line">    holderlist=[]</span><br><span class="line">    dircomp=filecmp.dircmp(dir1，dir2)</span><br><span class="line">    only_in_one=dircomp.left_only</span><br><span class="line">    diff_in_one=dircomp.diff_files</span><br><span class="line">    dirpath=os.path.abspath(dir1)</span><br><span class="line">    [holderlist.append(os.path.abspath( os.path.join(dir1，x) )) for x in only_in_one]</span><br><span class="line">    [holderlist.append(os.path.abspath( os.path.join(dir1，x) )) for x in diff_in_one]</span><br><span class="line"></span><br><span class="line">    if holderlist:</span><br><span class="line">        for item in holderlist:</span><br><span class="line">            destination_file=re.sub(dir1， dir2， item)</span><br><span class="line">            if os.path.isfile(item):</span><br><span class="line">                log = &quot;%s ----&gt; %s&quot; %(item，destination_file)</span><br><span class="line">                loglist.append(log)</span><br><span class="line">                shutil.copyfile(item， destination_file)</span><br><span class="line">    return loglist</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def wlog(logname，content，start_time):</span><br><span class="line">    log=open(&apos;%s&apos; % (logname) ，&apos;a&apos;)</span><br><span class="line">    try:</span><br><span class="line">        for item in content:</span><br><span class="line">            print &apos;item is %s&apos; %item</span><br><span class="line">            log.write(&apos;%s\n&apos; %item)</span><br><span class="line">        stop_time=time.strftime(&apos;%Y-%m-%d %H:%M:%S&apos;，time.localtime(time.time()))</span><br><span class="line">        total_time=int(time.mktime(time.strptime(stop_time，&quot;%Y-%m-%d %H:%M:%S&quot;)))-int(time.mktime(time.strptime(start_time，&quot;%Y-%m-%d %H:%M:%S&quot;)))</span><br><span class="line">        finish=&apos;&apos;.join([&apos;Finished&apos;，&apos;-&apos;*100])</span><br><span class="line">        log.write(&apos;%s\n&apos; %finish)</span><br><span class="line">        log.write(&apos;StartTime: %s   FinishTime: %s\n&apos; %(start_time，stop_time))</span><br><span class="line">        log.write(&apos;Total copy %d Files for %ds.\n&apos; %(len(content)，total_time))</span><br><span class="line">    finally:</span><br><span class="line">        log.close()</span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line"></span><br><span class="line">    &apos;&apos;&apos;</span><br><span class="line">    if len(sys.argv) &gt; 2:</span><br><span class="line">        dir1=sys.argv[1]</span><br><span class="line">        dir2=sys.argv[2]</span><br><span class="line">    else:</span><br><span class="line">        print &quot;Usage: &quot;， sys.argv[0]， &quot;datadir backupdir&quot;</span><br><span class="line">        sys.exit()</span><br><span class="line">    &apos;&apos;&apos;</span><br><span class="line"></span><br><span class="line">    dir1=&apos;/usr/local/src/project/binbinoms&apos;</span><br><span class="line">    dir2=&apos;/file&apos;</span><br><span class="line">    logname=&apos;dback&apos; + time.strftime(&apos;%Y%m%d-%H%M%S&apos;，time.localtime(time.time()))+&apos;.txt&apos;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    dir1=os.path.abspath(dir1)</span><br><span class="line">    if not dir2.endswith(&apos;/&apos;): dir2=dir2+&apos;/&apos;</span><br><span class="line">    dir2=os.path.abspath(dir2)</span><br><span class="line"></span><br><span class="line">    all_log_list=[]</span><br><span class="line">    source_dir_list=[]</span><br><span class="line">    destination_dir_list=[]</span><br><span class="line">    source_dir_list.append(dir1)</span><br><span class="line">    destination_dir_list.append(dir2)</span><br><span class="line">    for root，dirs，files in os.walk(dir1):</span><br><span class="line">        for name in dirs:</span><br><span class="line">            source_dir=root + &apos;/&apos; + name</span><br><span class="line">            destination_dir=re.sub(dir1，dir2，source_dir)</span><br><span class="line">            if not os.path.exists(destination_dir):</span><br><span class="line">                os.makedirs(destination_dir)</span><br><span class="line">            source_dir_list.append(source_dir)</span><br><span class="line">            destination_dir_list.append(destination_dir)</span><br><span class="line"></span><br><span class="line">    copyfile=zip(source_dir_list，destination_dir_list)</span><br><span class="line">    start_time=time.strftime(&apos;%Y-%m-%d %H:%M:%S&apos;，time.localtime(time.time()))</span><br><span class="line">    for item in copyfile:</span><br><span class="line">        all_log_list += compareme(item[0]，item[1])</span><br><span class="line"></span><br><span class="line">    if all_log_list:</span><br><span class="line">        wlog(logname，all_log_list，start_time)</span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/12/一个网卡流量监控脚本py/" rel="next" title="一个网卡流量监控脚本py">
+                <i class="fa fa-chevron-left"></i> 一个网卡流量监控脚本py
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/12/16/Jvm内存优化与Tomcat7调优/" rel="prev" title="Jvm内存优化与Tomcat7调优">
+                Jvm内存优化与Tomcat7调优 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#filecmp介绍"><span class="nav-number">1.</span> <span class="nav-text">filecmp介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用说明"><span class="nav-number">2.</span> <span class="nav-text">使用说明</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#单文件对比filecmp-cpm"><span class="nav-number">2.1.</span> <span class="nav-text">单文件对比filecmp.cpm</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多文件对比filecmp-cmpfiles"><span class="nav-number">2.2.</span> <span class="nav-text">多文件对比filecmp.cmpfiles</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目录对比filecmp-dircmp"><span class="nav-number">2.3.</span> <span class="nav-text">目录对比filecmp.dircmp</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#脚本练习-检验源和备份目录差异并同步"><span class="nav-number">3.</span> <span class="nav-text">脚本练习-检验源和备份目录差异并同步</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

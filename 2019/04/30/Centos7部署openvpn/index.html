@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="openvpn,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="OpenVPN是一个用于创建虚拟专用网络加密通道的软件包。OpenVPN可以使用公开密钥、电子证书、或者用户名/密码来进行身份验证。它大量使用了OpenSSL加密库中的SSLv3/TLSv1协议函数库。OpenVPN可以在Solaris、Linux、OpenBSD、FreeBSD、NetBSD、Mac OS X以及Windows、Android和ios上运行。">
+<meta name="keywords" content="openvpn">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Centos7部署openvpn">
+<meta property="og:url" content="http://zhanghonged.github.io/2019/04/30/Centos7部署openvpn/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="OpenVPN是一个用于创建虚拟专用网络加密通道的软件包。OpenVPN可以使用公开密钥、电子证书、或者用户名/密码来进行身份验证。它大量使用了OpenSSL加密库中的SSLv3/TLSv1协议函数库。OpenVPN可以在Solaris、Linux、OpenBSD、FreeBSD、NetBSD、Mac OS X以及Windows、Android和ios上运行。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-07-30T07:23:44.406Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Centos7部署openvpn">
+<meta name="twitter:description" content="OpenVPN是一个用于创建虚拟专用网络加密通道的软件包。OpenVPN可以使用公开密钥、电子证书、或者用户名/密码来进行身份验证。它大量使用了OpenSSL加密库中的SSLv3/TLSv1协议函数库。OpenVPN可以在Solaris、Linux、OpenBSD、FreeBSD、NetBSD、Mac OS X以及Windows、Android和ios上运行。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2019/04/30/Centos7部署openvpn/">
+
+
+
+
+
+  <title>Centos7部署openvpn | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2019/04/30/Centos7部署openvpn/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Centos7部署openvpn</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-30T15:58:36+08:00">
+                2019-04-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/日常运维/" itemprop="url" rel="index">
+                    <span itemprop="name">日常运维</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><strong>OpenVPN</strong>是一个用于创建虚拟专用网络加密通道的软件包。<br>OpenVPN可以使用公开密钥、电子证书、或者用户名/密码来进行身份验证。它大量使用了OpenSSL加密库中的SSLv3/TLSv1协议函数库。<br>OpenVPN可以在Solaris、Linux、OpenBSD、FreeBSD、NetBSD、Mac OS X以及Windows、Android和ios上运行。<br><a id="more"></a></p>
+<h2 id="一、安装openvpn"><a href="#一、安装openvpn" class="headerlink" title="一、安装openvpn"></a>一、安装openvpn</h2><p>系统环境为centos7，采用yum方式安装:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">yum install epel-release -y</span><br><span class="line">yum install iptables-services openssl ca-certificates -y</span><br><span class="line">yum install openvpn easy-rsa -y</span><br></pre></td></tr></table></figure></p>
+<h2 id="二、生成CA证书"><a href="#二、生成CA证书" class="headerlink" title="二、生成CA证书"></a>二、生成CA证书</h2><h3 id="1、复制easy-rsa文件"><a href="#1、复制easy-rsa文件" class="headerlink" title="1、复制easy-rsa文件"></a>1、复制easy-rsa文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cp -r /usr/share/easy-rsa/ /etc/openvpn/easy-rsa</span><br><span class="line">cd /etc/openvpn/easy-rsa/</span><br><span class="line">\rm 3 3.0</span><br><span class="line">cd 3.0.3/</span><br></pre></td></tr></table></figure>
+<h3 id="2、创建一个新的-PKI-和-CA"><a href="#2、创建一个新的-PKI-和-CA" class="headerlink" title="2、创建一个新的 PKI 和 CA"></a>2、创建一个新的 PKI 和 CA</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd /etc/openvpn/easy-rsa/3.0.3/</span><br><span class="line">./easyrsa init-pki</span><br><span class="line">./easyrsa --batch build-ca nopass</span><br></pre></td></tr></table></figure>
+<h2 id="三、创建服务端和客户端证书"><a href="#三、创建服务端和客户端证书" class="headerlink" title="三、创建服务端和客户端证书"></a>三、创建服务端和客户端证书</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">cd /etc/openvpn/easy-rsa/3.0.3/</span><br><span class="line">EASYRSA_CERT_EXPIRE=3650 ./easyrsa build-server-full server nopass</span><br><span class="line">EASYRSA_CERT_EXPIRE=3650 ./easyrsa build-client-full client nopass</span><br><span class="line"># 生成CRL文件</span><br><span class="line">EASYRSA_CRL_DAYS=3650 ./easyrsa gen-crl</span><br><span class="line"># 创建 Diffie-Hellman</span><br><span class="line">./easyrsa gen-dh</span><br><span class="line"># 生成 tls-auth 所需要的 ta.key 文件，tls-auth 在 SSL/TLS 握手包的基础上增加了额外的签名，以提供更高的安全性</span><br><span class="line">openvpn --genkey --secret /etc/openvpn/ta.key</span><br></pre></td></tr></table></figure>
+<p>整理服务端所需证书文件:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd /etc/openvpn/easy-rsa/3.0.3/</span><br><span class="line">cp pki/ca.crt pki/issued/server.crt pki/private/server.key pki/crl.pem pki/dh.pem /etc/openvpn</span><br><span class="line">chown openvpn:openvpn /etc/openvpn/crl.pem</span><br></pre></td></tr></table></figure></p>
+<h2 id="四、服务端配置文件"><a href="#四、服务端配置文件" class="headerlink" title="四、服务端配置文件"></a>四、服务端配置文件</h2><p>/etc/openvpn/server.conf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">port 11904</span><br><span class="line"># 端口协议，默认udp</span><br><span class="line">proto udp</span><br><span class="line"># openvpn有两种运行模式tun(路由模式)和tap(桥接模式)</span><br><span class="line">dev tun</span><br><span class="line">sndbuf 0</span><br><span class="line">rcvbuf 0</span><br><span class="line"># CA证书文件</span><br><span class="line">ca ca.crt</span><br><span class="line"># 服务器证书</span><br><span class="line">cert server.crt</span><br><span class="line"># 服务器密钥(必须严格控制其安全性)</span><br><span class="line">key server.key</span><br><span class="line"># 定义Diffie hellman文件</span><br><span class="line">dh dh.pem</span><br><span class="line"># 吊销客户端证书使用</span><br><span class="line">crl-verify crl.pem</span><br><span class="line"># SSL/TLS额外提供的HMAC防火墙，打开会更安全</span><br><span class="line"># ta.key文件增强安全性，防DDos攻击、UDP淹没等恶意攻击，默认不开启；此key文件在服务端/客户端各1份，服务端参数为&quot;0&quot;，客户端参数为&quot;1&quot;</span><br><span class="line">tls-auth ta.key 0</span><br><span class="line"># 数据通道的认证摘要，默认SHA-1</span><br><span class="line">auth SHA512</span><br><span class="line">;auth RSA-SHA512</span><br><span class="line"># 选择一个密码加密算法，如果服务器端启用了cipher指令选项，那客户端必须一致</span><br><span class="line"># 该配置项也必须复制到每个客户端配置文件中。</span><br><span class="line">cipher AES-256-CBC</span><br><span class="line">;cipher BF-CBC        # Blowfish (默认)</span><br><span class="line">;cipher AES-128-CBC   # AES</span><br><span class="line">;cipher DES-EDE3-CBC  # Triple-DES</span><br><span class="line"></span><br><span class="line">topology subnet</span><br><span class="line"># 定义openvpn在使用tun路由模式时，分配给client端分配的IP地址段</span><br><span class="line">server 10.8.0.0 255.255.255.0</span><br><span class="line">ifconfig-pool-persist ipp.txt&quot;</span><br><span class="line"># 重定向客户端的网关</span><br><span class="line">push &quot;redirect-gateway def1 bypass-dhcp&quot;</span><br><span class="line"># 向客户端推送的DNS信息</span><br><span class="line">push &quot;dhcp-option DNS 208.67.220.220&quot;</span><br><span class="line">push &quot;dhcp-option DNS 208.67.222.222&quot;</span><br><span class="line"># 使客户端之间能相互访问</span><br><span class="line">client-to-client</span><br><span class="line"># 一个证书在同一时刻是否允许多个客户端接入</span><br><span class="line">duplicate-cn</span><br><span class="line"># 默认每10秒钟ping一次，如果120秒内都没有收到对方的回复，则表示远程连接已经关闭</span><br><span class="line">keepalive 10 120</span><br><span class="line">user openvpn</span><br><span class="line">group openvpn</span><br><span class="line"># 允许并发连接的客户端的最大数量</span><br><span class="line">max-clients 100</span><br><span class="line"># 通过keepalive检测超时后，重新启动VPN，不重新读取keys，保留第一次使用的keys</span><br><span class="line">persist-key</span><br><span class="line"># 通过keepalive检测vpn超时后，当重新启动vpn后，保持tun或者tap设备自动连接状态</span><br><span class="line">persist-tun</span><br><span class="line"># 状态日志(客户端IP)</span><br><span class="line">status openvpn-status.log</span><br><span class="line"># 日志文件</span><br><span class="line">log-append  openvpn.log</span><br><span class="line"># 日志级别(0~9)，越大越详细</span><br><span class="line">verb 3</span><br><span class="line"># 在VPN连接上启用压缩。如果你在此处启用了该指令，那么也应该在每个客户端配置文件中启用它</span><br><span class="line">comp-lzo</span><br><span class="line">;comp-lzo adaptive 默认，后面不带参数也是默认</span><br><span class="line">;comp-lzo yes</span><br><span class="line">;comp-lzo no</span><br><span class="line"></span><br><span class="line"># 相同类别的信息只有前20条会输出到日志文件中。</span><br><span class="line">mute 20</span><br></pre></td></tr></table></figure></p>
+<p><span style="color:red;">注</span>：在GCE上部署openvpn TCP模式，客户端无法连接，一直报reset，在服务端开启 <strong>tls-auth</strong> 后才可以，分析可能是GFW限制。<br>    UDP模式正常，所以建议开启 <strong>tls-auth</strong> 。</p>
+<h2 id="五、系统其它配置"><a href="#五、系统其它配置" class="headerlink" title="五、系统其它配置"></a>五、系统其它配置</h2><h3 id="1、开启路由转发"><a href="#1、开启路由转发" class="headerlink" title="1、开启路由转发"></a>1、开启路由转发</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;net.ipv4.ip_forward = 1&quot; &gt;&gt; /etc/sysctl.conf</span><br><span class="line">sysctl -p</span><br></pre></td></tr></table></figure>
+<h3 id="2、关闭selinux"><a href="#2、关闭selinux" class="headerlink" title="2、关闭selinux"></a>2、关闭selinux</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sed -i &apos;s/SELINUX=enforcing/SELINUX=disabled/g&apos; /etc/selinux/config</span><br><span class="line">setenforce 0</span><br></pre></td></tr></table></figure>
+<h3 id="3、配置iptables防火墙"><a href="#3、配置iptables防火墙" class="headerlink" title="3、配置iptables防火墙"></a>3、配置iptables防火墙</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># $IP为服务器ip</span><br><span class="line">iptables -t nat -A POSTROUTING -s 10.8.0.0/24 ! -d 10.8.0.0/24 -j SNAT --to $IP</span><br><span class="line">iptables -I INPUT -p udp --dport 1194 -j ACCEPT</span><br><span class="line">iptables -I FORWARD -s 10.8.0.0/24 -j ACCEPT</span><br><span class="line">iptables -I FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT</span><br></pre></td></tr></table></figure>
+<h2 id="六、启动openvpn"><a href="#六、启动openvpn" class="headerlink" title="六、启动openvpn"></a>六、启动openvpn</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl start openvpn@server</span><br><span class="line">systemctl enable openvpn@server</span><br></pre></td></tr></table></figure>
+<h2 id="七、客户端配置文件"><a href="#七、客户端配置文件" class="headerlink" title="七、客户端配置文件"></a>七、客户端配置文件</h2><p>1、整理客户端所需证书文件:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd /etc/openvpn/client/</span><br><span class="line">cp /etc/openvpn/easy-rsa/3.0.3/pki/ca.crt .</span><br><span class="line">cp /etc/openvpn/easy-rsa/3.0.3/pki/issued/client.crt .</span><br><span class="line">cp /etc/openvpn/easy-rsa/3.0.3/pki/private/client.key .</span><br></pre></td></tr></table></figure></p>
+<p>2、创建客户端配置文件<br>/etc/openvpn/client/cilent.ovpn<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">client</span><br><span class="line"># openvpn运行的模式,与服务器一致</span><br><span class="line">dev tun</span><br><span class="line">proto udp</span><br><span class="line">sndbuf 0</span><br><span class="line">rcvbuf 0</span><br><span class="line">remote 1.2.3.4 1194</span><br><span class="line"># 始终重新解析Server的IP地址(如果remote后面跟的是域名)</span><br><span class="line">resolv-retry infinite</span><br><span class="line"># 定义在本机不邦定任何端口监听incoming数据</span><br><span class="line">nobind</span><br><span class="line">persist-key</span><br><span class="line">persist-tun</span><br><span class="line"># 指定采用服务器校验方式</span><br><span class="line">remote-cert-tls server</span><br><span class="line">auth SHA512</span><br><span class="line">cipher AES-256-CBC</span><br><span class="line">key-direction 1</span><br><span class="line">verb 3</span><br><span class="line"># 启用允许数据压缩,与服务器一致</span><br><span class="line">comp-lzo</span><br><span class="line">ca ca.crt   </span><br><span class="line">cert client.crt</span><br><span class="line">key client.key</span><br><span class="line"># 启用tls-auth</span><br><span class="line">tls-auth ta.key 1</span><br></pre></td></tr></table></figure></p>
+<h2 id="八、配置账号密码登陆"><a href="#八、配置账号密码登陆" class="headerlink" title="八、配置账号密码登陆"></a>八、配置账号密码登陆</h2><h3 id="1、创建用户认证脚本-checkpsw-sh"><a href="#1、创建用户认证脚本-checkpsw-sh" class="headerlink" title="1、创建用户认证脚本(checkpsw.sh)"></a>1、创建用户认证脚本(checkpsw.sh)</h3><p>/etc/openvpn/checkpsw.sh<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/sh</span><br><span class="line">###########################################################</span><br><span class="line"># checkpsw.sh (C) 2004 Mathias Sundman &lt;mathias@openvpn.se&gt;</span><br><span class="line">#</span><br><span class="line"># This script will authenticate OpenVPN users against</span><br><span class="line"># a plain text file. The passfile should simply contain</span><br><span class="line"># one row per user with the username first followed by</span><br><span class="line"># one or more space(s) or tab(s) and then the password.</span><br><span class="line"></span><br><span class="line">PASSFILE=&quot;/etc/openvpn/psw-file&quot;</span><br><span class="line">LOG_FILE=&quot;/etc/openvpn/openvpn-password.log&quot;</span><br><span class="line">TIME_STAMP=`date &quot;+%Y-%m-%d %T&quot;`</span><br><span class="line"></span><br><span class="line">###########################################################</span><br><span class="line"></span><br><span class="line">if [ ! -r &quot;$&#123;PASSFILE&#125;&quot; ]; then</span><br><span class="line">  echo &quot;$&#123;TIME_STAMP&#125;: Could not open password file \&quot;$&#123;PASSFILE&#125;\&quot; for reading.&quot; &gt;&gt; $&#123;LOG_FILE&#125;</span><br><span class="line">  exit 1</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">CORRECT_PASSWORD=`awk &apos;!/^;/&amp;&amp;!/^#/&amp;&amp;$1==&quot;&apos;$&#123;username&#125;&apos;&quot;&#123;print $2;exit&#125;&apos; $&#123;PASSFILE&#125;`</span><br><span class="line"></span><br><span class="line">if [ &quot;$&#123;CORRECT_PASSWORD&#125;&quot; = &quot;&quot; ]; then</span><br><span class="line">  echo &quot;$&#123;TIME_STAMP&#125;: User does not exist: username=\&quot;$&#123;username&#125;\&quot;, password=\&quot;$&#123;password&#125;\&quot;.&quot; &gt;&gt; $&#123;LOG_FILE&#125;</span><br><span class="line">  exit 1</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">if [ &quot;$&#123;password&#125;&quot; = &quot;$&#123;CORRECT_PASSWORD&#125;&quot; ]; then</span><br><span class="line">  echo &quot;$&#123;TIME_STAMP&#125;: Successful authentication: username=\&quot;$&#123;username&#125;\&quot;.&quot; &gt;&gt; $&#123;LOG_FILE&#125;</span><br><span class="line">  exit 0</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">echo &quot;$&#123;TIME_STAMP&#125;: Incorrect password: username=\&quot;$&#123;username&#125;\&quot;, password=\&quot;$&#123;password&#125;\&quot;.&quot; &gt;&gt; $&#123;LOG_FILE&#125;</span><br><span class="line">exit 1</span><br></pre></td></tr></table></figure></p>
+<p>给予脚本执行权限：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod +x /etc/openvpn/checkpsw.sh</span><br></pre></td></tr></table></figure></p>
+<h3 id="2、配置用户密码文件"><a href="#2、配置用户密码文件" class="headerlink" title="2、配置用户密码文件"></a>2、配置用户密码文件</h3><p>/etc/openvpn/psw-file<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">user1 passwd1</span><br><span class="line">user2 passwd2</span><br></pre></td></tr></table></figure></p>
+<h3 id="3、修改服务端配置文件"><a href="#3、修改服务端配置文件" class="headerlink" title="3、修改服务端配置文件"></a>3、修改服务端配置文件</h3><p>/etc/openvpn/server.conf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">script-security 3</span><br><span class="line"># 指定用户认证脚本</span><br><span class="line">auth-user-pass-verify /etc/openvpn/checkpsw.sh via-env</span><br><span class="line"># 使用客户提供的UserName作为Common Name</span><br><span class="line">username-as-common-name</span><br><span class="line">verify-client-cert none</span><br></pre></td></tr></table></figure></p>
+<p>注：如果加上client-cert-not-required则代表只使用用户名密码方式验证登录。<br>如果不加，则代表需要证书和用户名密码双重验证登录！</p>
+<h3 id="4、修改客户端配置文件"><a href="#4、修改客户端配置文件" class="headerlink" title="4、修改客户端配置文件"></a>4、修改客户端配置文件</h3><p>注释掉cert和key(客户端不需要crt和key文件，但是需要服务器的CA证书)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">;cert client.crt</span><br><span class="line">;key client.key</span><br></pre></td></tr></table></figure></p>
+<p>添加如下配置项<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">auth-user-pass</span><br></pre></td></tr></table></figure></p>
+<h2 id="九、配置文件模板"><a href="#九、配置文件模板" class="headerlink" title="九、配置文件模板"></a>九、配置文件模板</h2><p>server.conf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">port 23</span><br><span class="line">proto udp</span><br><span class="line">dev tun</span><br><span class="line">sndbuf 0</span><br><span class="line">rcvbuf 0</span><br><span class="line">auth SHA512</span><br><span class="line">cipher AES-256-CBC</span><br><span class="line">topology subnet</span><br><span class="line">ca ca.crt</span><br><span class="line">cert server.crt</span><br><span class="line">key server.key</span><br><span class="line">dh dh.pem</span><br><span class="line">crl-verify crl.pem</span><br><span class="line">server 10.88.88.0 255.255.255.0</span><br><span class="line">push &quot;redirect-gateway def1 bypass-dhcp&quot; </span><br><span class="line">push &quot;dhcp-option DNS 223.5.5.5&quot;	</span><br><span class="line">push &quot;dhcp-option DNS 223.6.6.6&quot;</span><br><span class="line">keepalive 10 120</span><br><span class="line">comp-lzo</span><br><span class="line">duplicate-cn</span><br><span class="line">user openvpn</span><br><span class="line">group openvpn</span><br><span class="line">max-clients 100</span><br><span class="line">persist-key		</span><br><span class="line">persist-tun</span><br><span class="line">status openvpn-status.log</span><br><span class="line">log-append  openvpn.log</span><br><span class="line">verb 3</span><br><span class="line">mute 20</span><br><span class="line">script-security 3</span><br><span class="line">auth-user-pass-verify /etc/openvpn/checkpsw.sh via-env</span><br><span class="line">username-as-common-name</span><br><span class="line">verify-client-cert none</span><br><span class="line">tls-auth ta.key 0</span><br></pre></td></tr></table></figure></p>
+<p>client.ovpn<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">client</span><br><span class="line">proto udp</span><br><span class="line">dev tun</span><br><span class="line">sndbuf 0</span><br><span class="line">rcvbuf 0</span><br><span class="line">remote 35.231.6.93 23</span><br><span class="line">ca ca.crt   </span><br><span class="line">resolv-retry infinite</span><br><span class="line">nobind</span><br><span class="line">mute-replay-warnings</span><br><span class="line">keepalive 20 120</span><br><span class="line">comp-lzo</span><br><span class="line">persist-key</span><br><span class="line">persist-tun</span><br><span class="line">status openvpn-status.log</span><br><span class="line">log-append openvpn.log</span><br><span class="line">verb 3</span><br><span class="line">mute 20</span><br><span class="line">cipher AES-256-CBC</span><br><span class="line">auth SHA512</span><br><span class="line">auth-user-pass</span><br><span class="line">setenv opt block-outside-dns</span><br><span class="line">key-direction 1</span><br><span class="line">;tls-auth ta.key 1</span><br></pre></td></tr></table></figure></p>
+<h2 id="十、openvpn调优"><a href="#十、openvpn调优" class="headerlink" title="十、openvpn调优"></a>十、openvpn调优</h2><p>1、禁用 <strong>comp-lzo</strong><br>2、<strong>cipher</strong> 设置成 <strong>none</strong><br>3、<strong>auth</strong> 设置为 <strong>none</strong></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/openvpn/" rel="tag"># openvpn</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/27/优化shadowsocks Linux服务器/" rel="next" title="优化shadowsocks Linux服务器">
+                <i class="fa fa-chevron-left"></i> 优化shadowsocks Linux服务器
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/30/Openvpn加密认证配置/" rel="prev" title="Openvpn加密认证配置">
+                Openvpn加密认证配置 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、安装openvpn"><span class="nav-number">1.</span> <span class="nav-text">一、安装openvpn</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、生成CA证书"><span class="nav-number">2.</span> <span class="nav-text">二、生成CA证书</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、复制easy-rsa文件"><span class="nav-number">2.1.</span> <span class="nav-text">1、复制easy-rsa文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、创建一个新的-PKI-和-CA"><span class="nav-number">2.2.</span> <span class="nav-text">2、创建一个新的 PKI 和 CA</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、创建服务端和客户端证书"><span class="nav-number">3.</span> <span class="nav-text">三、创建服务端和客户端证书</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、服务端配置文件"><span class="nav-number">4.</span> <span class="nav-text">四、服务端配置文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、系统其它配置"><span class="nav-number">5.</span> <span class="nav-text">五、系统其它配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、开启路由转发"><span class="nav-number">5.1.</span> <span class="nav-text">1、开启路由转发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、关闭selinux"><span class="nav-number">5.2.</span> <span class="nav-text">2、关闭selinux</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、配置iptables防火墙"><span class="nav-number">5.3.</span> <span class="nav-text">3、配置iptables防火墙</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#六、启动openvpn"><span class="nav-number">6.</span> <span class="nav-text">六、启动openvpn</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#七、客户端配置文件"><span class="nav-number">7.</span> <span class="nav-text">七、客户端配置文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#八、配置账号密码登陆"><span class="nav-number">8.</span> <span class="nav-text">八、配置账号密码登陆</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、创建用户认证脚本-checkpsw-sh"><span class="nav-number">8.1.</span> <span class="nav-text">1、创建用户认证脚本(checkpsw.sh)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、配置用户密码文件"><span class="nav-number">8.2.</span> <span class="nav-text">2、配置用户密码文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、修改服务端配置文件"><span class="nav-number">8.3.</span> <span class="nav-text">3、修改服务端配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4、修改客户端配置文件"><span class="nav-number">8.4.</span> <span class="nav-text">4、修改客户端配置文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#九、配置文件模板"><span class="nav-number">9.</span> <span class="nav-text">九、配置文件模板</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#十、openvpn调优"><span class="nav-number">10.</span> <span class="nav-text">十、openvpn调优</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

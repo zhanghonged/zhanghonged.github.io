@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="python,difflib,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="difflib：对比序列，特别是文本中的行。difflib 模块包含用于计算和处理序列之间差异的工具，它对于比较文本特别有用，并且包含几种常见的不同格式的生成报告函数。">
+<meta name="keywords" content="python,difflib">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Text-difflib">
+<meta property="og:url" content="http://zhanghonged.github.io/2018/06/12/Text-difflib/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="difflib：对比序列，特别是文本中的行。difflib 模块包含用于计算和处理序列之间差异的工具，它对于比较文本特别有用，并且包含几种常见的不同格式的生成报告函数。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/difflib_HtmlDiff.jpg">
+<meta property="og:updated_time" content="2018-06-14T03:45:20.904Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Text-difflib">
+<meta name="twitter:description" content="difflib：对比序列，特别是文本中的行。difflib 模块包含用于计算和处理序列之间差异的工具，它对于比较文本特别有用，并且包含几种常见的不同格式的生成报告函数。">
+<meta name="twitter:image" content="http://zhanghonged.github.io/uploads/difflib_HtmlDiff.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2018/06/12/Text-difflib/">
+
+
+
+
+
+  <title>Text-difflib | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2018/06/12/Text-difflib/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Text-difflib</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-12T17:30:00+08:00">
+                2018-06-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PyMOTW-3/" itemprop="url" rel="index">
+                    <span itemprop="name">PyMOTW-3</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><span style="font-size:1.2em;font-weight:bold">difflib：对比序列，特别是文本中的行。</span><br><strong>difflib</strong> 模块包含用于计算和处理序列之间差异的工具，它对于比较文本特别有用，并且包含几种常见的不同格式的生成报告函数。<br><a id="more"></a></p>
+<p>下面是本节的通用测试数据，存放在<em>difflib_data.py</em>文件中：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># difflib_data.py</span></span><br><span class="line">text1 = <span class="string">"""Lorem ipsum dolor sit amet, consectetuer adipiscing</span></span><br><span class="line"><span class="string">elit. Integer eu lacus accumsan arcu fermentum euismod. Donec</span></span><br><span class="line"><span class="string">pulvinar porttitor tellus. Aliquam venenatis. Donec facilisis</span></span><br><span class="line"><span class="string">pharetra tortor.  In nec mauris eget magna consequat</span></span><br><span class="line"><span class="string">convalis. Nam sed sem vitae odio pellentesque interdum. Sed</span></span><br><span class="line"><span class="string">consequat viverra nisl. Suspendisse arcu metus, blandit quis,</span></span><br><span class="line"><span class="string">rhoncus ac, pharetra eget, velit. Mauris urna. Morbi nonummy</span></span><br><span class="line"><span class="string">molestie orci. Praesent nisi elit, fringilla ac, suscipit non,</span></span><br><span class="line"><span class="string">tristique vel, mauris. Curabitur vel lorem id nisl porta</span></span><br><span class="line"><span class="string">adipiscing. Suspendisse eu lectus. In nunc. Duis vulputate</span></span><br><span class="line"><span class="string">tristique enim. Donec quis lectus a justo imperdiet tempus."""</span></span><br><span class="line"></span><br><span class="line">text1_lines = text1.splitlines()</span><br><span class="line"></span><br><span class="line">text2 = <span class="string">"""Lorem ipsum dolor sit amet, consectetuer adipiscing</span></span><br><span class="line"><span class="string">elit. Integer eu lacus accumsan arcu fermentum euismod. Donec</span></span><br><span class="line"><span class="string">pulvinar, porttitor tellus. Aliquam venenatis. Donec facilisis</span></span><br><span class="line"><span class="string">pharetra tortor. In nec mauris eget magna consequat</span></span><br><span class="line"><span class="string">convalis. Nam cras vitae mi vitae odio pellentesque interdum. Sed</span></span><br><span class="line"><span class="string">consequat viverra nisl. Suspendisse arcu metus, blandit quis,</span></span><br><span class="line"><span class="string">rhoncus ac, pharetra eget, velit. Mauris urna. Morbi nonummy</span></span><br><span class="line"><span class="string">molestie orci. Praesent nisi elit, fringilla ac, suscipit non,</span></span><br><span class="line"><span class="string">tristique vel, mauris. Curabitur vel lorem id nisl porta</span></span><br><span class="line"><span class="string">adipiscing. Duis vulputate tristique enim. Donec quis lectus a</span></span><br><span class="line"><span class="string">justo imperdiet tempus.  Suspendisse eu lectus. In nunc."""</span></span><br><span class="line"></span><br><span class="line">text2_lines = text2.splitlines()</span><br></pre></td></tr></table></figure></p>
+<h2 id="1、对比Text文本"><a href="#1、对比Text文本" class="headerlink" title="1、对比Text文本"></a>1、对比Text文本</h2><h3 id="Differ"><a href="#Differ" class="headerlink" title="Differ()"></a>Differ()</h3><p><strong>Differ</strong> 类比较的是文本行的差异并且产生适合人类阅读的差异结果或者增量结果，结果中各部分的表示如下：</p>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>‘-‘</td>
+<td>包含在第一个序列行中，但不包含第二个。</td>
+</tr>
+<tr>
+<td>‘+’</td>
+<td>包含在第二个序列行中，但不包含第一个。</td>
+</tr>
+<tr>
+<td>‘’</td>
+<td>两个序列行一致</td>
+</tr>
+<tr>
+<td>‘?’</td>
+<td>标志两个序列行存在增量差异</td>
+</tr>
+<tr>
+<td>‘^’</td>
+<td>标志着两个序列行存在的差异字符</td>
+</tr>
+</tbody>
+</table>
+<p>在传递文本到 <span style="font-size:18px;font-weight:bold;">compare()</span> 方法之前，将文本分解为一系列单独的行，会产生比传入大字符串更可读的输出。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># difflib_differ.py</span></span><br><span class="line"><span class="keyword">import</span> difflib</span><br><span class="line"><span class="keyword">from</span> difflib_data <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">d = difflib.Differ()</span><br><span class="line">diff = d.compare(text1_lines, text2_lines)</span><br><span class="line">print(<span class="string">'\n'</span>.join(diff))</span><br></pre></td></tr></table></figure></p>
+<p>两个文本段的开头是相同的，因此第一行不需要任何附加注释就可以打印出来。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Lorem ipsum dolor sit amet, consectetuer adipiscing</span><br><span class="line">elit. Integer eu lacus accumsan arcu fermentum euismod. Donec</span><br></pre></td></tr></table></figure></p>
+<p>数据的第三行被更改为,在修改后的文本中包含一个逗号。这一行的两个版本都打印出来了，第5行显示修改文本的具体信息，包括添加了的字符。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- pulvinar porttitor tellus. Aliquam venenatis. Donec facilisis</span><br><span class="line">+ pulvinar, porttitor tellus. Aliquam venenatis. Donec facilisis</span><br><span class="line">?         +</span><br></pre></td></tr></table></figure></p>
+<p>后面几行输出显示删除了一个空格。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">- pharetra tortor.  In nec mauris eget magna consequat</span><br><span class="line">?                 -</span><br><span class="line"></span><br><span class="line">+ pharetra tortor. In nec mauris eget magna consequat</span><br></pre></td></tr></table></figure></p>
+<p>下面是一个更复杂的变更，在一个短语中替换几个单词。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- convalis. Nam sed sem vitae odio pellentesque interdum. Sed</span><br><span class="line">?                 - --</span><br><span class="line"></span><br><span class="line">+ convalis. Nam cras vitae mi vitae odio pellentesque interdum. Sed</span><br><span class="line">?               +++ +++++   +</span><br></pre></td></tr></table></figure></p>
+<p>段落最后发生了很大的变化，所以提示的区别是删除旧版本和添加新版本。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">  consequat viverra nisl. Suspendisse arcu metus, blandit quis,</span><br><span class="line">  rhoncus ac, pharetra eget, velit. Mauris urna. Morbi nonummy</span><br><span class="line">  molestie orci. Praesent nisi elit, fringilla ac, suscipit non,</span><br><span class="line">  tristique vel, mauris. Curabitur vel lorem id nisl porta</span><br><span class="line">- adipiscing. Suspendisse eu lectus. In nunc. Duis vulputate</span><br><span class="line">- tristique enim. Donec quis lectus a justo imperdiet tempus.</span><br><span class="line">+ adipiscing. Duis vulputate tristique enim. Donec quis lectus a</span><br><span class="line">+ justo imperdiet tempus.  Suspendisse eu lectus. In nunc.</span><br></pre></td></tr></table></figure></p>
+<h3 id="ndiff"><a href="#ndiff" class="headerlink" title="ndiff()"></a>ndiff()</h3><p><span style="font-size:18px;font-weight:bold;">ndiff()</span> 函数的输出和上面基本是相同的。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">diff = difflib.ndiff(text1_lines,text2_lines)</span><br><span class="line">print(<span class="string">'\n'</span>.join(diff))</span><br></pre></td></tr></table></figure></p>
+<h2 id="2、其他格式输出"><a href="#2、其他格式输出" class="headerlink" title="2、其他格式输出"></a>2、其他格式输出</h2><h3 id="unified-diff"><a href="#unified-diff" class="headerlink" title="unified_diff()"></a>unified_diff()</h3><p><span style="font-size:18px;font-weight:bold;">unified_diff()</span> 生成统一的差异结果文本，只要拿到第一个文本，再通过这个差异文本进行操作，就可以得到第二个文本，从而减少储存两份文件，缩小储存空间。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># difflib_unified.py</span></span><br><span class="line"><span class="keyword">import</span> difflib</span><br><span class="line"><span class="keyword">from</span> difflib_data <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">diff = difflib.unified_diff(</span><br><span class="line">    text1_lines,</span><br><span class="line">    text2_lines,</span><br><span class="line">    lineterm=<span class="string">''</span>,</span><br><span class="line">)</span><br><span class="line">print(<span class="string">'\n'</span>.join(diff))</span><br></pre></td></tr></table></figure></p>
+<p>说明：<strong>lineterm</strong> 参数用来告诉 <strong>unified_diff()</strong> 不必为返回的控制行追加换行符，因为输入行不包含这些换行符。<br>当它们被打印出来时，新行被添加到所有的行中。对于许多流行的版本控制工具的用户来说，输出应该是熟悉的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">$ python3 difflib_unified.py</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">+++</span><br><span class="line">@@ -1,11 +1,11 @@</span><br><span class="line"> Lorem ipsum dolor sit amet, consectetuer adipiscing</span><br><span class="line"> elit. Integer eu lacus accumsan arcu fermentum euismod. Donec</span><br><span class="line">-pulvinar porttitor tellus. Aliquam venenatis. Donec facilisis</span><br><span class="line">-pharetra tortor.  In nec mauris eget magna consequat</span><br><span class="line">-convalis. Nam sed sem vitae odio pellentesque interdum. Sed</span><br><span class="line">+pulvinar, porttitor tellus. Aliquam venenatis. Donec facilisis</span><br><span class="line">+pharetra tortor. In nec mauris eget magna consequat</span><br><span class="line">+convalis. Nam cras vitae mi vitae odio pellentesque interdum. S</span><br><span class="line">ed</span><br><span class="line"> consequat viverra nisl. Suspendisse arcu metus, blandit quis,</span><br><span class="line"> rhoncus ac, pharetra eget, velit. Mauris urna. Morbi nonummy</span><br><span class="line"> molestie orci. Praesent nisi elit, fringilla ac, suscipit non,</span><br><span class="line"> tristique vel, mauris. Curabitur vel lorem id nisl porta</span><br><span class="line">-adipiscing. Suspendisse eu lectus. In nunc. Duis vulputate</span><br><span class="line">-tristique enim. Donec quis lectus a justo imperdiet tempus.</span><br><span class="line">+adipiscing. Duis vulputate tristique enim. Donec quis lectus a</span><br><span class="line">+justo imperdiet tempus.  Suspendisse eu lectus. In nunc.</span><br></pre></td></tr></table></figure></p>
+<p>通过上面的结果来看，<strong>@</strong> 这行是说明两个文件差异的多少，以及总行数，后面前面有加号的表示相对第一个文件要添加，前面有减号的表示相对第一个文件要删除，如果什么都没有表示不用改变。有这个差异化文件，可以生成第一个文件，也可以生成第二个文件，因为生成第一个文件时，只要碰到减号就不要变化，空白的行直接保留，加号的行去掉；第二个文件时刚好相反。从而达到保存一个文件，就可以生成两个文件的目的。</p>
+<h3 id="context-diff"><a href="#context-diff" class="headerlink" title="context_diff()"></a>context_diff()</h3><p><span style="font-size:18px;font-weight:bold;">context_diff()</span> 生成和上面相似的可读性输出:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># difflib_context.py</span></span><br><span class="line"><span class="keyword">import</span> difflib</span><br><span class="line"><span class="keyword">from</span> difflib_data <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">diff = difflib.context_diff(</span><br><span class="line">    text1_lines,</span><br><span class="line">    text2_lines,</span><br><span class="line">    lineterm=<span class="string">''</span>,</span><br><span class="line">)</span><br><span class="line">print(<span class="string">'\n'</span>.join(diff))</span><br></pre></td></tr></table></figure></p>
+<p>结果输出:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"># python3 difflib_context.py</span><br><span class="line">***</span><br><span class="line">---</span><br><span class="line">***************</span><br><span class="line">*** 1,11 ****</span><br><span class="line">  Lorem ipsum dolor sit amet, consectetuer adipiscing</span><br><span class="line">  elit. Integer eu lacus accumsan arcu fermentum euismod. Donec</span><br><span class="line">! pulvinar porttitor tellus. Aliquam venenatis. Donec facilisis</span><br><span class="line">! pharetra tortor.  In nec mauris eget magna consequat</span><br><span class="line">! convalis. Nam sed sem vitae odio pellentesque interdum. Sed</span><br><span class="line">  consequat viverra nisl. Suspendisse arcu metus, blandit quis,</span><br><span class="line">  rhoncus ac, pharetra eget, velit. Mauris urna. Morbi nonummy</span><br><span class="line">  molestie orci. Praesent nisi elit, fringilla ac, suscipit non,</span><br><span class="line">  tristique vel, mauris. Curabitur vel lorem id nisl porta</span><br><span class="line">! adipiscing. Suspendisse eu lectus. In nunc. Duis vulputate</span><br><span class="line">! tristique enim. Donec quis lectus a justo imperdiet tempus.</span><br><span class="line">--- 1,11 ----</span><br><span class="line">  Lorem ipsum dolor sit amet, consectetuer adipiscing</span><br><span class="line">  elit. Integer eu lacus accumsan arcu fermentum euismod. Donec</span><br><span class="line">! pulvinar, porttitor tellus. Aliquam venenatis. Donec facilisis</span><br><span class="line">! pharetra tortor. In nec mauris eget magna consequat</span><br><span class="line">! convalis. Nam cras vitae mi vitae odio pellentesque interdum. Sed</span><br><span class="line">  consequat viverra nisl. Suspendisse arcu metus, blandit quis,</span><br><span class="line">  rhoncus ac, pharetra eget, velit. Mauris urna. Morbi nonummy</span><br><span class="line">  molestie orci. Praesent nisi elit, fringilla ac, suscipit non,</span><br><span class="line">  tristique vel, mauris. Curabitur vel lorem id nisl porta</span><br><span class="line">! adipiscing. Duis vulputate tristique enim. Donec quis lectus a</span><br><span class="line">! justo imperdiet tempus.  Suspendisse eu lectus. In nunc.</span><br></pre></td></tr></table></figure></p>
+<h2 id="3、对比结果生成html"><a href="#3、对比结果生成html" class="headerlink" title="3、对比结果生成html"></a>3、对比结果生成html</h2><h3 id="HtmlDiff"><a href="#HtmlDiff" class="headerlink" title="HtmlDiff()"></a>HtmlDiff()</h3><p><strong>difflib</strong> 中的 <strong>HtmlDiff()</strong> 类支持将比较结果输出为HTML格式，其中 <strong>HtmlDiff()</strong> 类的 <strong>make_file()</strong> 方法可以生成美观的html文档。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># difflib_Html.py</span></span><br><span class="line"><span class="keyword">import</span> difflib</span><br><span class="line"><span class="keyword">from</span> difflib_data <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">diff = difflib.HtmlDiff()</span><br><span class="line">print(diff.make_file(text1_lines,text2_lines))</span><br></pre></td></tr></table></figure></p>
+<p>终端执行:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python difflib_Html.py &gt; 1.html</span><br></pre></td></tr></table></figure></p>
+<p>浏览器打开1.html文件，可读性更强了：<br><img src="/uploads/difflib_HtmlDiff.jpg" alt="HtmlDiff"></p>
+<h2 id="4、SequenceMatcher对象"><a href="#4、SequenceMatcher对象" class="headerlink" title="4、SequenceMatcher对象"></a>4、SequenceMatcher对象</h2><p><span style="font-size:18px;font-weight:bold;">difflib.SequenceMatcher(isjunk=None, a=’’, b=’’, autojunk=True)</span><br>本函数是构造函数，主要创建任何类型序列的比较对象。</p>
+<p><strong>isjunk</strong> 是关键字参数，主要设置过滤函数，比如想丢掉a和b比较序列里特定的字符，就可以设置相应的函数，比如不要空格和跳格符：lambda x: x in “ \t”。<br>a和b是比较序列。</p>
+<p><strong>autojunk</strong> 是用来设置是否启用自动垃圾处理。它具有自动垃圾启发方式，可以将重复超过片段1%或者重复200次的字符作为垃圾来处理。可以通过将 <strong>autojunk</strong> 设置为 <strong>false</strong> 关闭该功能。</p>
+<p><strong>set_seqs(a,b)</strong> 设置两个比较的序列。</p>
+<p><strong>set_seq1(a)</strong> 改变第一个比较序列，第二个比较序列保持不变。</p>
+<p><strong>set_seq2(b)</strong> 改变第二个比较序列，第一个比较序列保持不变。</p>
+<p><strong>find_longest_match(alo, ahi, blo, bhi)</strong><br>从比较序列 <strong>a[alo:ahi]</strong> 和 <strong>b[blo:bhi]</strong> 里找到最长相同的交集序列。<br>此函数返回一个命名的元组 <strong>Match(a, b, size)</strong>。<br>如果 <strong>isjunk</strong> 没有设置，即是 <strong>None</strong> 时，此函数返回 <strong>(i, j, k)</strong> 元组，即是 <strong>a[i:i+k]</strong> 与 <strong>b[j:j+k]</strong> 是相同的序列。<br>如果 <strong>isjunk</strong> 有设置，此函数也返回 <strong>(i, j, k)</strong> 元组，不过会跳过丢掉的字符进行比较。<br>如果此函数返回 <strong>(alo, blo, 0)</strong> 表示没有任何相同的序列。</p>
+<p><strong>get_matching_blocks()</strong><br>此函数返回多个描述 <strong>a</strong> 和 <strong>b</strong> 序列相同部分的三元组的列表。每一个三元组 <strong>(i, j, n)</strong> 是表示 <strong>a[i: i+n] == b[j: j+n]</strong>，最后一个三元组例外，它表示为 <strong>(len(a), len(b), 0)</strong>。在三元组里i和j采用单调递增的方式，因此比较相同之后，永远是增加方向进行。</p>
+<p><strong>get_opcodes()</strong><br>此函数每执行一次返回5个元素的元组，元组描述了从 <strong>a</strong> 序列变成 <strong>b</strong> 序列所经历的步骤。5个元素的元组表示为 <strong>(tag, i1, i2, j1, j2)</strong>，其中 <strong>tag</strong> 表示动作，<strong>i1</strong> 表示序列 <strong>a</strong> 的开始位置，<strong>i2</strong> 表示序列 <strong>a</strong> 的结束位置，<strong>j1</strong> 表示序列 <strong>b</strong> 的开始位置，<strong>j2</strong> 表示序列 <strong>b</strong> 的结束位置。<br><strong>tag</strong> 表示的字符串为：</p>
+<ul>
+<li><strong>replace</strong> 表示 <strong>a[i1 : i2]</strong> 将要被 <strong>b[j1 : j2]</strong> 替换。</li>
+<li><strong>delete</strong>  表示 <strong>a[i1 : i2]</strong> 将要被删除。</li>
+<li><strong>insert</strong>  表示 <strong>b[j1 : j2]</strong> 将被插入到 <strong>a[i1 : i1]</strong> 地方。</li>
+<li><strong>equal</strong>  表示 <strong>a[i1 : i2] == b[j1 : j2]</strong> 相同。</li>
+</ul>
+<p><strong>get_grouped_opcodes(n=3)</strong><br>返回一个列表保存操作组，可以同时返回多个操作组。<br>与 <strong>get_opcodes()</strong> 函数区别，就是此函数返回列表，而 <strong>get_opcodes()</strong> 只返回一个。</p>
+<p><strong>ratio()</strong><br>返回一个度量两个序列的相似程度，值在[0, 1]之间。当没有调用过 <strong>get_matching_blocks()</strong> 或 <strong>get_opcodes()</strong> 时，调用此函数需要比较大的计算量。如果只是想大概计算，可以使用 <strong>quick_ratio()</strong> 或 <strong>real_quick_ratio()</strong>函数，这样减少一些计算量。</p>
+<p><strong>quick_ratio()</strong><br>返回一个大于 <strong>ratio()</strong> 函数返回相似度的值，比 <strong>ratio()</strong> 相对要快一些。</p>
+<p><strong>real_quick_ratio()</strong><br>返回一个大于 <strong>ratio()</strong> 函数返回相似度的值，比<strong>ratio()</strong> 速度更快一些。</p>
+<h2 id="5、无用数据"><a href="#5、无用数据" class="headerlink" title="5、无用数据"></a>5、无用数据</h2><p>所有生成差异序列的函数都可以接受一些参数来指示应当忽略那些行，以及应当忽略一行中的那些字符，例如：可以用这些参数指定跳过一个文件两个本中的标记或者空白变更。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># difflib_junk.py</span></span><br><span class="line"><span class="comment"># This example is adapted from the source for difflib.py.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> difflib <span class="keyword">import</span> SequenceMatcher</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">show_results</span><span class="params">(match)</span>:</span></span><br><span class="line">    print(<span class="string">'  a    = &#123;&#125;'</span>.format(match.a))</span><br><span class="line">    print(<span class="string">'  b    = &#123;&#125;'</span>.format(match.b))</span><br><span class="line">    print(<span class="string">'  size = &#123;&#125;'</span>.format(match.size))</span><br><span class="line">    i, j, k = match</span><br><span class="line">    print(<span class="string">'  A[a:a+size] = &#123;!r&#125;'</span>.format(A[i:i + k]))</span><br><span class="line">    print(<span class="string">'  B[b:b+size] = &#123;!r&#125;'</span>.format(B[j:j + k]))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">A = <span class="string">" abcd"</span></span><br><span class="line">B = <span class="string">"abcd abcd"</span></span><br><span class="line"></span><br><span class="line">print(<span class="string">'A = &#123;!r&#125;'</span>.format(A))</span><br><span class="line">print(<span class="string">'B = &#123;!r&#125;'</span>.format(B))</span><br><span class="line"></span><br><span class="line">print(<span class="string">'\nWithout junk detection:'</span>)</span><br><span class="line">s1 = SequenceMatcher(<span class="literal">None</span>, A, B)</span><br><span class="line">match1 = s1.find_longest_match(<span class="number">0</span>, len(A), <span class="number">0</span>, len(B))</span><br><span class="line">show_results(match1)</span><br><span class="line"></span><br><span class="line">print(<span class="string">'\nTreat spaces as junk:'</span>)</span><br><span class="line">s2 = SequenceMatcher(<span class="keyword">lambda</span> x: x == <span class="string">" "</span>, A, B)</span><br><span class="line">match2 = s2.find_longest_match(<span class="number">0</span>, len(A), <span class="number">0</span>, len(B))</span><br><span class="line">show_results(match2)</span><br></pre></td></tr></table></figure></p>
+<p>默认情况下，<strong>Differ</strong> 不会显式忽略任何行或者字符，忽略一些字符需要依赖 <strong>SequenceMatcher</strong> 的功能。<strong>ndiff()</strong> 的默认行为是忽略空格和制表符。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">$ python3 difflib_junk.py</span><br><span class="line"></span><br><span class="line">A = &apos; abcd&apos;</span><br><span class="line">B = &apos;abcd abcd&apos;</span><br><span class="line"></span><br><span class="line">Without junk detection:</span><br><span class="line">  a    = 0</span><br><span class="line">  b    = 4</span><br><span class="line">  size = 5</span><br><span class="line">  A[a:a+size] = &apos; abcd&apos;</span><br><span class="line">  B[b:b+size] = &apos; abcd&apos;</span><br><span class="line"></span><br><span class="line">Treat spaces as junk:</span><br><span class="line">  a    = 1</span><br><span class="line">  b    = 0</span><br><span class="line">  size = 4</span><br><span class="line">  A[a:a+size] = &apos;abcd&apos;</span><br><span class="line">  B[b:b+size] = &apos;abcd&apos;</span><br></pre></td></tr></table></figure></p>
+<h2 id="6、比较任意类型"><a href="#6、比较任意类型" class="headerlink" title="6、比较任意类型"></a>6、比较任意类型</h2><p><strong>SequenceMatcher</strong> 可以比较任意类型的可哈希序列，它使用一种算法来识别序列中最长的连续匹配块，并删除对实际数据没有作用的无用值。<br>下面是个例子：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># difflib_seq.py</span></span><br><span class="line"><span class="keyword">import</span> difflib</span><br><span class="line"></span><br><span class="line">s1 = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">4</span>]</span><br><span class="line">s2 = [<span class="number">2</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">6</span>, <span class="number">1</span>]</span><br><span class="line"></span><br><span class="line">print(<span class="string">'Initial data:'</span>)</span><br><span class="line">print(<span class="string">'s1 ='</span>, s1)</span><br><span class="line">print(<span class="string">'s2 ='</span>, s2)</span><br><span class="line">print(<span class="string">'s1 == s2:'</span>, s1 == s2)</span><br><span class="line">print()</span><br><span class="line"></span><br><span class="line">matcher = difflib.SequenceMatcher(<span class="literal">None</span>, s1, s2)</span><br><span class="line"><span class="keyword">for</span> tag, i1, i2, j1, j2 <span class="keyword">in</span> reversed(matcher.get_opcodes()):</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> tag == <span class="string">'delete'</span>:</span><br><span class="line">        print(<span class="string">'Remove &#123;&#125; from positions [&#123;&#125;:&#123;&#125;]'</span>.format(</span><br><span class="line">            s1[i1:i2], i1, i2))</span><br><span class="line">        print(<span class="string">'  before ='</span>, s1)</span><br><span class="line">        <span class="keyword">del</span> s1[i1:i2]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">elif</span> tag == <span class="string">'equal'</span>:</span><br><span class="line">        print(<span class="string">'s1[&#123;&#125;:&#123;&#125;] and s2[&#123;&#125;:&#123;&#125;] are the same'</span>.format(</span><br><span class="line">            i1, i2, j1, j2))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">elif</span> tag == <span class="string">'insert'</span>:</span><br><span class="line">        print(<span class="string">'Insert &#123;&#125; from s2[&#123;&#125;:&#123;&#125;] into s1 at &#123;&#125;'</span>.format(</span><br><span class="line">            s2[j1:j2], j1, j2, i1))</span><br><span class="line">        print(<span class="string">'  before ='</span>, s1)</span><br><span class="line">        s1[i1:i2] = s2[j1:j2]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">elif</span> tag == <span class="string">'replace'</span>:</span><br><span class="line">        print((<span class="string">'Replace &#123;&#125; from s1[&#123;&#125;:&#123;&#125;] '</span></span><br><span class="line">               <span class="string">'with &#123;&#125; from s2[&#123;&#125;:&#123;&#125;]'</span>).format(</span><br><span class="line">                   s1[i1:i2], i1, i2, s2[j1:j2], j1, j2))</span><br><span class="line">        print(<span class="string">'  before ='</span>, s1)</span><br><span class="line">        s1[i1:i2] = s2[j1:j2]</span><br><span class="line"></span><br><span class="line">    print(<span class="string">'   after ='</span>, s1, <span class="string">'\n'</span>)</span><br><span class="line"></span><br><span class="line">print(<span class="string">'s1 == s2:'</span>, s1 == s2)</span><br></pre></td></tr></table></figure></p>
+<p>这个例子使用 <strong>get_opcodes()</strong> 对比两个证书列表并得到将原列表转换为新列表的指令。这里以逆序应用所做的修改，以便在添加和删除元素之后列表的索引仍是正确的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">$ python3 difflib_seq.py</span><br><span class="line"></span><br><span class="line">Initial data:</span><br><span class="line">s1 = [1, 2, 3, 5, 6, 4]</span><br><span class="line">s2 = [2, 3, 5, 4, 6, 1]</span><br><span class="line">s1 == s2: False</span><br><span class="line"></span><br><span class="line">Replace [4] from s1[5:6] with [1] from s2[5:6]</span><br><span class="line">  before = [1, 2, 3, 5, 6, 4]</span><br><span class="line">   after = [1, 2, 3, 5, 6, 1]</span><br><span class="line"></span><br><span class="line">s1[4:5] and s2[4:5] are the same</span><br><span class="line">   after = [1, 2, 3, 5, 6, 1]</span><br><span class="line"></span><br><span class="line">Insert [4] from s2[3:4] into s1 at 4</span><br><span class="line">  before = [1, 2, 3, 5, 6, 1]</span><br><span class="line">   after = [1, 2, 3, 5, 4, 6, 1]</span><br><span class="line"></span><br><span class="line">s1[1:4] and s2[0:3] are the same</span><br><span class="line">   after = [1, 2, 3, 5, 4, 6, 1]</span><br><span class="line"></span><br><span class="line">Remove [1] from positions [0:1]</span><br><span class="line">  before = [1, 2, 3, 5, 4, 6, 1]</span><br><span class="line">   after = [2, 3, 5, 4, 6, 1]</span><br><span class="line"></span><br><span class="line">s1 == s2: True</span><br></pre></td></tr></table></figure></p>
+<p><strong>SequenceMatcher</strong> 可用于处理自定义类及内置类型，前提是他们必须是可哈希化(hashable)的。<br><span style="font-weight:bold;color:#000080">备注:<span><br><a href="https://docs.python.org/3.6/library/difflib.html" target="_blank" rel="noopener">Standard library documentation for difflib</a></span></span></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/difflib/" rel="tag"># difflib</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/12/Text-textwrap/" rel="next" title="Text-textwrap">
+                <i class="fa fa-chevron-left"></i> Text-textwrap
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/06/13/DataStructures-enum/" rel="prev" title="DataStructures-enum">
+                DataStructures-enum <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1、对比Text文本"><span class="nav-number">1.</span> <span class="nav-text">1、对比Text文本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Differ"><span class="nav-number">1.1.</span> <span class="nav-text">Differ()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ndiff"><span class="nav-number">1.2.</span> <span class="nav-text">ndiff()</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2、其他格式输出"><span class="nav-number">2.</span> <span class="nav-text">2、其他格式输出</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#unified-diff"><span class="nav-number">2.1.</span> <span class="nav-text">unified_diff()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#context-diff"><span class="nav-number">2.2.</span> <span class="nav-text">context_diff()</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3、对比结果生成html"><span class="nav-number">3.</span> <span class="nav-text">3、对比结果生成html</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#HtmlDiff"><span class="nav-number">3.1.</span> <span class="nav-text">HtmlDiff()</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4、SequenceMatcher对象"><span class="nav-number">4.</span> <span class="nav-text">4、SequenceMatcher对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5、无用数据"><span class="nav-number">5.</span> <span class="nav-text">5、无用数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6、比较任意类型"><span class="nav-number">6.</span> <span class="nav-text">6、比较任意类型</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

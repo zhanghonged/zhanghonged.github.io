@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="python,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="python 函数编程，面向过程编程">
+<meta name="keywords" content="python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python基础-函数编程">
+<meta property="og:url" content="http://zhanghonged.github.io/2017/11/02/Python基础-函数编程/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="python 函数编程，面向过程编程">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-11-15T03:06:31.177Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python基础-函数编程">
+<meta name="twitter:description" content="python 函数编程，面向过程编程">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2017/11/02/Python基础-函数编程/">
+
+
+
+
+
+  <title>Python基础-函数编程 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2017/11/02/Python基础-函数编程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Python基础-函数编程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-02T17:43:29+08:00">
+                2017-11-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python/" itemprop="url" rel="index">
+                    <span itemprop="name">python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>python 函数编程，面向过程编程<br><a id="more"></a></p>
+<h2 id="函数的定义"><a href="#函数的定义" class="headerlink" title="函数的定义"></a>函数的定义</h2><p>代码块：就是将我们要执行的代码进行结构的整合，形成可被调用的代码块。<br>函数是可以重复调用的。<br>函数比较代码复制:</p>
+<ol>
+<li>减少冗余代码</li>
+<li>代码结构更加清晰</li>
+<li>有助于保持代码的一致性</li>
+</ol>
+<h3 id="定义函数语法"><a href="#定义函数语法" class="headerlink" title="定义函数语法"></a>定义函数语法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">def 函数名([参数]):</span><br><span class="line">　　代码块(block)</span><br><span class="line">　　return</span><br></pre></td></tr></table></figure>
+<p>1、    关键字：def<br>2、    函数名命名规范</p>
+<ol>
+<li>字母开头</li>
+<li>不允许有关键字</li>
+<li>不允许有特殊符号</li>
+<li>不建议起莫名其妙的函数名(A,B)</li>
+</ol>
+<p>3、参数：参数是定义在括号里边，由调用的时候传入，作用在函数内部的变量</p>
+<ol>
+<li>如果有参数，写在括号里边</li>
+<li>如果没有，那就写空括号</li>
+</ol>
+<p>4、    内容块</p>
+<h2 id="函数的调用"><a href="#函数的调用" class="headerlink" title="函数的调用"></a>函数的调用</h2><p>要调用一个函数，需要知道函数的名称和参数，函数在没有调用之前是不会执行的。<br>调用：函数名()，并且进行对应的传参形式。<br><strong>实参和形参:</strong><br>形参：在我们定义函数的时候定义的参数<br>实参：在我们调用的时候传递的值</p>
+<h2 id="函数的划分"><a href="#函数的划分" class="headerlink" title="函数的划分"></a>函数的划分</h2><p>按照参数类型划分：</p>
+<ul>
+<li>位置参数</li>
+<li>默认参数</li>
+<li>可变参数</li>
+<li>关键字参数</li>
+</ul>
+<h3 id="1、位置参数"><a href="#1、位置参数" class="headerlink" title="1、位置参数"></a>1、位置参数</h3><p>是我们在传参的时候，实参传递的顺序是按照形参定义的顺序进行传递的传参方式。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">def power(x, n):</span><br><span class="line">    s = 1</span><br><span class="line">    while n &gt; 0:</span><br><span class="line">        n = n - 1</span><br><span class="line">        s = s * x</span><br><span class="line">    return s</span><br><span class="line">print pow(2,4)</span><br><span class="line"></span><br><span class="line">##return</span><br><span class="line">16</span><br></pre></td></tr></table></figure></p>
+<p>power(x, n)函数有两个参数：x和n，这两个参数都是位置参数，调用函数时，传入的两个值按照位置顺序依次赋给参数x和n。</p>
+<h3 id="2、默认参数-缺省参数"><a href="#2、默认参数-缺省参数" class="headerlink" title="2、默认参数(缺省参数)"></a>2、默认参数(缺省参数)</h3><p>是在我们定义参数的时候，我们给形参一个默认值，在我们调用的时候，如果不给有默认值的形参参数，会自动采用默认值。<br>注：默认值参数必须放在正常参数的后面，否则会引发语法错误。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">def power(x, n=2):</span><br><span class="line">    s = 1</span><br><span class="line">    while n &gt; 0:</span><br><span class="line">        n = n - 1</span><br><span class="line">        s = s * x</span><br><span class="line">    print s</span><br><span class="line">power(2)</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">4</span><br></pre></td></tr></table></figure></p>
+<h3 id="3、可变参数"><a href="#3、可变参数" class="headerlink" title="3、可变参数"></a>3、可变参数</h3><p>可变参数就是传入的参数个数是可变的，可以是1个、2个到任意个，还可以是0个。<br>下面例子，求一组数字的平方和：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">def calc(*numbers):</span><br><span class="line">    sum = 0</span><br><span class="line">    for n in numbers:</span><br><span class="line">        sum = sum + n * n</span><br><span class="line">    print sum</span><br><span class="line">calc(1,2)</span><br><span class="line">calc()</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">5</span><br><span class="line">0</span><br></pre></td></tr></table></figure></p>
+<p>参数前面加了一个*号。在函数内部，参数numbers接收到的是一个tuple。<br>如果已经有一个list或者tuple，要调用一个可变参数怎么办？可以这样做：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">def calc(*numbers):</span><br><span class="line">    sum = 0</span><br><span class="line">    for n in numbers:</span><br><span class="line">        sum = sum + n * n</span><br><span class="line">    print sum</span><br><span class="line">num=[1,2,3]</span><br><span class="line">calc(*num)</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">14</span><br></pre></td></tr></table></figure></p>
+<p>*nums表示把nums这个list的所有元素作为可变参数传进去。</p>
+<h3 id="4、关键字参数"><a href="#4、关键字参数" class="headerlink" title="4、关键字参数"></a>4、关键字参数</h3><p>关键字参数允许你传入0个或任意个含参数名的参数，这些关键字参数在函数内部自动组装为一个dict。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">def person(name, age, **kw):</span><br><span class="line">    print(&apos;name:&apos;, name, &apos;age:&apos;, age, &apos;other:&apos;, kw)</span><br><span class="line">#调用</span><br><span class="line">person(&apos;Bob&apos;, 35)</span><br><span class="line">person(&apos;Bob&apos;, 35, city=&apos;Beijing&apos;)</span><br><span class="line">person(&apos;Bob&apos;, 35, city=&apos;Beijing&apos;,sex=&apos;male&apos;)</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">(&apos;name:&apos;, &apos;Bob&apos;, &apos;age:&apos;, 35, &apos;other:&apos;, &#123;&#125;)</span><br><span class="line">(&apos;name:&apos;, &apos;Bob&apos;, &apos;age:&apos;, 35, &apos;other:&apos;, &#123;&apos;city&apos;: &apos;Beijing&apos;&#125;)</span><br><span class="line">(&apos;name:&apos;, &apos;Bob&apos;, &apos;age:&apos;, 35, &apos;other:&apos;, &#123;&apos;city&apos;: &apos;Beijing&apos;, &apos;sex&apos;: &apos;male&apos;&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>关键字参数可以扩展函数的功能，如果调用者愿意提供更多的参数，我们也能收到。<br>如果已经有一个dict,可以这简单调用<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">def person(name, age, **kw):</span><br><span class="line">    print(&apos;name:&apos;, name, &apos;age:&apos;, age, &apos;other:&apos;, kw)</span><br><span class="line">#调用</span><br><span class="line">zhangsan=&#123;&apos;city&apos;:&apos;xian&apos;,&apos;sex&apos;:&apos;male&apos;&#125;</span><br><span class="line">person(&apos;Bob&apos;, 35, **zhangsan)</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">(&apos;name:&apos;, &apos;Bob&apos;, &apos;age:&apos;, 35, &apos;other:&apos;, &#123;&apos;city&apos;: &apos;xian&apos;, &apos;sex&apos;: &apos;male&apos;&#125;)</span><br></pre></td></tr></table></figure></p>
+<p><strong>zhangsan表示把zhangsan这个dict的所有key-value用关键字参数传入到函数的</strong>kw参数，kw将获得一个dict，注意kw获得的dict是zhagnsan的一份拷贝，对kw的改动不会影响到函数外的zhangsna。</p>
+<p>##注意**,此外还有一个命名关键字参数，这个是python3才支持的。</p>
+<h2 id="return"><a href="#return" class="headerlink" title="return"></a>return</h2><p>return 函数退出，返回一个值给调用方，不带值的return相当于返回None。</p>
+<h2 id="匿名函数-lambda"><a href="#匿名函数-lambda" class="headerlink" title="匿名函数-lambda"></a>匿名函数-lambda</h2><p>我们在定义函数的时候，不想给函数起名，那么就可用lambda来定义一个匿名函数。<br>语法:<br>&emsp;&emsp;<strong>lambda</strong> <strong>参数:表达式</strong><br>&emsp;&emsp;参数：以逗号分隔的变量表达式形式<br>&emsp;&emsp;表达式：不能有循环，但可以有if<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">F=lambda num: num*num</span><br><span class="line">print F(8)</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">64</span><br></pre></td></tr></table></figure></p>
+<h2 id="递归函数"><a href="#递归函数" class="headerlink" title="递归函数"></a>递归函数</h2><p>递归函数就是自身内部调用自己，但递归必须要有一个出口。<br>下面求1-10和的例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">def add(num):</span><br><span class="line">    if num == 1:</span><br><span class="line">        return 1</span><br><span class="line">    else:</span><br><span class="line">        return num+add(num-1)</span><br><span class="line">print add(10)</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">55</span><br></pre></td></tr></table></figure></p>
+<p>函数的执行过程如下：<br>1.num = 10 – 10 + add(9)<br>2.num = 9  – 10 + 9 + add(8)<br>……..<br>10.num=1  == 10+9+8+7+6+5+4+3+2+1</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/02/Python基础-运算与流程控制/" rel="next" title="Python基础-运算与流程控制">
+                <i class="fa fa-chevron-left"></i> Python基础-运算与流程控制
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/05/Python基础-文件操作/" rel="prev" title="Python基础-文件操作">
+                Python基础-文件操作 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#函数的定义"><span class="nav-number">1.</span> <span class="nav-text">函数的定义</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#定义函数语法"><span class="nav-number">1.1.</span> <span class="nav-text">定义函数语法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#函数的调用"><span class="nav-number">2.</span> <span class="nav-text">函数的调用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#函数的划分"><span class="nav-number">3.</span> <span class="nav-text">函数的划分</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、位置参数"><span class="nav-number">3.1.</span> <span class="nav-text">1、位置参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、默认参数-缺省参数"><span class="nav-number">3.2.</span> <span class="nav-text">2、默认参数(缺省参数)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、可变参数"><span class="nav-number">3.3.</span> <span class="nav-text">3、可变参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4、关键字参数"><span class="nav-number">3.4.</span> <span class="nav-text">4、关键字参数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#return"><span class="nav-number">4.</span> <span class="nav-text">return</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#匿名函数-lambda"><span class="nav-number">5.</span> <span class="nav-text">匿名函数-lambda</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#递归函数"><span class="nav-number">6.</span> <span class="nav-text">递归函数</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

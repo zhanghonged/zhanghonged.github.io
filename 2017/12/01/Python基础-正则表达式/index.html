@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="python,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="Python匹配，指python通过各种规则对字符串当中的内容进行筛选，python匹配只是python字符串高级的一种处理方式。则表达式是用于处理字符串的强大工具，拥有自己独特的语法以及一个独立的处理引擎，主要功能是从字符串中通过特定的模式，搜索想要找到的内容。在提供了正则表达式的语言里，正则表达式的语法都是一样的。">
+<meta name="keywords" content="python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python基础-正则表达式">
+<meta property="og:url" content="http://zhanghonged.github.io/2017/12/01/Python基础-正则表达式/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="Python匹配，指python通过各种规则对字符串当中的内容进行筛选，python匹配只是python字符串高级的一种处理方式。则表达式是用于处理字符串的强大工具，拥有自己独特的语法以及一个独立的处理引擎，主要功能是从字符串中通过特定的模式，搜索想要找到的内容。在提供了正则表达式的语言里，正则表达式的语法都是一样的。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/re.png">
+<meta property="og:updated_time" content="2017-12-01T06:45:52.519Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python基础-正则表达式">
+<meta name="twitter:description" content="Python匹配，指python通过各种规则对字符串当中的内容进行筛选，python匹配只是python字符串高级的一种处理方式。则表达式是用于处理字符串的强大工具，拥有自己独特的语法以及一个独立的处理引擎，主要功能是从字符串中通过特定的模式，搜索想要找到的内容。在提供了正则表达式的语言里，正则表达式的语法都是一样的。">
+<meta name="twitter:image" content="http://zhanghonged.github.io/uploads/re.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2017/12/01/Python基础-正则表达式/">
+
+
+
+
+
+  <title>Python基础-正则表达式 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2017/12/01/Python基础-正则表达式/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Python基础-正则表达式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-01T10:12:37+08:00">
+                2017-12-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python/" itemprop="url" rel="index">
+                    <span itemprop="name">python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Python匹配，指python通过各种规则对字符串当中的内容进行筛选，python匹配只是python字符串高级的一种处理方式。<br>则表达式是用于处理字符串的强大工具，拥有自己独特的语法以及一个独立的处理引擎，主要功能是从字符串中通过特定的模式，搜索想要找到的内容。<br>在提供了正则表达式的语言里，正则表达式的语法都是一样的。<br><a id="more"></a><br><span style="color:green;font-size:70%"><strong>今天的内容很多来自于网络，见谅。</strong></span></p>
+<p><strong>正则表达式的大致匹配过程是：</strong></p>
+<ol>
+<li>依次拿出表达式和文本中的字符比较，</li>
+<li>如果每一个字符都能匹配，则匹配成功；一旦有匹配不成功的字符则匹配失败。</li>
+<li>如果表达式中有量词或边界，这个过程会稍微有一些不同。</li>
+</ol>
+<h2 id="正则表达式匹配规则"><a href="#正则表达式匹配规则" class="headerlink" title="正则表达式匹配规则"></a>正则表达式匹配规则</h2><p>图片来自于网络。<br><img src="/uploads/re.png" alt></p>
+<h3 id="数量词的贪婪模式与非贪婪模式"><a href="#数量词的贪婪模式与非贪婪模式" class="headerlink" title="数量词的贪婪模式与非贪婪模式"></a>数量词的贪婪模式与非贪婪模式</h3><p>Python里数量词默认是贪婪的，总是尝试匹配尽可能多的字符；<br>非贪婪的则相反，总是尝试匹配尽可能少的字符。<br>例如：正则表达式”ab<em>“如果用于查找”abbbc”，将找到”abbb”。而如果使用非贪婪的数量词”ab</em>?”，将找到”a”。</p>
+<h3 id="反斜杠的困扰"><a href="#反斜杠的困扰" class="headerlink" title="反斜杠的困扰"></a>反斜杠的困扰</h3><p>与大多数编程语言相同，正则表达式里使用 <strong>“\”</strong> 作为转义字符，这就可能造成反斜杠困扰。<br>假如你需要匹配文本中的字符 <strong>“\”</strong>，那么使用编程语言表示的正则表达式里将需要4个反斜杠 <strong>“\\“</strong>：前两个和后两个分别用于在编程语言里转义成反斜杠，转换成两个反斜杠后再在正则表达式里转义成一个反斜杠。<br>Python里的原生字符串很好地解决了这个问题，这个例子中的正则表达式可以使用 <strong>r”\“</strong> 表示。同样，匹配一个数字的 <strong>“\d”</strong> 可以写成 <strong>r”\d”</strong>。有了原生字符串，你再也不用担心是不是漏写了反斜杠，写出来的表达式也更直观。</p>
+<h2 id="re模块"><a href="#re模块" class="headerlink" title="re模块"></a>re模块</h2><p>python自带了 <strong>re</strong> 模块，它提供了对正则表达式的支持。下面介绍常用方法。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">re方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">re.compile(string[,flag])</td>
+<td>Pattern类的工厂方法，用于将字符串形式的正则表达式编译为Pattern对象</td>
+</tr>
+<tr>
+<td style="text-align:left">re.match(pattern, string[, flags])</td>
+<td>从string开头开始匹配pattern，无法匹配返回None；成功返回match对象</td>
+</tr>
+<tr>
+<td style="text-align:left">re.search(pattern, string[, flags])</td>
+<td>与match方法极其类似，区别是search()会扫描整个string查找匹配</td>
+</tr>
+<tr>
+<td style="text-align:left">re.findall(pattern, string[, flags])</td>
+<td>搜索string，以列表形式返回全部能匹配的子串，返回list对象</td>
+</tr>
+<tr>
+<td style="text-align:left">re.split(pattern, string[, maxsplit])</td>
+<td>按照能够匹配的子串将string分割后返回列表，maxsplit用于指定最大分割次数，不指定将全部分割</td>
+</tr>
+<tr>
+<td style="text-align:left">re.finditer(pattern, string[, flags])</td>
+<td>搜索string，返回一个顺序访问每一个匹配结果(Match对象)的迭代器。迭代出来的是match对象</td>
+</tr>
+<tr>
+<td style="text-align:left">re.sub(pattern, repl, string[, count])</td>
+<td>用repl替换string中每一个匹配的子串后返回替换后的字符串</td>
+</tr>
+<tr>
+<td style="text-align:left">re.subn(pattern, repl, string[, count])</td>
+<td>与sub方法类似，返回时增加替换次数</td>
+</tr>
+</tbody>
+</table>
+<h2 id="flag参数"><a href="#flag参数" class="headerlink" title="flag参数"></a>flag参数</h2><p>上面的re方法里 <strong>re.compile</strong> 有 <strong>flag</strong> 参数，而其他方法都有 <strong>flags</strong> 方法，下面介绍说明下：<br><strong>flag</strong> 是匹配模式，取值可以使用按位或运算符， <strong>‘|’</strong> 表示同时生效，比如 <strong>re.I | re.M</strong>。<br>可选值有：</p>
+<table>
+<thead>
+<tr>
+<th>flag参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>re.I(全拼：IGNORECASE)</td>
+<td>忽略大小写</td>
+</tr>
+<tr>
+<td>re.M(全拼：MULTILINE)</td>
+<td>多行模式，改变’^’和’$’的行为</td>
+</tr>
+<tr>
+<td>re.S(全拼：DOTALL)</td>
+<td>点任意匹配模式，改变’.’的行为</td>
+</tr>
+<tr>
+<td>re.L(全拼：LOCALE)</td>
+<td>使预定字符类 \w \W \b \B \s \S 取决于当前区域设定</td>
+</tr>
+<tr>
+<td>re.U(全拼：UNICODE)</td>
+<td>使预定字符类 \w \W \b \B \s \S \d \D 取决于unicode定义的字符属性</td>
+</tr>
+<tr>
+<td>re.X(全拼：VERBOSE)</td>
+<td>详细模式。这个模式下正则表达式可以是多行，忽略空白字符，并可以加入注释</td>
+</tr>
+</tbody>
+</table>
+<p>re模块其他方法中的 <strong>flags</strong> 同样是代表匹配模式的意思，如果在pattern生成时 <strong>re.compile()</strong> 已经指明了 <strong>flag</strong> ，那其他方法中就不需要传入这个参数了。</p>
+<h2 id="match对象"><a href="#match对象" class="headerlink" title="match对象"></a>match对象</h2><p><strong>Match</strong>对象是一次匹配的结果，包含了很多关于此次匹配的信息，可以使用<strong>Match</strong>提供的可读属性或方法来获取这些信息。</p>
+<table>
+<thead>
+<tr>
+<th>Match属性</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>string</td>
+<td>匹配时使用的文本</td>
+</tr>
+<tr>
+<td>re</td>
+<td>匹配时使用的Pattern对象</td>
+</tr>
+<tr>
+<td>pos</td>
+<td>文本中正则表达式开始搜索的索引。值与Pattern.match()和Pattern.seach()方法的同名参数相同</td>
+</tr>
+<tr>
+<td>endpos</td>
+<td>文本中正则表达式结束搜索的索引。值与Pattern.match()和Pattern.seach()方法的同名参数相同</td>
+</tr>
+<tr>
+<td>lastindex</td>
+<td>最后一个被捕获的分组的索引。如果没有被捕获的分组，将为None</td>
+</tr>
+<tr>
+<td>lastgroup</td>
+<td>最后一个被捕获的分组的别名。如果这个分组没有别名或者没有被捕获的分组，将为None</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Match方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>group([group1, …])</td>
+<td>获得一个或多个分组截获的字符串，指定多个参数时将以元组形式返回。group1可以使用编号也可以使用别名；编号0代表整个匹配的子串；不填写参数时，返回group(0)；没有截获字符串的组返回None；截获了多次的组返回最后一次截获的子串</td>
+</tr>
+<tr>
+<td>groups([default])</td>
+<td>以元组形式返回全部分组截获的字符串。相当于调用group(1,2,…last)。default表示没有截获字符串的组以这个值替代，默认为None</td>
+</tr>
+<tr>
+<td>groupdict([default])</td>
+<td>返回有别名的组的别名为键、以该组截获的子串为值的字典，没有别名的组不包含在内。default含义同上</td>
+</tr>
+<tr>
+<td>start([group])</td>
+<td>返回指定的组截获的子串在string中的起始索引（子串第一个字符的索引）。group默认值为0</td>
+</tr>
+<tr>
+<td>end([group])</td>
+<td>返回指定的组截获的子串在string中的结束索引（子串最后一个字符的索引+1）。group默认值为0</td>
+</tr>
+<tr>
+<td>span([group])</td>
+<td>返回(start(group), end(group))</td>
+</tr>
+<tr>
+<td>expand(template)</td>
+<td>将匹配到的分组代入template中然后返回。template中可以使用\id或\g<id>、\g<name>引用分组，但不能使用编号0。\id与\g<id>是等价的；但\10将被认为是第10个分组，如果你想表达\1之后是字符’0’，只能使用\g<1>0</1></id></name></id></td>
+</tr>
+</tbody>
+</table>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">import re</span><br><span class="line">pattern = re.compile(r&apos;(\w+) (\w+)(?P&lt;sign&gt;.*)&apos;)</span><br><span class="line">m = re.match(pattern,&apos;hello world!&apos;)</span><br><span class="line">print &apos;m.string:&apos;,m.string</span><br><span class="line">print &apos;m.re:&apos;,m.re</span><br><span class="line">print &apos;m.pos:&apos;,m.pos</span><br><span class="line">print &apos;m.endpos:&apos;,m.endpos</span><br><span class="line">print &apos;m.lastindex:&apos;,m.lastindex</span><br><span class="line">print &apos;m.lastgroup:&apos;,m.lastgroup</span><br><span class="line">print &apos;m.group:&apos;,m.group()</span><br><span class="line">print &quot;m.group(&apos;sign&apos;):&quot;,m.group(&apos;sign&apos;)</span><br><span class="line">print &apos;m.group(1,2):&apos;,m.group(1,2)</span><br><span class="line">print &apos;m.groups():&apos;,m.groups()</span><br><span class="line">print &apos;m.groupdict():&apos;,m.groupdict()</span><br><span class="line">print &apos;m.start(2):&apos;,m.start(2)</span><br><span class="line">print &apos;m.end(1):&apos;,m.end(1)</span><br><span class="line">print &apos;m.span(2):&apos;,m.span(2)</span><br><span class="line">print r&quot;m.expand(r&apos;\2 \1\3&apos;):&quot;, m.expand(r&apos;\2 \1\3&apos;)</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">m.string: hello world!</span><br><span class="line">m.re: &lt;_sre.SRE_Pattern object at 0x03509760&gt;</span><br><span class="line">m.pos: 0</span><br><span class="line">m.endpos: 12</span><br><span class="line">m.lastindex: 3</span><br><span class="line">m.lastgroup: sign</span><br><span class="line">m.group: hello world!</span><br><span class="line">m.group(&apos;sign&apos;): !</span><br><span class="line">m.group(1,2): (&apos;hello&apos;, &apos;world&apos;)</span><br><span class="line">m.groups(): (&apos;hello&apos;, &apos;world&apos;, &apos;!&apos;)</span><br><span class="line">m.groupdict(): &#123;&apos;sign&apos;: &apos;!&apos;&#125;</span><br><span class="line">m.start(2): 6</span><br><span class="line">m.end(1): 5</span><br><span class="line">m.span(2): (6, 11)</span><br><span class="line">m.expand(r&apos;\2 \1\3&apos;): world hello!</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/28/Python基础-多线程/" rel="next" title="Python基础-多线程">
+                <i class="fa fa-chevron-left"></i> Python基础-多线程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/12/07/Python基础-Xpath用法/" rel="prev" title="Python基础-Xpath用法">
+                Python基础-Xpath用法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#正则表达式匹配规则"><span class="nav-number">1.</span> <span class="nav-text">正则表达式匹配规则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数量词的贪婪模式与非贪婪模式"><span class="nav-number">1.1.</span> <span class="nav-text">数量词的贪婪模式与非贪婪模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#反斜杠的困扰"><span class="nav-number">1.2.</span> <span class="nav-text">反斜杠的困扰</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#re模块"><span class="nav-number">2.</span> <span class="nav-text">re模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#flag参数"><span class="nav-number">3.</span> <span class="nav-text">flag参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#match对象"><span class="nav-number">4.</span> <span class="nav-text">match对象</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

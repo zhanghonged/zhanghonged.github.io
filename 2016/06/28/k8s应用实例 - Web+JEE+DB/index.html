@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="k8s,实例,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="系统架构:nginx+tomcat+mysql 部署规划: mysql采用单个Pod，tomcat、nginx分别用rc来部署。 持久化数据采用Persistent Volumes挂载NFS来支持。">
+<meta name="keywords" content="k8s,实例">
+<meta property="og:type" content="article">
+<meta property="og:title" content="k8s应用实例 - Web+JEE+DB">
+<meta property="og:url" content="http://zhanghonged.github.io/2016/06/28/k8s应用实例 - Web+JEE+DB/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="系统架构:nginx+tomcat+mysql 部署规划: mysql采用单个Pod，tomcat、nginx分别用rc来部署。 持久化数据采用Persistent Volumes挂载NFS来支持。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2016-08-09T08:58:16.542Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="k8s应用实例 - Web+JEE+DB">
+<meta name="twitter:description" content="系统架构:nginx+tomcat+mysql 部署规划: mysql采用单个Pod，tomcat、nginx分别用rc来部署。 持久化数据采用Persistent Volumes挂载NFS来支持。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2016/06/28/k8s应用实例 - Web+JEE+DB/">
+
+
+
+
+
+  <title>k8s应用实例 - Web+JEE+DB | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2016/06/28/k8s应用实例 - Web+JEE+DB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">k8s应用实例 - Web+JEE+DB</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-06-28T18:04:28+08:00">
+                2016-06-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/k8s应用实例/" itemprop="url" rel="index">
+                    <span itemprop="name">k8s应用实例</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="系统架构"><a href="#系统架构" class="headerlink" title="系统架构:"></a>系统架构:</h2><p>nginx+tomcat+mysql</p>
+<h2 id="部署规划"><a href="#部署规划" class="headerlink" title="部署规划:"></a>部署规划:</h2><ul>
+<li>mysql采用单个Pod，tomcat、nginx分别用rc来部署。</li>
+<li>持久化数据采用Persistent Volumes挂载NFS来支持。</li>
+</ul>
+<a id="more"></a>
+<h2 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备:"></a>前期准备:</h2><p>NFS采用现有系统，配置输出目录:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@4 ~]# cat /etc/exports </span><br><span class="line">#挂载mysql数据存放目录/var/lib/mysql</span><br><span class="line">/data/mysql *(rw,no_root_squash,async)</span><br><span class="line">#挂载tomcat webapps目录</span><br><span class="line">/data/tomcat/ *(rw,no_root_squash,async)</span><br><span class="line">#挂载nginx web文件</span><br><span class="line">/data/web/ *(rw,no_root_squash,async)</span><br></pre></td></tr></table></figure></p>
+<font color="#ff0000">DNS：cluster中已经部署skydns,内部服务调用采用service名称方式。</font>
+
+<h2 id="实施步骤"><a href="#实施步骤" class="headerlink" title="实施步骤"></a>实施步骤</h2><h3 id="一、msyql部署"><a href="#一、msyql部署" class="headerlink" title="一、msyql部署"></a>一、msyql部署</h3><h4 id="1、创建mysql所用的持久化数据pv及pvc"><a href="#1、创建mysql所用的持久化数据pv及pvc" class="headerlink" title="1、创建mysql所用的持久化数据pv及pvc"></a>1、创建mysql所用的持久化数据pv及pvc</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">[root@master k11]# cat mysql-pv.yaml </span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolume</span><br><span class="line">metadata:</span><br><span class="line">  name: nfs-mysql</span><br><span class="line">spec:</span><br><span class="line">  capacity:</span><br><span class="line">    storage: 500Mi</span><br><span class="line">  accessModes:</span><br><span class="line">    - ReadWriteMany</span><br><span class="line">  nfs:</span><br><span class="line">    server: 192.168.1.4</span><br><span class="line">    path: &quot;/data/mysql&quot;</span><br><span class="line"></span><br><span class="line">[root@master k11]# cat mysql-pvc.yaml </span><br><span class="line">kind: PersistentVolumeClaim</span><br><span class="line">apiVersion: v1</span><br><span class="line">metadata:</span><br><span class="line">  name: mysqlnfs</span><br><span class="line">spec:</span><br><span class="line">  accessModes:</span><br><span class="line">    - ReadWriteMany</span><br><span class="line">  resources:</span><br><span class="line">    requests:</span><br><span class="line">      storage: 300Mi</span><br><span class="line"></span><br><span class="line">[root@master k11]# kubectl create -f mysql-pv.yaml</span><br><span class="line">[root@master k11]# kubectl create -f mysql-pvc.yaml</span><br></pre></td></tr></table></figure>
+<h4 id="2、构建mysql-pod配置文件"><a href="#2、构建mysql-pod配置文件" class="headerlink" title="2、构建mysql pod配置文件"></a>2、构建mysql pod配置文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">[root@master k12]# cat mysql-pod.yaml </span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: mysql</span><br><span class="line">  labels: </span><br><span class="line">    name: mysql</span><br><span class="line">spec: </span><br><span class="line">  containers: </span><br><span class="line">    - resources:</span><br><span class="line">        limits :</span><br><span class="line">          cpu: 0.5</span><br><span class="line">      image: mysql:5.6</span><br><span class="line">      name: mysql</span><br><span class="line">      env:</span><br><span class="line">        - name: MYSQL_ROOT_PASSWORD</span><br><span class="line">          # change this</span><br><span class="line">          value: abcd1234</span><br><span class="line">      ports: </span><br><span class="line">        - containerPort: 3306</span><br><span class="line">          name: mysql</span><br><span class="line">      volumeMounts:</span><br><span class="line">        - name: mysql-persistent-storage</span><br><span class="line">          mountPath: /var/lib/mysql</span><br><span class="line">  volumes:</span><br><span class="line">    - name: mysql-persistent-storage</span><br><span class="line">      persistentVolumeClaim:</span><br><span class="line">        claimName: mysqlnfs</span><br><span class="line">  #选择部署节点(根据实际情况)</span><br><span class="line">  nodeSelector:</span><br><span class="line">    node: &quot;26&quot;</span><br><span class="line"></span><br><span class="line">[root@master k12]# kubectl create -f mysql-pod.yaml</span><br></pre></td></tr></table></figure>
+<h4 id="3、创建mysql-service"><a href="#3、创建mysql-service" class="headerlink" title="3、创建mysql service"></a>3、创建mysql service</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[root@master k12]# cat mysql-service.yaml </span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata: </span><br><span class="line">  labels: </span><br><span class="line">    name: mysql</span><br><span class="line">  name: mysql</span><br><span class="line">spec: </span><br><span class="line">  ports:</span><br><span class="line">    # the port that this service should serve on</span><br><span class="line">    - port: 3306</span><br><span class="line">  # label keys and values that must match in order to receive traffic for this service</span><br><span class="line">  selector: </span><br><span class="line">    name: mysql</span><br><span class="line"></span><br><span class="line">[root@master k12]# kubectl create -f mysql-service.yaml</span><br></pre></td></tr></table></figure>
+<h4 id="4、手动创建初始数据库"><a href="#4、手动创建初始数据库" class="headerlink" title="4、手动创建初始数据库"></a>4、手动创建初始数据库</h4><p>此步骤主要过程是.sql脚本，我这里kubectl exec进入container手动执行脚本恢复的。</p>
+<h3 id="二、tomcat部署"><a href="#二、tomcat部署" class="headerlink" title="二、tomcat部署"></a>二、tomcat部署</h3><h4 id="1、创建tomcat所用的持久化数据"><a href="#1、创建tomcat所用的持久化数据" class="headerlink" title="1、创建tomcat所用的持久化数据"></a>1、创建tomcat所用的持久化数据</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">[root@master gotran]# cat tomcat-pv.yaml </span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolume</span><br><span class="line">metadata:</span><br><span class="line">  name: nfs-tomcat</span><br><span class="line">spec:</span><br><span class="line">  capacity:</span><br><span class="line">    storage: 200Mi</span><br><span class="line">  accessModes:</span><br><span class="line">    - ReadWriteMany</span><br><span class="line">  nfs:</span><br><span class="line">    server: 192.168.1.4</span><br><span class="line">    path: &quot;/data/tomcat&quot;</span><br><span class="line">[root@master gotran]# cat tomcat-pvc.yaml </span><br><span class="line">kind: PersistentVolumeClaim</span><br><span class="line">apiVersion: v1</span><br><span class="line">metadata:</span><br><span class="line">  name: tomcatnfs</span><br><span class="line">spec:</span><br><span class="line">  accessModes:</span><br><span class="line">    - ReadWriteMany</span><br><span class="line">  resources:</span><br><span class="line">    requests:</span><br><span class="line">      storage: 200Mi</span><br><span class="line">[root@master gotran]# </span><br><span class="line">[root@master gotran]# kubectl -f create -f  tomcat-pv.yaml</span><br><span class="line">[root@master gotran]# kubectl -f create -f  tomcat-pvc.yaml</span><br></pre></td></tr></table></figure>
+<h4 id="2、构建tomcat-image"><a href="#2、构建tomcat-image" class="headerlink" title="2、构建tomcat image"></a>2、构建tomcat image</h4><p>tomcat镜像是从时速云仓库下载的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull index.tenxcloud.com/tenxcloud/tomcat:7</span><br></pre></td></tr></table></figure></p>
+<p>根据自己业务对此镜像进行重新build：<br><em>Dockerfile</em><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[root@minion tomcat]# cat Dockerfile </span><br><span class="line">FROM index.tenxcloud.com/tenxcloud/tomcat:7</span><br><span class="line">MAINTAINER zhanghong,zhanghong@16feng.com</span><br><span class="line">ADD context.xml /tomcat/conf</span><br><span class="line">ADD substitute.sh /</span><br><span class="line">RUN echo &quot;Asia/shanghai&quot; &gt; /etc/timezone</span><br><span class="line">RUN chmod +x substitute.sh</span><br><span class="line">#项目用的目录</span><br><span class="line">RUN mkdir -p /opt/file/gotrantest/avator/</span><br><span class="line">#将substitute.sh脚本插入到run.sh脚本第二行，以便build完成后运行</span><br><span class="line">RUN sed -i &apos;2 r /substitute.sh&apos; /run.sh</span><br><span class="line">ENTRYPOINT [&quot;/run.sh&quot;]</span><br><span class="line">EXPOSE 8080</span><br></pre></td></tr></table></figure></p>
+<p>tomcat数据库配置文件context.xml</p>
+<p><font color="#ff0000">MYSQL_*</font>通过substitute.sh脚本通过调用k8s中tomcat-rc中定义的环境变量替换为实际value<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&lt;Context&gt;</span><br><span class="line"></span><br><span class="line">    &lt;WatchedResource&gt;WEB-INF/web.xml&lt;/WatchedResource&gt;</span><br><span class="line"></span><br><span class="line">    &lt;Loader delegate=&quot;true&quot; /&gt;</span><br><span class="line"></span><br><span class="line">    &lt;Resource  name=&quot;jdbc/gotran&quot;   </span><br><span class="line">     auth=&quot;Container&quot;       </span><br><span class="line">     type=&quot;javax.sql.DataSource&quot;       </span><br><span class="line">     driverClassName=&quot;com.mysql.jdbc.Driver&quot;       </span><br><span class="line">     url=&quot;jdbc:mysql://MYSQL_HOSTNAME:MYSQL_PORT/MYSQL_DB&quot;       </span><br><span class="line">     username=&quot;MYSQL_USER&quot;       </span><br><span class="line">     password=&quot;MYSQL_PASSWORD&quot;  </span><br><span class="line">     maxActive=&quot;30&quot;       </span><br><span class="line">     maxIdle=&quot;10&quot;       </span><br><span class="line">     maxWait=&quot;5000&quot; /&gt;</span><br><span class="line"></span><br><span class="line">&lt;/Context&gt;</span><br></pre></td></tr></table></figure></p>
+<p>自定义脚本substitute.sh：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@minion tomcat]# cat substitute.sh </span><br><span class="line">sed -i &quot;s/MYSQL_HOSTNAME/$MYSQL_HOSTNAME/&quot; /tomcat/conf/context.xml</span><br><span class="line">sed -i &quot;s/MYSQL_PORT/$MYSQL_PORT/&quot; /tomcat/conf/context.xml</span><br><span class="line">sed -i &quot;s/MYSQL_DB/$MYSQL_DB/&quot; /tomcat/conf/context.xml</span><br><span class="line">sed -i &quot;s/MYSQL_USER/$MYSQL_USER/&quot; /tomcat/conf/context.xml</span><br><span class="line">sed -i &quot;s/MYSQL_PASSWORD/$MYSQL_PASSWORD/&quot; /tomcat/conf/context.xml</span><br></pre></td></tr></table></figure></p>
+<p>docker build生成image：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@minion tomcat]# docker build -t tomcat:7.1 .</span><br><span class="line">[root@minion tomcat]# docker images | grep tomcat</span><br><span class="line">tomcat                                   7.1     8f7a7b74e5cc        About an hour ago   545.1 MB</span><br><span class="line">index.tenxcloud.com/tenxcloud/tomcat     7       02d0f815333c        6 weeks ago         545.1 MB</span><br></pre></td></tr></table></figure></p>
+<h4 id="3、构建tomcat-rc配置文件并创建"><a href="#3、构建tomcat-rc配置文件并创建" class="headerlink" title="3、构建tomcat rc配置文件并创建"></a>3、构建tomcat rc配置文件并创建</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">[root@master gotran]# cat tomcat-rc.yaml </span><br><span class="line">kind: ReplicationController</span><br><span class="line">apiVersion: v1</span><br><span class="line">metadata:</span><br><span class="line">  name: gotran-backed</span><br><span class="line">  labels:</span><br><span class="line">    name: gotran-backed</span><br><span class="line">spec:</span><br><span class="line">  replicas: 2</span><br><span class="line">  selector:</span><br><span class="line">    name: gotran-backed</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        name: gotran-backed</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - name: gotran-backed</span><br><span class="line">        image: tomcat:7.1</span><br><span class="line">        ports:</span><br><span class="line">        - name: http-server</span><br><span class="line">          containerPort: 8080</span><br><span class="line">        env:</span><br><span class="line">          #此处mysql为mysql svc名称，通过skydns调用</span><br><span class="line">        - name: MYSQL_HOSTNAME</span><br><span class="line">          value: mysql</span><br><span class="line">        - name: MYSQL_PORT</span><br><span class="line">          value: &apos;3306&apos;</span><br><span class="line">        - name: MYSQL_DB</span><br><span class="line">          value: goyi</span><br><span class="line">        - name: MYSQL_USER</span><br><span class="line">          value: root</span><br><span class="line">        - name: MYSQL_PASSWORD</span><br><span class="line">          value: abcd1234</span><br><span class="line">        volumeMounts:</span><br><span class="line">        - name: tomcat-persistent-storage</span><br><span class="line">          mountPath: /tomcat/webapps</span><br><span class="line">      volumes:</span><br><span class="line">      - name: tomcat-persistent-storage</span><br><span class="line">        persistentVolumeClaim:</span><br><span class="line">          claimName: tomcatnfs</span><br><span class="line"></span><br><span class="line">[root@master gotran]# kubectl create -f tomcat-rc.yaml</span><br><span class="line">[root@master gotran]#</span><br></pre></td></tr></table></figure>
+<h4 id="4、创建tomcat-service"><a href="#4、创建tomcat-service" class="headerlink" title="4、创建tomcat service"></a>4、创建tomcat service</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[root@master gotran]# cat tomcat-svc.yaml </span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata: </span><br><span class="line">  labels: </span><br><span class="line">    name: gotran-backed</span><br><span class="line">  name: gotran-backed</span><br><span class="line">spec:</span><br><span class="line">  ports:</span><br><span class="line">    - port: 8080</span><br><span class="line">      targetPort: 8080</span><br><span class="line">  selector:</span><br><span class="line">    name: gotran-backed</span><br><span class="line">[root@master gotran]# </span><br><span class="line">[root@master gotran]# kubectl create -f tomcat-svc.yaml</span><br></pre></td></tr></table></figure>
+<h3 id="三、nginx部署"><a href="#三、nginx部署" class="headerlink" title="三、nginx部署"></a>三、nginx部署</h3><h4 id="1、创建nginx持久化数据"><a href="#1、创建nginx持久化数据" class="headerlink" title="1、创建nginx持久化数据"></a>1、创建nginx持久化数据</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">[root@master gotran]# cat nginx-pv.yaml </span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolume</span><br><span class="line">metadata:</span><br><span class="line">  name: nfs-nginx</span><br><span class="line">spec:</span><br><span class="line">  capacity:</span><br><span class="line">    storage: 200Mi</span><br><span class="line">  accessModes:</span><br><span class="line">    - ReadWriteMany</span><br><span class="line">  nfs:</span><br><span class="line">    server: 192.168.1.4</span><br><span class="line">    path: &quot;/data/web&quot;</span><br><span class="line">[root@master gotran]# cat nginx-pvc.yaml </span><br><span class="line">kind: PersistentVolumeClaim</span><br><span class="line">apiVersion: v1</span><br><span class="line">metadata:</span><br><span class="line">  name: nginxnfs</span><br><span class="line">spec:</span><br><span class="line">  accessModes:</span><br><span class="line">    - ReadWriteMany</span><br><span class="line">  resources:</span><br><span class="line">    requests:</span><br><span class="line">      storage: 200Mi</span><br><span class="line">[root@master gotran]# kubectl create -f nginx-pv.yaml </span><br><span class="line">[root@master gotran]# kubectl create -f nginx-pvc.yaml</span><br></pre></td></tr></table></figure>
+<h4 id="2、构建nginx-image："><a href="#2、构建nginx-image：" class="headerlink" title="2、构建nginx image："></a>2、构建nginx image：</h4><p>nginx镜像从docker.io下载：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull docker.io/nginx:latest</span><br></pre></td></tr></table></figure></p>
+<p>根据自己业务对此镜像进行重新build：<br><em>Dockerfile</em><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[root@minion nginx]# cat Dockerfile </span><br><span class="line">FROM nginx:1</span><br><span class="line">MAINTAINER zhanghong,zhanghong@16feng.com</span><br><span class="line">ADD gotran.conf /etc/nginx/conf.d/</span><br><span class="line">ADD run.sh /</span><br><span class="line">RUN chmod +x /run.sh</span><br><span class="line">RUN rm -rf /etc/nginx/conf.d/default.conf</span><br><span class="line">RUN echo &quot;Asia/shanghai&quot; &gt;&gt; /etc/timezone</span><br><span class="line">RUN mkdir -p /opt/nginx/gotran.com</span><br><span class="line">RUN ln -sf /dev/stdout /var/log/nginx/access.log</span><br><span class="line">RUN ln -sf /dev/stderr /var/log/nginx/error.log</span><br><span class="line">ENTRYPOINT [&quot;/run.sh&quot;]</span><br><span class="line">EXPOSE 80</span><br></pre></td></tr></table></figure></p>
+<p>自定义的gotran.conf配置文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">[root@minion nginx]# cat gotran.conf </span><br><span class="line">server  &#123;</span><br><span class="line">        listen 80;</span><br><span class="line">        server_name www.gotran.com gotran.com;</span><br><span class="line">        root /opt/nginx/gotran.com/;</span><br><span class="line">        index index.html;</span><br><span class="line"></span><br><span class="line">        access_log off;</span><br><span class="line">        location /gotran &#123;</span><br><span class="line">        #此处TOMCAT_HOST在run.sh脚本中被替换为tomcat svc名称，最后通过skydns解析为clusterIP</span><br><span class="line">        proxy_pass http://TOMCAT_HOST:8080/gotran;</span><br><span class="line">        proxy_redirect off;</span><br><span class="line">        proxy_set_header Host $host;</span><br><span class="line">        proxy_set_header X-real-ip $remote_addr;</span><br><span class="line">        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">        client_max_body_size 1025m;</span><br><span class="line">        client_body_buffer_size 128k;</span><br><span class="line">        client_body_temp_path   /tmp/nginx_temp;</span><br><span class="line">        proxy_connect_timeout 900;</span><br><span class="line">        proxy_send_timeout 900;</span><br><span class="line">        proxy_read_timeout 900;</span><br><span class="line">        proxy_buffer_size 4k;</span><br><span class="line">        proxy_buffers 4 64k;</span><br><span class="line">        proxy_busy_buffers_size 128k;</span><br><span class="line">        proxy_temp_file_write_size 64k;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        error_page 404 = /new_site/error.html;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">[root@minion nginx]#</span><br></pre></td></tr></table></figure></p>
+<p>自定义的run.sh启动脚本:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line"></span><br><span class="line">#替换gotran.conf中的tomcat service名称</span><br><span class="line">sed -i &quot;s/TOMCAT_HOST/$TOMCAT_HOST/&quot; /etc/nginx/conf.d/gotran.conf</span><br><span class="line"></span><br><span class="line">nginx -g &quot;daemon off;&quot;&lt;/pre&gt; </span><br><span class="line"></span><br><span class="line">docker build 生成image：</span><br><span class="line">&lt;pre class=&quot;lang:default decode:true &quot;&gt;[root@minion nginx]# docker build -t nginx:1.1 .</span><br><span class="line">[root@minion nginx]# docker images | grep nginx</span><br><span class="line">nginx              1.1        e9b30037f230     5 hours ago      182.7 MB</span><br><span class="line">docker.io/nginx    latest     89732b811e7f     3 weeks ago      182.7 MB</span><br></pre></td></tr></table></figure></p>
+<h4 id="3、创建nginx-rc"><a href="#3、创建nginx-rc" class="headerlink" title="3、创建nginx rc"></a>3、创建nginx rc</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">[root@master gotran]# cat nginx-rc.yaml </span><br><span class="line">kind: ReplicationController</span><br><span class="line">apiVersion: v1</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx-gotran</span><br><span class="line">  labels:</span><br><span class="line">    name: nginx-gotran</span><br><span class="line">spec:</span><br><span class="line">  replicas: 2</span><br><span class="line">  selector:</span><br><span class="line">    name: nginx-gotran</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        name: nginx-gotran</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - name: nginx-gotran</span><br><span class="line">        image: nginx:1.1</span><br><span class="line">        ports:</span><br><span class="line">        - name: http-server</span><br><span class="line">          containerPort: 80</span><br><span class="line">        #通过环境变量传入tomcat svc名称,通过skydns调用</span><br><span class="line">        env:</span><br><span class="line">        - name: TOMCAT_HOST</span><br><span class="line">          value: gotran-backed</span><br><span class="line">        volumeMounts:</span><br><span class="line">        - name: nginx-persistent-storage</span><br><span class="line">          mountPath: /opt/nginx/gotran.com</span><br><span class="line">      volumes:</span><br><span class="line">      - name: nginx-persistent-storage</span><br><span class="line">        persistentVolumeClaim:</span><br><span class="line">          claimName: nginxnfs</span><br><span class="line">[root@master gotran]# kubectl create -f nginx-rc.yaml</span><br></pre></td></tr></table></figure>
+<h4 id="4、创建nginx-service"><a href="#4、创建nginx-service" class="headerlink" title="4、创建nginx service"></a>4、创建nginx service</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[root@master gotran]# cat nginx-svc.yaml </span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata: </span><br><span class="line">  labels: </span><br><span class="line">    name: nginx-gotran</span><br><span class="line">  name: nginx-gotran</span><br><span class="line">spec:</span><br><span class="line">  ports:</span><br><span class="line">    - port: 80</span><br><span class="line">      targetPort: 80</span><br><span class="line">  selector:</span><br><span class="line">    name: nginx-gotran</span><br><span class="line">  #此处选择NodePort，由于本地环境无法使用LoadBlanacer</span><br><span class="line">  type: NodePort</span><br><span class="line">[root@master gotran]# kubectl create -f nginx-svc.yaml</span><br></pre></td></tr></table></figure>
+<p>环境部署完毕，可通过Node节点IP+NodePort端口去访问此系统。<br>访问方式: <a href="http://NodeIP:NodePort" target="_blank" rel="noopener">http://NodeIP:NodePort</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@master ~]# kubectl describe svc nginx-gotran</span><br><span class="line">Name:			nginx-gotran</span><br><span class="line">Namespace:		default</span><br><span class="line">Labels:			name=nginx-gotran</span><br><span class="line">Selector:		name=nginx-gotran</span><br><span class="line">Type:			NodePort</span><br><span class="line">IP:			10.254.38.134</span><br><span class="line">Port:			&lt;unset&gt;	80/TCP</span><br><span class="line">NodePort:		&lt;unset&gt;	32651/TCP</span><br><span class="line">Endpoints:		172.17.2.6:80</span><br><span class="line">Session Affinity:	None</span><br><span class="line">No events.</span><br></pre></td></tr></table></figure></p>
+<p>下来就可以部署我们的应用系统了：</p>
+<ul>
+<li>JEE应用：将.war包放到tomcat的webapps目录，这里放到NFS服务器的对应目录即可 /data/tomcat/</li>
+<li>Web应用：将站点文件放到nginx相应的配置路径，这里存放到NFS服务器对应目录 /data/web</li>
+<li>DB：我们前面已经手动恢复过。</li>
+</ul>
+<p>此时应用已经可以正常访问了，<a href="http://NodeIP:NodePort" target="_blank" rel="noopener">http://NodeIP:NodePort</a><br>任意一个node节点都可以访问到，下来就可以使用自己的负载均衡解决方案去实施，仁者见仁智者见智。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/k8s/" rel="tag"># k8s</a>
+          
+            <a href="/tags/实例/" rel="tag"># 实例</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/14/Kubernetes工作中部署和管理(二) 部署应用/" rel="next" title="Kubernetes工作中部署和管理(二) 部署应用">
+                <i class="fa fa-chevron-left"></i> Kubernetes工作中部署和管理(二) 部署应用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/06/29/部署Kubernetes DNS - skydns/" rel="prev" title="部署Kubernetes DNS - skydns">
+                部署Kubernetes DNS - skydns <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#系统架构"><span class="nav-number">1.</span> <span class="nav-text">系统架构:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#部署规划"><span class="nav-number">2.</span> <span class="nav-text">部署规划:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前期准备"><span class="nav-number">3.</span> <span class="nav-text">前期准备:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实施步骤"><span class="nav-number">4.</span> <span class="nav-text">实施步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、msyql部署"><span class="nav-number">4.1.</span> <span class="nav-text">一、msyql部署</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、创建mysql所用的持久化数据pv及pvc"><span class="nav-number">4.1.1.</span> <span class="nav-text">1、创建mysql所用的持久化数据pv及pvc</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、构建mysql-pod配置文件"><span class="nav-number">4.1.2.</span> <span class="nav-text">2、构建mysql pod配置文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3、创建mysql-service"><span class="nav-number">4.1.3.</span> <span class="nav-text">3、创建mysql service</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4、手动创建初始数据库"><span class="nav-number">4.1.4.</span> <span class="nav-text">4、手动创建初始数据库</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、tomcat部署"><span class="nav-number">4.2.</span> <span class="nav-text">二、tomcat部署</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、创建tomcat所用的持久化数据"><span class="nav-number">4.2.1.</span> <span class="nav-text">1、创建tomcat所用的持久化数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、构建tomcat-image"><span class="nav-number">4.2.2.</span> <span class="nav-text">2、构建tomcat image</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3、构建tomcat-rc配置文件并创建"><span class="nav-number">4.2.3.</span> <span class="nav-text">3、构建tomcat rc配置文件并创建</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4、创建tomcat-service"><span class="nav-number">4.2.4.</span> <span class="nav-text">4、创建tomcat service</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、nginx部署"><span class="nav-number">4.3.</span> <span class="nav-text">三、nginx部署</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、创建nginx持久化数据"><span class="nav-number">4.3.1.</span> <span class="nav-text">1、创建nginx持久化数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、构建nginx-image："><span class="nav-number">4.3.2.</span> <span class="nav-text">2、构建nginx image：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3、创建nginx-rc"><span class="nav-number">4.3.3.</span> <span class="nav-text">3、创建nginx rc</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4、创建nginx-service"><span class="nav-number">4.3.4.</span> <span class="nav-text">4、创建nginx service</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

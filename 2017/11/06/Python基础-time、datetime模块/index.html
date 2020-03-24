@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="python,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="&amp;emsp;Python具有良好的时间和日期管理功能。实际上，计算机只会维护一个挂钟时间(wall clock time)，这个时间是从某个固定时间起点到现在的时间间隔。时间起点的选择与计算机相关，但一台计算机的话，这一时间起点是固定的。其它的日期信息都是从这一时间计算得到的。此外，计算机还可以测量CPU实际上运行的时间，也就是处理器时间(processor clock time)，以测量计算机性">
+<meta name="keywords" content="python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python基础-time、datetime模块">
+<meta property="og:url" content="http://zhanghonged.github.io/2017/11/06/Python基础-time、datetime模块/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="&amp;emsp;Python具有良好的时间和日期管理功能。实际上，计算机只会维护一个挂钟时间(wall clock time)，这个时间是从某个固定时间起点到现在的时间间隔。时间起点的选择与计算机相关，但一台计算机的话，这一时间起点是固定的。其它的日期信息都是从这一时间计算得到的。此外，计算机还可以测量CPU实际上运行的时间，也就是处理器时间(processor clock time)，以测量计算机性">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/time.png">
+<meta property="og:updated_time" content="2017-11-07T03:53:48.011Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python基础-time、datetime模块">
+<meta name="twitter:description" content="&amp;emsp;Python具有良好的时间和日期管理功能。实际上，计算机只会维护一个挂钟时间(wall clock time)，这个时间是从某个固定时间起点到现在的时间间隔。时间起点的选择与计算机相关，但一台计算机的话，这一时间起点是固定的。其它的日期信息都是从这一时间计算得到的。此外，计算机还可以测量CPU实际上运行的时间，也就是处理器时间(processor clock time)，以测量计算机性">
+<meta name="twitter:image" content="http://zhanghonged.github.io/uploads/time.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2017/11/06/Python基础-time、datetime模块/">
+
+
+
+
+
+  <title>Python基础-time、datetime模块 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2017/11/06/Python基础-time、datetime模块/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Python基础-time、datetime模块</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-06T16:26:06+08:00">
+                2017-11-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python/" itemprop="url" rel="index">
+                    <span itemprop="name">python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>&emsp;Python具有良好的时间和日期管理功能。实际上，计算机只会维护一个挂钟时间(wall clock time)，这个时间是从某个固定时间起点到现在的时间间隔。时间起点的选择与计算机相关，但一台计算机的话，这一时间起点是固定的。其它的日期信息都是从这一时间计算得到的。此外，计算机还可以测量CPU实际上运行的时间，也就是处理器时间(processor clock time)，以测量计算机性能。当CPU处于闲置状态时，处理器时间会暂停。<br><a id="more"></a></p>
+<h2 id="time模块"><a href="#time模块" class="headerlink" title="time模块"></a>time模块</h2><p><strong>时区</strong><br>UTC（Coordinated Universal Time，世界协调时）亦即格林威治天文时间，世界标准时间。在中国为UTC+8。DST（Daylight Saving Time）即夏令时。</p>
+<p><strong><em>时间戳</em></strong><br>距离1970年1月1日0:00过了多少秒。</p>
+<h3 id="时间格式"><a href="#时间格式" class="headerlink" title="时间格式"></a>时间格式</h3><p>1、字符串时间<br>2、时间戳<br>3、元组方式(共9个元素)，也叫九元素时间<br>元组（struct_time）方式：struct_time元组共有9个元素，返回struct_time的函数主要有gmtime()，localtime()，strptime()。下面列出这种方式元组中的几个元素：</p>
+<table>
+<thead>
+<tr>
+<th>索引(index)</th>
+<th>属性(Attribute)</th>
+<th>值(values)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>tm_year（年）</td>
+<td>比如2011</td>
+</tr>
+<tr>
+<td>1</td>
+<td>tm_mon（月）</td>
+<td>1 - 12</td>
+</tr>
+<tr>
+<td>2</td>
+<td>tm_mday（日）</td>
+<td>1 - 31</td>
+</tr>
+<tr>
+<td>3</td>
+<td>tm_hour（时）</td>
+<td>0 - 23</td>
+</tr>
+<tr>
+<td>4</td>
+<td>tm_min（分）</td>
+<td>0 - 59</td>
+</tr>
+<tr>
+<td>5</td>
+<td>tm_sec（秒）</td>
+<td>0 - 61</td>
+</tr>
+<tr>
+<td>6</td>
+<td>tm_wday（weekday）</td>
+<td>0 - 6（0表示周日）</td>
+</tr>
+<tr>
+<td>7</td>
+<td>tm_yday（一年中的第几天）</td>
+<td>1 - 366</td>
+</tr>
+<tr>
+<td>8</td>
+<td>tm_isdst（是否是夏令时）</td>
+<td>默认为-1</td>
+</tr>
+</tbody>
+</table>
+<h3 id="time方法"><a href="#time方法" class="headerlink" title="time方法"></a>time方法</h3><h4 id="1、time-localtime-secs"><a href="#1、time-localtime-secs" class="headerlink" title="1、time.localtime([secs])"></a>1、time.localtime([secs])</h4><p>将一个时间戳转换为当前时区的struct_time。secs参数未提供，则以当前时间为准。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">print time.localtime()</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">time.struct_time(tm_year=2017, tm_mon=11, tm_mday=6, tm_hour=16, tm_min=55, tm_sec=2, tm_wday=0, tm_yday=310, tm_isdst=0)</span><br></pre></td></tr></table></figure></p>
+<h4 id="2、time-gmtime-secs"><a href="#2、time-gmtime-secs" class="headerlink" title="2、time.gmtime([secs])"></a>2、time.gmtime([secs])</h4><p>和localtime()方法类似,返回0时区的struct_time(九元素时间)。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">print time.gmtime()</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">time.struct_time(tm_year=2017, tm_mon=11, tm_mday=6, tm_hour=8, tm_min=57, tm_sec=30, tm_wday=0, tm_yday=310, tm_isdst=0)</span><br></pre></td></tr></table></figure></p>
+<h4 id="3、time-time"><a href="#3、time-time" class="headerlink" title="3、time.time()"></a>3、time.time()</h4><p>返回当前时间的时间戳。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">print time.time()</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">1509958800.98</span><br></pre></td></tr></table></figure></p>
+<h4 id="4、time-mktime-t"><a href="#4、time-mktime-t" class="headerlink" title="4、time.mktime(t)"></a>4、time.mktime(t)</h4><p>将一个struct_time转化为时间戳。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">print time.mktime((time.localtime()))</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">1509958887.0</span><br></pre></td></tr></table></figure></p>
+<h4 id="5、time-asctime-t"><a href="#5、time-asctime-t" class="headerlink" title="5、time.asctime([t])"></a>5、time.asctime([t])</h4><p>把一个表示时间的元组或者struct_time表示为字符串时间样式，比如：’Sun Jun 20 23:21:05 1993’。如果没有参数，将会将time.localtime()作为参数传入。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">print time.asctime(time.localtime())</span><br><span class="line">print time.asctime((2017,11,1,20,48,50,2,305,0))</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">Mon Nov 06 17:09:36 2017</span><br><span class="line">Wed Nov 01 20:48:50 2017</span><br></pre></td></tr></table></figure></p>
+<h4 id="6、time-ctime-secs"><a href="#6、time-ctime-secs" class="headerlink" title="6、time.ctime([secs])"></a>6、time.ctime([secs])</h4><p>将时间戳转换为字符串时间,如果没有参数，将会将time.localtime()作为参数传入。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">print time.ctime()</span><br><span class="line">print time.ctime(123456789)</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">Mon Nov 06 17:11:35 2017</span><br><span class="line">Fri Nov 30 05:33:09 1973</span><br></pre></td></tr></table></figure></p>
+<h4 id="7、time-strftime-format-t"><a href="#7、time-strftime-format-t" class="headerlink" title="7、time.strftime(format[, t])"></a>7、time.strftime(format[, t])</h4><p>把一个代表时间的元组或者struct_time（如由time.localtime()和time.gmtime()）转化为格式化的时间字符串。 如果t未指定，将传入time.localtime()。如果元组中任何一个元素越界，ValueError的错误将会被抛出。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">print time.strftime(&apos;%y-%m-%d %H:%M:%S&apos;,time.localtime())</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">17-11-06 17:14:13</span><br></pre></td></tr></table></figure></p>
+<p><strong>strftime格式符</strong></p>
+<table>
+<thead>
+<tr>
+<th>格式</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>%Y</td>
+<td>年(四位)</td>
+</tr>
+<tr>
+<td>%y</td>
+<td>年(二位)</td>
+</tr>
+<tr>
+<td>%m</td>
+<td>月</td>
+</tr>
+<tr>
+<td>%d</td>
+<td>日</td>
+</tr>
+<tr>
+<td>%H</td>
+<td>时(24小时制)</td>
+</tr>
+<tr>
+<td>%I</td>
+<td>时(24小时制)</td>
+</tr>
+<tr>
+<td>%M</td>
+<td>分</td>
+</tr>
+<tr>
+<td>%S</td>
+<td>秒</td>
+</tr>
+</tbody>
+</table>
+<h4 id="8、time-strptime-string-format"><a href="#8、time-strptime-string-format" class="headerlink" title="8、time.strptime(string[, format])"></a>8、time.strptime(string[, format])</h4><p>根据指定的时间把一个字符串时间转换为时间元组，实际上它和strftime()是逆操作。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">print time.strptime(&apos;2017-11-01 21:04:07&apos;,&apos;%Y-%m-%d %H:%M:%S&apos;)</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">time.struct_time(tm_year=2017, tm_mon=11, tm_mday=1, tm_hour=21, tm_min=4, tm_sec=7, tm_wday=2, tm_yday=305, tm_isdst=-1)</span><br></pre></td></tr></table></figure></p>
+<h4 id="9、time-sleep-secs"><a href="#9、time-sleep-secs" class="headerlink" title="9、time.sleep(secs)"></a>9、time.sleep(secs)</h4><p>就是让程序挂起指定的秒数。</p>
+<h4 id="10、time-clock"><a href="#10、time-clock" class="headerlink" title="10、time.clock"></a>10、time.clock</h4><p>在Linux中，他返回的是进程时间，是用秒表示时间戳(浮点数)，在win中，第一次调用返回的是进程运行的实际时间，第二次调用时自第一次调用之后到现在运行的时间。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">time.sleep(1)  </span><br><span class="line">print &quot;clock1:%s&quot; % time.clock()  </span><br><span class="line">time.sleep(1)  </span><br><span class="line">print &quot;clock2:%s&quot; % time.clock()  </span><br><span class="line">time.sleep(1)  </span><br><span class="line">print &quot;clock3:%s&quot; % time.clock()</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">clock1:3.31155324762e-07</span><br><span class="line">clock2:1.00003079745</span><br><span class="line">clock3:2.00004503712</span><br></pre></td></tr></table></figure></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>在Python中共有三种表达方式：1、timestamp 2、tuple或者struct_time 3、格式化字符串。<br>关系图如下:<br><img src="/uploads/time.png" alt></p>
+<h2 id="datetime模块"><a href="#datetime模块" class="headerlink" title="datetime模块"></a>datetime模块</h2><p>datetime包是基于time包的一个高级包，是Python处理日期和时间的标准库。</p>
+<h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>datetime定义了两个常量：</p>
+<ul>
+<li>datetime.MINYEAR (最小年份1)</li>
+<li>datetime.MAXYEAR (最大年份9999)</li>
+</ul>
+<p>datetime模块定义了下面这几个类：</p>
+<ul>
+<li>datetime.date：表示日期的类(相当于日历)。常用的属性有year, month, day</li>
+<li>datetime.time：表示时间的类(相当于手表)。常用的属性有hour, minute, second, microsecond</li>
+<li>datetime.datetime：表示日期时间</li>
+<li>datetime.timedelta：表示时间间隔，即两个时间点之间的长度</li>
+<li>datetime.tzinfo：与时区有关的相关信息</li>
+</ul>
+<p>获取当前日期和时间,及指定日期时间<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">print datetime.datetime.now()</span><br><span class="line">print type(datetime.datetime.now())</span><br><span class="line">print datetime.datetime(2017,11,06,18,19)</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">2017-11-06 18:18:00.085000</span><br><span class="line">&lt;type &apos;datetime.datetime&apos;&gt;</span><br><span class="line">2017-11-06 18:19:00</span><br></pre></td></tr></table></figure></p>
+<h3 id="运算timedelta"><a href="#运算timedelta" class="headerlink" title="运算timedelta"></a>运算timedelta</h3><p>datetime包还定义了时间间隔对象(timedelta)。一个时间点(datetime)加上一个时间间隔(timedelta)可以得到一个新的时间点(datetime)。同理，两个时间点相减会得到一个时间间隔。<br><span style="color: red;">只有<strong>“datetime.datetime”</strong>类型的数据才能进行datetime.timedelta运算。</span><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">t      = datetime.datetime(2017,11,3,21,30)</span><br><span class="line">t_next = datetime.datetime(2017,11,5,23,30)</span><br><span class="line">delta1 = datetime.timedelta(seconds = 600)</span><br><span class="line">delta2 = datetime.timedelta(weeks = 3)</span><br><span class="line">print(t + delta1)</span><br><span class="line">print(t + delta2)</span><br><span class="line">print(t_next - t)</span><br><span class="line">print(t &lt; t_next)</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">2017-11-03 21:40:00</span><br><span class="line">2017-11-24 21:30:00</span><br><span class="line">2 days, 2:00:00</span><br><span class="line">True</span><br></pre></td></tr></table></figure></p>
+<p>在给datetime.timedelta传递参数（如上的seconds和weeks）的时候，还可以是days, hours, milliseconds, microseconds。</p>
+<h3 id="datetime对象与字符串转换"><a href="#datetime对象与字符串转换" class="headerlink" title="datetime对象与字符串转换"></a>datetime对象与字符串转换</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">print datetime.datetime.strptime(&apos;2017-11-6 184920&apos;,&apos;%Y-%m-%d %H%M%S&apos;)</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">2017-11-06 18:49:20</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">format = &quot;output-%Y-%m-%d-%H%M%S.txt&quot; </span><br><span class="line">str    = &quot;output-1997-12-23-030000.txt&quot; </span><br><span class="line">t      = datetime.datetime.strptime(str, format)</span><br><span class="line">print t</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">1997-12-23 03:00:00</span><br></pre></td></tr></table></figure>
+<p>我们通过format来告知Python我们的str字符串中包含的日期的格式。在format中，%Y表示年所出现的位置, %m表示月份所出现的位置……。<br>反过来，我们也可以调用datetime对象的strftime()方法，来将datetime对象转换为特定格式的字符串。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">print datetime.datetime(2017,11,06,23,40,21).strftime(&apos;%Y-%m-%d %H:%M:%S&apos;)</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">2017-11-06 23:40:21</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">t_next = datetime.datetime(2012,9,5,23,30)</span><br><span class="line">print t_next</span><br><span class="line">format = &quot;output-%Y-%m-%d-%H%M%S.txt&quot; </span><br><span class="line">print(t_next.strftime(format))</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">2012-09-05 23:30:00</span><br><span class="line">output-2012-09-05-233000.txt</span><br></pre></td></tr></table></figure>
+<h3 id="datetime对象与时间戳转换"><a href="#datetime对象与时间戳转换" class="headerlink" title="datetime对象与时间戳转换"></a>datetime对象与时间戳转换</h3><p>要把timestamp转换为datetime，使用datetime提供的fromtimestamp()方法。<br>timestamp是一个浮点数，它没有时区的概念，而datetime是有时区的。默认转换是在timestamp和本地时间做转换。<br>timestamp也可以直接被转换到UTC标准时区的时间：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">import datetime</span><br><span class="line">t=1509965933.42</span><br><span class="line">print datetime.datetime.fromtimestamp(t)</span><br><span class="line">print datetime.datetime.utcfromtimestamp(t)</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">2017-11-06 18:58:53.420000</span><br><span class="line">2017-11-06 10:58:53.420000</span><br></pre></td></tr></table></figure></p>
+<h2 id="时间转换示例"><a href="#时间转换示例" class="headerlink" title="时间转换示例"></a>时间转换示例</h2><p><strong>1、将字符串的时间转换为时间戳</strong><br>思路:将字符串时间转换为struct_time，再通过time.mktime()转换为时间戳<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">styleTime=&quot;2017-11-06 23:40:01&quot;</span><br><span class="line">timeArry=time.strptime(styleTime,&apos;%Y-%m-%d %H:%M:%S&apos;)</span><br><span class="line">timeStamp=int(time.mktime(timeArry))</span><br><span class="line">print timeStamp</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">1509982801</span><br></pre></td></tr></table></figure></p>
+<p><strong>2、字符串时间更改样式</strong><br>思路:将字符串时间转换为struct_time，再转换为新的字符串时间样式。<br>如”2013-10-10 23:40:00”,更改为”2013/10/10 23:40:00”<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">a=&apos;2017-11-17 11:40:00&apos;</span><br><span class="line">timeArry=time.strptime(a,&apos;%Y-%m-%d %H:%M:%S&apos;)</span><br><span class="line">styleTime=time.strftime(&apos;%Y/%m/%d %H:%M:%S&apos;,timeArry)</span><br><span class="line">print styleTime</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">2017/11/17 11:40:00</span><br></pre></td></tr></table></figure></p>
+<p><strong>3、时间戳转换为指定格式日期</strong><br>方法一：<br>思路:使用time.localtime()转换为struct_time,再转换为字符串格式时间。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">timeStamp=1510024122</span><br><span class="line">timeArry=time.localtime(timeStamp)</span><br><span class="line">styleTime=time.strftime(&apos;%Y-%m-%d %H:%M:%S&apos;,timeArry)</span><br><span class="line">print styleTime</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">2017-11-07 11:08:42</span><br></pre></td></tr></table></figure></p>
+<p>方法二：<br>思路:使用datetime.datetime.fromtimestamp()直接转换为字符串格式时间，还可以自定义其他格式，这个没有中转为struct_time。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">timeStamp=1510024122</span><br><span class="line">styleTime=datetime.datetime.fromtimestamp(timeStamp)</span><br><span class="line">print styleTime</span><br><span class="line">otherStyleTime=styleTime.strftime(&apos;%Y/%m/%d %H:%M:%S&apos;)</span><br><span class="line">print otherStyleTime</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">2017-11-07 11:08:42</span><br><span class="line">2017/11/07 11:08:42</span><br></pre></td></tr></table></figure></p>
+<p><strong>4、获取当前时间并转换为指定日期格式</strong><br>方法一：<br>思路:获取time.time()时间戳，转换为struct_time,z在格式化为指定字符串时间<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">timeStamp=time.time()</span><br><span class="line">timeArry=time.localtime(timeStamp)</span><br><span class="line">styleTime=time.strftime(&apos;%Y-%m-%d %H:%M:%S&apos;,timeArry)</span><br><span class="line">print styleTime</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">2017-11-07 11:22:54</span><br></pre></td></tr></table></figure></p>
+<p>方法二：<br>思路:获取datetime.datetime.now()字符串样式时间，再格式化为自定义格式字符串时间<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">styleTime=datetime.datetime.now()</span><br><span class="line">otherStyleTime=styleTime.strftime(&apos;%Y/%m/%d %H-%M-%S&apos;)</span><br><span class="line">print otherStyleTime</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">2017/11/07 11-25-19</span><br></pre></td></tr></table></figure></p>
+<p><strong>5、获得三天前的时间</strong><br>思路:使用datetime.timedelta进行运算，可以在转换字符串时间样式。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">now=datetime.datetime.now()</span><br><span class="line">days=datetime.timedelta(days=3)</span><br><span class="line">threeDaysago=now-days</span><br><span class="line">print threeDaysago</span><br><span class="line">otherStyleTime=threeDaysago.strftime(&apos;%Y/%m/%d %H:%M:%S&apos;)</span><br><span class="line">print otherStyleTime</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">2017-11-04 11:31:31.197000</span><br><span class="line">2017/11/04 11:31:31</span><br></pre></td></tr></table></figure></p>
+<p><strong>6、给定时间戳,计算该时间的几天前时间</strong><br>方法一：<br>思路:使用datetime.datetime.fromtimestamp()将时间戳转换为字符串格式时间，再使用datetime.timedelta进行运算<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">timeStamp=1510024122</span><br><span class="line">styleTime=datetime.datetime.fromtimestamp(timeStamp)</span><br><span class="line">print styleTime</span><br><span class="line">threeDaysago=styleTime-datetime.timedelta(days=3)</span><br><span class="line">print threeDaysago</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">2017-11-07 11:08:42</span><br><span class="line">2017-11-04 11:08:42</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/06/Python基础-模块导入和os、random模块/" rel="next" title="Python基础-模块导入和os、random模块">
+                <i class="fa fa-chevron-left"></i> Python基础-模块导入和os、random模块
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/07/Python基础-闭包、装饰器/" rel="prev" title="Python基础-闭包、装饰器">
+                Python基础-闭包、装饰器 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#time模块"><span class="nav-number">1.</span> <span class="nav-text">time模块</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#时间格式"><span class="nav-number">1.1.</span> <span class="nav-text">时间格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#time方法"><span class="nav-number">1.2.</span> <span class="nav-text">time方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、time-localtime-secs"><span class="nav-number">1.2.1.</span> <span class="nav-text">1、time.localtime([secs])</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、time-gmtime-secs"><span class="nav-number">1.2.2.</span> <span class="nav-text">2、time.gmtime([secs])</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3、time-time"><span class="nav-number">1.2.3.</span> <span class="nav-text">3、time.time()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4、time-mktime-t"><span class="nav-number">1.2.4.</span> <span class="nav-text">4、time.mktime(t)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5、time-asctime-t"><span class="nav-number">1.2.5.</span> <span class="nav-text">5、time.asctime([t])</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6、time-ctime-secs"><span class="nav-number">1.2.6.</span> <span class="nav-text">6、time.ctime([secs])</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7、time-strftime-format-t"><span class="nav-number">1.2.7.</span> <span class="nav-text">7、time.strftime(format[, t])</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8、time-strptime-string-format"><span class="nav-number">1.2.8.</span> <span class="nav-text">8、time.strptime(string[, format])</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#9、time-sleep-secs"><span class="nav-number">1.2.9.</span> <span class="nav-text">9、time.sleep(secs)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#10、time-clock"><span class="nav-number">1.2.10.</span> <span class="nav-text">10、time.clock</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">1.3.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#datetime模块"><span class="nav-number">2.</span> <span class="nav-text">datetime模块</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍"><span class="nav-number">2.1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运算timedelta"><span class="nav-number">2.2.</span> <span class="nav-text">运算timedelta</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#datetime对象与字符串转换"><span class="nav-number">2.3.</span> <span class="nav-text">datetime对象与字符串转换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#datetime对象与时间戳转换"><span class="nav-number">2.4.</span> <span class="nav-text">datetime对象与时间戳转换</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#时间转换示例"><span class="nav-number">3.</span> <span class="nav-text">时间转换示例</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

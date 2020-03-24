@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="drf,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="结合对DRF基础知识的学习，本节内容开始一个小例子，完成对前面知识点的梳理及总结。本节篇幅较长，请慎入！">
+<meta name="keywords" content="drf">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DRF-实例解析">
+<meta property="og:url" content="http://zhanghonged.github.io/2018/07/27/DRF-实例解析/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="结合对DRF基础知识的学习，本节内容开始一个小例子，完成对前面知识点的梳理及总结。本节篇幅较长，请慎入！">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-07-28T08:39:21.903Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DRF-实例解析">
+<meta name="twitter:description" content="结合对DRF基础知识的学习，本节内容开始一个小例子，完成对前面知识点的梳理及总结。本节篇幅较长，请慎入！">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2018/07/27/DRF-实例解析/">
+
+
+
+
+
+  <title>DRF-实例解析 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2018/07/27/DRF-实例解析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">DRF-实例解析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-27T09:53:31+08:00">
+                2018-07-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Django-REST-framework/" itemprop="url" rel="index">
+                    <span itemprop="name">Django REST framework</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>结合对DRF基础知识的学习，本节内容开始一个小例子，完成对前面知识点的梳理及总结。<br>本节篇幅较长，请慎入！<br><a id="more"></a></p>
+<h2 id="实例功能"><a href="#实例功能" class="headerlink" title="实例功能"></a>实例功能</h2><p>以一个简单的CMDB系统来进行示例，主要功能如下:</p>
+<blockquote>
+<p><span style="font-weight:bold;">用户模块</span></p>
+<ul>
+<li>注册</li>
+<li>登录</li>
+<li>用户增删改查</li>
+<li>身份校验采用JWT实现</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><span style="font-weight:bold;">设备管理模块</span></p>
+<ul>
+<li>PC机增删改查</li>
+<li>Server增删改查，自动收集Server配置信息</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><span style="font-weight:bold;">日志模块</span></p>
+<ul>
+<li>用户操作日志展示</li>
+</ul>
+</blockquote>
+<h2 id="软件环境"><a href="#软件环境" class="headerlink" title="软件环境"></a>软件环境</h2><blockquote>
+<p>Python 3.6.3<br>Django 1.11.13<br>djangorestframework     3.8.2<br>djangorestframework-jwt 1.11.0<br>paramiko                2.4.1<br>django-crequest         2018.5.11</p>
+</blockquote>
+<h2 id="代码实现解析"><a href="#代码实现解析" class="headerlink" title="代码实现解析"></a>代码实现解析</h2><h3 id="项目目录结构"><a href="#项目目录结构" class="headerlink" title="项目目录结构"></a>项目目录结构</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">myangular</span><br><span class="line">├─myangular</span><br><span class="line">│  ├─__init.py</span><br><span class="line">│  ├─settings.py</span><br><span class="line">│  ├─urls.py</span><br><span class="line">│  └─wsgi.py</span><br><span class="line">├─users</span><br><span class="line">│  ├─migrations</span><br><span class="line">│  ├─__init__.py</span><br><span class="line">│  ├─admin.py</span><br><span class="line">│  ├─apps.py</span><br><span class="line">│  ├─models.py</span><br><span class="line">│  ├─serializer.py</span><br><span class="line">│  ├─signals.py</span><br><span class="line">│  ├─test.py</span><br><span class="line">│  └─views.py</span><br><span class="line">├─equipment</span><br><span class="line">│  ├─migrations</span><br><span class="line">│  ├─__init__.py</span><br><span class="line">│  ├─admin.py</span><br><span class="line">│  ├─apps.py</span><br><span class="line">│  ├─models.py</span><br><span class="line">│  ├─serializer.py</span><br><span class="line">│  ├─test.py</span><br><span class="line">│  └─views.py</span><br><span class="line">├─templates</span><br><span class="line">└─utils</span><br><span class="line">    ├─sftpDir</span><br><span class="line">    │  ├─getData.py</span><br><span class="line">    │  ├─getJwt.py</span><br><span class="line">    │  ├─sendData.py</span><br><span class="line">    │  └─main.py</span><br><span class="line">    ├─__init__.py</span><br><span class="line">    ├─connectserver.py</span><br><span class="line">    └─getmac.py</span><br></pre></td></tr></table></figure>
+<p><strong>myangular</strong> 是项目名称，这个名字自己随便写的。<br><strong>users 和 equipment</strong> 是添加的app名称。<br><strong>utils</strong> 里是一些被调用的自定义模块。</p>
+<h3 id="一、用户模块"><a href="#一、用户模块" class="headerlink" title="一、用户模块"></a>一、用户模块</h3><h4 id="1、用户信息建模"><a href="#1、用户信息建模" class="headerlink" title="1、用户信息建模"></a>1、用户信息建模</h4><p><em>myangular/users/models.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> models</span><br><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime</span><br><span class="line"><span class="keyword">from</span> django.contrib.auth.models <span class="keyword">import</span> AbstractUser</span><br><span class="line"><span class="keyword">import</span> datetime</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserProfile</span><span class="params">(AbstractUser)</span>:</span> <span class="comment">#继承AbstractUser</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    用户表</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    GENDER_CHOICES = (</span><br><span class="line">        (<span class="string">"male"</span>, <span class="string">u"男"</span>),</span><br><span class="line">        (<span class="string">"female"</span>,<span class="string">u"女"</span>)</span><br><span class="line">    )</span><br><span class="line">    name = models.CharField(max_length=<span class="number">30</span>, null=<span class="literal">True</span>, blank=<span class="literal">True</span>, verbose_name=<span class="string">"姓名"</span>)</span><br><span class="line">    birthday = models.DateField(null=<span class="literal">True</span>, blank=<span class="literal">True</span>, verbose_name=<span class="string">"出生年月"</span>)</span><br><span class="line">    gender = models.CharField(max_length=<span class="number">6</span>, choices=GENDER_CHOICES, default=<span class="string">"female"</span>, verbose_name=<span class="string">"性别"</span>)</span><br><span class="line">    mobile = models.CharField(max_length=<span class="number">11</span>, null=<span class="literal">True</span>, blank=<span class="literal">True</span>, verbose_name=<span class="string">"电话"</span>)</span><br><span class="line">    email = models.EmailField(max_length=<span class="number">100</span>, verbose_name=<span class="string">"邮箱"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        verbose_name = <span class="string">"用户"</span></span><br><span class="line">        verbose_name_plural = verbose_name</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__str__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.username</span><br></pre></td></tr></table></figure></p>
+<p><strong>Django</strong> 自带用户模块功能并且处理用户验证的方式符合我们项目需求，但我们希望在不创建单独模块的情况下增加一些额外的属性。因此这里采用扩展 <strong>AbstractUser</strong> 创建自定义用户模型。<br>这样实现还必须更新 <strong>settings.py</strong>,定义 <strong>AUTH_USER_MODEL</strong> 属性来覆盖django的默认表。<br><span style="font-weight:bold;color:red;">settings配置</span><br><em>myangular/myangular/settings.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AUTH_USER_MODEL = <span class="string">"users.UserProfile"</span></span><br></pre></td></tr></table></figure></p>
+<p>在视图中调用的时候，需要采用下面的方式<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.contrib.auth <span class="keyword">import</span> get_user_model</span><br><span class="line">User = get_user_model()</span><br></pre></td></tr></table></figure></p>
+<h4 id="2、自定义用户后台认证实现登录"><a href="#2、自定义用户后台认证实现登录" class="headerlink" title="2、自定义用户后台认证实现登录"></a>2、自定义用户后台认证实现登录</h4><p><strong>django</strong> 默认使用用户名和密码去查询来进行用户登录验证，我们这里需要使用邮箱和密码进行登录验证，因此来自定义用户验证。<br>在 <strong>settings</strong> 中定义 <strong>AUTHENTICATION_BACKENDS</strong> ,这是个元组，如果只有一项，后面必须添加逗号。<br><em>myangular/myangular/settings.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">AUTHENTICATION_BACKENDS = (</span><br><span class="line">    <span class="string">'users.views.CustomBackend'</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure></p>
+<p>我们在 <strong>views</strong> 中定义认证类，自定义 <strong>CustomBackend</strong>，重写 <strong>authenticate</strong> 函数。<br><em>myangular/users/views.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.contrib.auth.backends <span class="keyword">import</span> ModelBackend</span><br><span class="line"><span class="keyword">from</span> django.db.models <span class="keyword">import</span> Q</span><br><span class="line"><span class="keyword">from</span> django.contrib.auth <span class="keyword">import</span> get_user_model</span><br><span class="line">User = get_user_model()</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomBackend</span><span class="params">(ModelBackend)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    自定义用户验证</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">authenticate</span><span class="params">(self, request, username=None, password=None, **kwargs)</span>:</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            user = User.objects.get(Q(username=username)|Q(email=username))</span><br><span class="line">            <span class="keyword">if</span> user.check_password(password): <span class="comment">#调用check_password 对明文密码进行加密认证</span></span><br><span class="line">                <span class="keyword">return</span> user</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">None</span></span><br></pre></td></tr></table></figure></p>
+<h4 id="3、DRF实现用户增删改查"><a href="#3、DRF实现用户增删改查" class="headerlink" title="3、DRF实现用户增删改查"></a>3、DRF实现用户增删改查</h4><p>首先定义序列化类 <strong>serializer</strong> ，我们这里定义了2个<strong>serializer</strong>：<span style="color:blue;font-weight:bold">UserRegSerializer、UserDetailSerializer</span>。<br><span style="color:blue;font-weight:bold">UserRegSerializer</span> 在注册用户的时候显示，在客户端只展示用户名和密码字段。<br><span style="color:blue;font-weight:bold">UserDetailSerializer</span> 在查看详细的时候展示，定义的字段多一些。</p>
+<p><em>myangular/users/serializer.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> serializers</span><br><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueValidator</span><br><span class="line"><span class="keyword">from</span> myangular.settings <span class="keyword">import</span> REGEX_EMAIL</span><br><span class="line"><span class="keyword">from</span> django.contrib.auth <span class="keyword">import</span> get_user_model</span><br><span class="line">User = get_user_model()</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserRegSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    用户注册序列化类</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    username = serializers.CharField(required=<span class="literal">True</span>,</span><br><span class="line">                                     allow_blank=<span class="literal">False</span>,</span><br><span class="line">                                     label=<span class="string">"用户名"</span>,</span><br><span class="line">                                     validators=[UniqueValidator(queryset=User.objects.all(),message=<span class="string">"用户已存在"</span>)],</span><br><span class="line">                                     help_text=<span class="string">"string用户名"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 用户注册成功后并不需要返回password字段，因此这里配合write_only=True									 </span></span><br><span class="line">    password = serializers.CharField(style=&#123;<span class="string">'input_type'</span>:<span class="string">'password'</span>&#125;,label=<span class="string">"密码"</span>,write_only=<span class="literal">True</span>,help_text=<span class="string">"string密码"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">validate_username</span><span class="params">(self, username)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        验证用户名是邮箱规则</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> re.match(REGEX_EMAIL,username):</span><br><span class="line">            <span class="keyword">raise</span> serializers.ValidationError(<span class="string">"请输入邮箱格式用户名"</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> username</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">validate</span><span class="params">(self, attrs)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        attrs是字段validate之后返回的总的dict</span></span><br><span class="line"><span class="string">        注册时提交的username字段是邮箱，这里把email字段也加上</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        attrs[<span class="string">"email"</span>] = attrs[<span class="string">"username"</span>]</span><br><span class="line">        <span class="keyword">return</span> attrs</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 此功能这里注销，由信号量或viewset中来实现</span></span><br><span class="line">    <span class="comment"># def create(self, validated_data):</span></span><br><span class="line">    <span class="comment">#     """</span></span><br><span class="line">    <span class="comment">#     重载create函数,使密码入库</span></span><br><span class="line">    <span class="comment">#     :param validated_data:</span></span><br><span class="line">    <span class="comment">#     :return:</span></span><br><span class="line">    <span class="comment">#     """</span></span><br><span class="line">    <span class="comment">#     user = super(UserRegSerializer,self).create(validated_data=validated_data)</span></span><br><span class="line">    <span class="comment">#     user.set_password(validated_data["password"])</span></span><br><span class="line">    <span class="comment">#     user.save()</span></span><br><span class="line">    <span class="comment">#     return user</span></span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = User</span><br><span class="line">        fields = (<span class="string">"username"</span>,<span class="string">"password"</span>)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserDetailSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    用户详情序列化类</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = User</span><br><span class="line">        fields = (<span class="string">"id"</span>,<span class="string">"username"</span>,<span class="string">"gender"</span>,<span class="string">"birthday"</span>,<span class="string">"mobile"</span>,<span class="string">"email"</span>)</span><br></pre></td></tr></table></figure></p>
+<p><span style="color:green;font-weight:bold;">read_only</span>  表明该字段仅用于序列化输出，默认False<br><span style="color:green;font-weight:bold;">write_only</span>  表明该字段仅用于反序列化输入，默认False<br>使用DRF的 <strong>UniqueValidator</strong> 来实现用户名唯一验证。<br>并且在<strong>settings</strong> 中配置了邮箱格式的正则验证规则。<br><em>myangular/myangular/settings.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">REGEX_EMAIL = <span class="string">"^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$"</span></span><br></pre></td></tr></table></figure></p>
+<h4 id="4、views中配置用户viewset"><a href="#4、views中配置用户viewset" class="headerlink" title="4、views中配置用户viewset"></a>4、views中配置用户viewset</h4><p><em>myangular/users/views.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> mixins</span><br><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> viewsets</span><br><span class="line"><span class="keyword">from</span> django.contrib.auth.base_user <span class="keyword">import</span> make_password</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> .serializers <span class="keyword">import</span> UserRegSerializer, UserDetailSerializer</span><br><span class="line"><span class="keyword">from</span> django.contrib.auth <span class="keyword">import</span> get_user_model</span><br><span class="line">User = get_user_model()</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserViewset</span><span class="params">(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin,mixins.DestroyModelMixin, viewsets.GenericViewSet)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    用户</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">	queryset = User.objects.all()</span><br><span class="line">	</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_serializer_class</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        根据self.action来判断调用的序列类，action是mixins提供的功能</span></span><br><span class="line"><span class="string">        注册动作使用UserRegSerializer</span></span><br><span class="line"><span class="string">        其他动作使用UserDetailSerializer</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">if</span> self.action == <span class="string">'create'</span>:</span><br><span class="line">            <span class="keyword">return</span> UserRegSerializer</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> UserDetailSerializer</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">perform_create</span><span class="params">(self, serializer)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        重写CreateModelMixin的perform_create方法，对用户提交的密码加密处理，然后在保存</span></span><br><span class="line"><span class="string">        调用django自带的make_password方法来处理</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        password = make_password(serializer.validated_data[<span class="string">'password'</span>])</span><br><span class="line">        serializer.validated_data[<span class="string">"password"</span>] = password</span><br><span class="line">        <span class="keyword">return</span> serializer.save()</span><br></pre></td></tr></table></figure></p>
+<p><span style="color:red;font-weight:bold;">注意:</span></p>
+<blockquote>
+<p>用户密码加密是调用diango的 <strong>make_password</strong> 方法来实现。<br>也可以在 <strong>serializer</strong> 或 <strong>django信号量</strong> 中来实现这一步骤，但这两种方式的操作步骤是：用户实例保存入库后对密码进行修改，会导致进行两次 <strong>post_save</strong> 操作，导致我们后面的用户操作日志功能产生影响，因此在viewset中来实现。<br>在 <strong>serializer</strong> 和 <strong>信号量</strong> 的注释代码中可以看到实现方法。</p>
+</blockquote>
+<h4 id="5、使用JWT实现用户身份验证"><a href="#5、使用JWT实现用户身份验证" class="headerlink" title="5、使用JWT实现用户身份验证"></a>5、使用JWT实现用户身份验证</h4><p>我们的所有功能模块都需要用户登录验证之后才能进行操作，用户的登录在”前后端分离的开发中”和我们之前”基于模板 <strong>template</strong>“ 进行开发的是有一定区别的。<br>一般情况用户登录的 <strong>session</strong> 和 <strong>cookie</strong> 在模板中是有用的。但在前后端分离的项目中我们需要使用 <strong>token</strong>。<br><strong>DRF自带token存在问题问题：</strong></p>
+<blockquote>
+<p><strong>DRF</strong>的 <strong>token</strong> 是保存在我们的服务器数据库当中，但是我们如果是一个分布式的系统，两套系统想用一个 <strong>token</strong> 的话就会出现问题，还需要额外做 <strong>token</strong> 同步操作。<br>还有一个非常严重的问题，<strong>DRF</strong> 的 <strong>token</strong> 没有过期时间，永久有效。</p>
+</blockquote>
+<p>基于以上原因我们这里使用 <strong>Json Web Token (JWT)</strong> 来进行用户身份验证。<br>JWT原理介绍请参考：<a href="http://lion1ou.win/2017/01/18/" target="_blank" rel="noopener">http://lion1ou.win/2017/01/18/</a></p>
+<p>在<strong>setting</strong> 中配置JWT的过期时间和自定义前缀。<br><em>myangular/myangular/settings.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">JWT_AUTH = &#123;</span><br><span class="line">    <span class="string">'JWT_EXPIRATION_DELTA'</span>: datetime.timedelta(days=<span class="number">7</span>),</span><br><span class="line">    <span class="string">'JWT_AUTH_HEADER_PREFIX'</span>: <span class="string">'JWT'</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在 <strong>viewset</strong> 中进行增加下面内容。<br><em>myangular/users/views.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> mixins</span><br><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> viewsets</span><br><span class="line"><span class="keyword">from</span> rest_framework.response <span class="keyword">import</span> Response</span><br><span class="line"><span class="keyword">from</span> rest_framework_jwt.authentication <span class="keyword">import</span> JSONWebTokenAuthentication</span><br><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> permissions</span><br><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> authentication</span><br><span class="line"><span class="keyword">from</span> rest_framework_jwt.serializers <span class="keyword">import</span> jwt_encode_handler,jwt_payload_handler</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserViewset</span><span class="params">(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin,mixins.DestroyModelMixin, viewsets.GenericViewSet)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    用户</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="comment"># 这里身份校验还加上了DRF自带的Session验证，主要是方便我们使用DRF自带WebAPI界面进行测试</span></span><br><span class="line">    authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)</span><br><span class="line">	</span><br><span class="line">    <span class="comment"># permission_classes 权限过滤掉未认证通过的用户</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_permissions</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        除了注册用户外，其他动作都需要权限验证:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">if</span> self.action == <span class="string">"create"</span>:</span><br><span class="line">            <span class="keyword">return</span> []</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> [permissions.IsAuthenticated()]</span><br><span class="line">	</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">create</span><span class="params">(self, request, *args, **kwargs)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        重载CreateModelMixin的create方法，用户注册完成后返回jwt-token</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        serializer = self.get_serializer(data=request.data)</span><br><span class="line">        serializer.is_valid(raise_exception=<span class="literal">True</span>)</span><br><span class="line">        user = self.perform_create(serializer)</span><br><span class="line">		</span><br><span class="line">        re_dict = serializer.data</span><br><span class="line">        <span class="comment"># 通过查看DRF源码得知生成token的两个重要步骤，一payload，二encode</span></span><br><span class="line">        <span class="comment"># 使用user对象来生成jwt token，并返回给客户端</span></span><br><span class="line">        payload = jwt_payload_handler(user)</span><br><span class="line">        re_dict[<span class="string">"token"</span>] = jwt_encode_handler(payload)</span><br><span class="line">        re_dict[<span class="string">"name"</span>] = user.name <span class="keyword">if</span> user.name <span class="keyword">else</span> user.username</span><br><span class="line"></span><br><span class="line">        headers = self.get_success_headers(serializer.data)</span><br><span class="line">        <span class="keyword">return</span> Response(re_dict, status=status.HTTP_201_CREATED, headers=headers)</span><br></pre></td></tr></table></figure></p>
+<p><span style="color:#149FB8;font-weight:bold;font-size:18px;">authentication_classes 与 permission_classes 的区别:</span><br><strong>authentication</strong> 用来识别用户的身份<br><strong>permission</strong> 用来判断用户是否有权限进行某项操作。</p>
+<h4 id="6、用户登出"><a href="#6、用户登出" class="headerlink" title="6、用户登出"></a>6、用户登出</h4><p>登出功能非常好做，因为 <strong>jwt</strong> 的 <strong>token</strong> 并不是保存在服务器端的，客户端自己清空 <strong>token</strong> 就行了。</p>
+<h4 id="7、配置Url路由"><a href="#7、配置Url路由" class="headerlink" title="7、配置Url路由"></a>7、配置Url路由</h4><p>在url中配置路由<br><em>myangular/myangular/urls.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.conf.urls <span class="keyword">import</span> url, include</span><br><span class="line"><span class="keyword">from</span> django.contrib <span class="keyword">import</span> admin</span><br><span class="line"><span class="keyword">from</span> rest_framework.documentation <span class="keyword">import</span> include_docs_urls</span><br><span class="line"><span class="keyword">from</span> rest_framework.routers <span class="keyword">import</span> DefaultRouter</span><br><span class="line"><span class="keyword">from</span> rest_framework.authtoken <span class="keyword">import</span> views</span><br><span class="line"><span class="keyword">from</span> rest_framework_jwt.views <span class="keyword">import</span> obtain_jwt_token</span><br><span class="line"><span class="keyword">from</span> users.views <span class="keyword">import</span> UserViewset</span><br><span class="line"></span><br><span class="line">router = DefaultRouter()</span><br><span class="line">router.register(<span class="string">r'users'</span>,UserViewset,base_name=<span class="string">'users'</span>)</span><br><span class="line"></span><br><span class="line">urlpatterns = [</span><br><span class="line">    url(<span class="string">r'^admin/'</span>, admin.site.urls),</span><br><span class="line">    url(<span class="string">r'^api-auth/'</span>, include(<span class="string">'rest_framework.urls'</span>, namespace=<span class="string">'rest_framework'</span>)),</span><br><span class="line">    url(<span class="string">r'docs/'</span>, include_docs_urls(title=<span class="string">"API文档"</span>)),</span><br><span class="line">    url(<span class="string">r'^'</span>, include(router.urls)),</span><br><span class="line">    <span class="comment"># JWT登录验证</span></span><br><span class="line">    url(<span class="string">r'^login/'</span>, obtain_jwt_token),</span><br><span class="line">    <span class="comment"># drf 自带的token授权登录，获取token需要向该地址post数据</span></span><br><span class="line">    url(<span class="string">r'^api-token-auth/'</span>,views.obtain_auth_token)</span><br><span class="line">]</span><br></pre></td></tr></table></figure></p>
+<h3 id="二、设备管理模块"><a href="#二、设备管理模块" class="headerlink" title="二、设备管理模块"></a>二、设备管理模块</h3><p>此模块包括 <strong>pc</strong> 和 <strong>server</strong> 两个子模块。<br>设备管理的增删改查及权限和 <strong>user</strong> 模块的实现方法相同，这里不重点介绍。<br>此外pc子模块还额外实现了<span style="color:#5ACB8F;font-weight:bold;">搜索</span>、<span style="color:#5ACB8F;font-weight:bold;">排序</span>和<span style="color:#5ACB8F;font-weight:bold;">分页</span>功能。</p>
+<h4 id="1、搜索"><a href="#1、搜索" class="headerlink" title="1、搜索"></a>1、搜索</h4><p>通过DRF为我们提供的过滤功能简单快速的完成搜索。<br><em>myangular/equipment/views.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> filters</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PcViewset</span><span class="params">(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet)</span>:</span></span><br><span class="line">    filter_backends = (filters.SearchFilter,)</span><br><span class="line">    search_fields = (<span class="string">'pcuser'</span>, <span class="string">'ip'</span>)</span><br></pre></td></tr></table></figure></p>
+<p>代码就是这么简洁，比原生django方便太多了。<br>搜索字段包含 <strong>pcuser</strong> 和 <strong>ip</strong>。<br>客户端请求方式为: <em><a href="http://localhost:8000/pc/?search=10" target="_blank" rel="noopener">http://localhost:8000/pc/?search=10</a></em></p>
+<h4 id="2、排序"><a href="#2、排序" class="headerlink" title="2、排序"></a>2、排序</h4><p>还是通过DRF的过滤器功能来实现<br><em>myangular/equipment/views.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> filters</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PcViewset</span><span class="params">(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet)</span>:</span></span><br><span class="line">    filter_backends = (filters.OrderingFilter,)</span><br><span class="line">    ordering_fields = (<span class="string">'pcuser'</span>,<span class="string">'ip'</span>)</span><br></pre></td></tr></table></figure></p>
+<p>可根据 <strong>pcuser</strong> 和 <strong>ip</strong> 进行排序显示。<br>客户端可按照实际需求自定义请求，请求示例:<br>按照pcuser升序显示：  <em><a href="http://localhost:8000/pc/?ordering=pcuser" target="_blank" rel="noopener">http://localhost:8000/pc/?ordering=pcuser</a></em><br>按照ip降序显示：  <em><a href="http://localhost:8000/pc/?ordering=-ip" target="_blank" rel="noopener">http://localhost:8000/pc/?ordering=-ip</a></em></p>
+<h4 id="3、分页"><a href="#3、分页" class="headerlink" title="3、分页"></a>3、分页</h4><p><em>myangular/equipment/views.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.pagination <span class="keyword">import</span> PageNumberPagination</span><br><span class="line"></span><br><span class="line"><span class="comment"># 自定义一个分页类</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Pcpagination</span><span class="params">(PageNumberPagination)</span>:</span></span><br><span class="line">    page_size = <span class="number">10</span>  <span class="comment"># 默认每页显示10条</span></span><br><span class="line">    page_size_query_param = <span class="string">'page_size'</span> <span class="comment"># 自定义获取多少条内容</span></span><br><span class="line">    page_query_param = <span class="string">'page'</span> <span class="comment"># url参数名</span></span><br><span class="line">    max_page_size = <span class="number">100</span> <span class="comment"># 最大页码</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PcViewset</span><span class="params">(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet)</span>:</span></span><br><span class="line">    pagination_class = Pcpagination</span><br></pre></td></tr></table></figure></p>
+<p>客气端请求默认每页显示10条数据<br>请求地址为： <em><a href="http://localhost:8000/pc/?page=2" target="_blank" rel="noopener">http://localhost:8000/pc/?page=2</a></em><br>也可以自定义请求多条数据： <em><a href="http://localhost:8000/pc/?page_size=100" target="_blank" rel="noopener">http://localhost:8000/pc/?page_size=100</a></em><br>搜索、排序、分页的组合请求url为： <em><a href="http://localhost:8000/pc/?ordering=ip&amp;page=2&amp;search=1" target="_blank" rel="noopener">http://localhost:8000/pc/?ordering=ip&amp;page=2&amp;search=1</a></em></p>
+<h4 id="4、PC自动获取mac功能"><a href="#4、PC自动获取mac功能" class="headerlink" title="4、PC自动获取mac功能"></a>4、PC自动获取mac功能</h4><p>添加或修改pc后，根据 <strong>ip</strong> 自动获取 <strong>mac</strong> 并入库。<br><em>myangular/equipment/views.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> utils.getmac <span class="keyword">import</span> IP2MAC</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PcViewset</span><span class="params">(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">perform_create</span><span class="params">(self, serializer)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        重载CreateModelMixin的 perform_create 方法，使通过ip自动获取到mac地址</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        ip = serializer.validated_data[<span class="string">'ip'</span>]</span><br><span class="line">        g = IP2MAC()</span><br><span class="line">        mac = g.getMac(ip)</span><br><span class="line">        serializer.validated_data[<span class="string">'mac'</span>] = mac</span><br><span class="line">        serializer.save()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">perform_update</span><span class="params">(self, serializer)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        重载UpdateModelMixin perform_create 方法，使通过ip自动获取到mac地址</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        ip = serializer.validated_data[<span class="string">'ip'</span>]</span><br><span class="line">        g = IP2MAC()</span><br><span class="line">        mac = g.getMac(ip)</span><br><span class="line">        serializer.validated_data[<span class="string">'mac'</span>] = mac</span><br><span class="line">        serializer.save()</span><br></pre></td></tr></table></figure></p>
+<p>获取mac的脚本在 <strong>util</strong> 中。<br><em>myangular/utils/getmac.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> platform</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">IP2MAC</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.patt_mac = re.compile(<span class="string">'([a-f0-9]&#123;2&#125;[-:])&#123;5&#125;[a-f0-9]&#123;2&#125;'</span>, re.I)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">getMac</span><span class="params">(self, ip)</span>:</span></span><br><span class="line">        sysstr = platform.system()</span><br><span class="line">        <span class="keyword">if</span> sysstr == <span class="string">'Windows'</span>:</span><br><span class="line">            macaddr = self.__forWin(ip)</span><br><span class="line">        <span class="keyword">elif</span> sysstr == <span class="string">'Linux'</span>:</span><br><span class="line">            macaddr = self.__forLinux(ip)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            macaddr = <span class="literal">None</span></span><br><span class="line">        <span class="keyword">return</span> macaddr <span class="keyword">or</span> <span class="string">'00-00-00-00-00-00'</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__forWin</span><span class="params">(self, ip)</span>:</span></span><br><span class="line">        os.popen(<span class="string">'ping -n 1 -w 500 &#123;&#125; &gt; nul'</span>.format(ip))</span><br><span class="line">        macaddr = os.popen(<span class="string">'arp -a &#123;&#125;'</span>.format(ip))</span><br><span class="line">        macaddr = self.patt_mac.search(macaddr.read())</span><br><span class="line">        <span class="keyword">if</span> macaddr:</span><br><span class="line">            macaddr = macaddr.group()</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            macaddr = <span class="literal">None</span></span><br><span class="line">        <span class="keyword">return</span> macaddr</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__forLinux</span><span class="params">(self, ip)</span>:</span></span><br><span class="line">        os.popen(<span class="string">'ping -nq -c 1 -W 500 &#123;&#125; &gt; /dev/null'</span>.format(ip))</span><br><span class="line">        result = os.popen(<span class="string">'arp -an &#123;&#125;'</span>.format(ip))</span><br><span class="line">        result = self.patt_mac.search(result.read())</span><br><span class="line">        <span class="keyword">return</span> result.group() <span class="keyword">if</span> result <span class="keyword">else</span> <span class="literal">None</span></span><br></pre></td></tr></table></figure></p>
+<h4 id="5、Server获取配置功能"><a href="#5、Server获取配置功能" class="headerlink" title="5、Server获取配置功能"></a>5、Server获取配置功能</h4><p>此功能的逻辑步骤:<br>1、添加server后，通过 <strong>paramiko</strong> 远程连接并上传脚本到Server上。</p>
+<p><em>myangular/equipment/views.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> utils.connectserver <span class="keyword">import</span> connect_server</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ServerViewset</span><span class="params">(mixins.ListModelMixin,mixins.RetrieveModelMixin,mixins.CreateModelMixin,mixins.UpdateModelMixin,viewsets.GenericViewSet)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">perform_create</span><span class="params">(self, serializer)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        重载CreateModelMixin的 perform_create 方法，通过paramiko获取服务器信息并入库</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        ip = serializer.validated_data[<span class="string">'ip'</span>]</span><br><span class="line">        port = serializer.validated_data[<span class="string">'port'</span>]</span><br><span class="line">        username = serializer.validated_data[<span class="string">'username'</span>]</span><br><span class="line">        password = serializer.validated_data[<span class="string">'password'</span>]</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 连接远程主机</span></span><br><span class="line">        connect = connect_server(ip,int(port),username,password)</span><br><span class="line">        <span class="keyword">if</span> connect[<span class="string">'status'</span>] == <span class="string">'success'</span>:</span><br><span class="line">            trans = connect[<span class="string">'data'</span>]</span><br><span class="line">            <span class="comment"># 用于文件上传和下载的sftp服务</span></span><br><span class="line">            sftp = paramiko.SFTPClient.from_transport(trans)</span><br><span class="line">            <span class="comment"># 远程执行命令服务</span></span><br><span class="line">            ssh = paramiko.SSHClient()</span><br><span class="line">            ssh._transport = trans</span><br><span class="line">            <span class="comment"># 创建目录</span></span><br><span class="line">            stdin,stdout,stderr = ssh.exec_command(<span class="string">'mkdir CMDBClient'</span>)</span><br><span class="line">            time.sleep(<span class="number">1</span>)</span><br><span class="line">            <span class="comment"># 上传文件</span></span><br><span class="line">            sftp.put(<span class="string">'utils/sftpDir/getData.py'</span>,<span class="string">'CMDBClient/getData.py'</span>)</span><br><span class="line">            sftp.put(<span class="string">'utils/sftpDir/sendData.py'</span>, <span class="string">'CMDBClient/sendData.py'</span>)</span><br><span class="line">            sftp.put(<span class="string">'utils/sftpDir/getJwt.py'</span>, <span class="string">'CMDBClient/getJwt.py'</span>)</span><br><span class="line">            sftp.put(<span class="string">'utils/sftpDir/main.py'</span>, <span class="string">'CMDBClient/main.py'</span>)</span><br><span class="line">            <span class="comment"># 这里不自动调用脚本，改为手动调用</span></span><br><span class="line">            <span class="comment"># stdin,stdout,stderr = ssh.exec_command('python CMDBClient/main.py')</span></span><br><span class="line">            trans.close()</span><br><span class="line">            <span class="comment"># 连接成功状态记录到数据库</span></span><br><span class="line">            status = <span class="literal">True</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            status = <span class="literal">False</span></span><br><span class="line">        serializer.validated_data[<span class="string">'status'</span>] = status</span><br><span class="line">        serializer.save()</span><br></pre></td></tr></table></figure></p>
+<p>2、客户端通过访问 <strong>ServerViewset</strong> 的 <strong>mixins.RetrieveModelMixin</strong> 方法触发远程连接到 <strong>Server</strong> 并调用脚本。<br>脚本获取服务器配置并发送到 <strong>ServerViewset</strong> 的 <strong>mixins.UpdateModelMixin</strong> 来实现配置更新。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> utils.connectserver <span class="keyword">import</span> connect_server</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ServerViewset</span><span class="params">(mixins.ListModelMixin,mixins.RetrieveModelMixin,mixins.CreateModelMixin,mixins.UpdateModelMixin,viewsets.GenericViewSet)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">retrieve</span><span class="params">(self, request, *args, **kwargs)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        重载RetrieveModelMixin的retrieve方法，触发远程调用server脚本</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        instance = self.get_object()</span><br><span class="line">        serializer = self.get_serializer(instance)</span><br><span class="line">        ip = instance.ip</span><br><span class="line">        port = instance.port</span><br><span class="line">        username = instance.username</span><br><span class="line">        password = instance.password</span><br><span class="line">        <span class="comment"># 连接远程主机</span></span><br><span class="line">        connect = connect_server(ip,int(port),username,password)</span><br><span class="line">        <span class="keyword">if</span> connect[<span class="string">'status'</span>] == <span class="string">'success'</span>:</span><br><span class="line">            trans = connect[<span class="string">'data'</span>]</span><br><span class="line">            <span class="comment"># 远程执行命令服务</span></span><br><span class="line">            ssh = paramiko.SSHClient()</span><br><span class="line">            ssh._transport = trans</span><br><span class="line">            <span class="comment"># 调用客户端脚本，脚本获取配置后通过patch方法更新server配置信息</span></span><br><span class="line">            stdin,stdout,stderr = ssh.exec_command(<span class="string">'python CMDBClient/main.py'</span>)</span><br><span class="line">            trans.close()</span><br><span class="line">        <span class="keyword">return</span> Response(serializer.data)</span><br></pre></td></tr></table></figure>
+<p><strong>connect_server</strong> 功能考虑到后期其他模块可能会用，固放在 <strong>utils</strong> 中。<br><strong>myangular/utils/connectserver.py</strong><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> paramiko</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">connect_server</span><span class="params">(ip,port,user,password)</span>:</span></span><br><span class="line">    <span class="string">'''</span></span><br><span class="line"><span class="string">    通过paramiko检测服务器是否可以连通，是的话返回连接对象</span></span><br><span class="line"><span class="string">    :return:返回连接对象</span></span><br><span class="line"><span class="string">    '''</span></span><br><span class="line">    result = &#123;<span class="string">'status'</span>:<span class="string">'error'</span>,<span class="string">'data'</span>:<span class="string">''</span>&#125;</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        trans = paramiko.Transport(ip,port)</span><br><span class="line">        trans.connect(username = user, password = password)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        result[<span class="string">'data'</span>] = str(e)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        result[<span class="string">'status'</span>] = <span class="string">'success'</span></span><br><span class="line">        result[<span class="string">'data'</span>] = trans</span><br><span class="line">    <span class="keyword">finally</span>:</span><br><span class="line">        <span class="keyword">return</span> result</span><br></pre></td></tr></table></figure></p>
+<p>获取配置脚本由于篇幅太大这里不展示。</p>
+<h3 id="三、用户操作日志模块"><a href="#三、用户操作日志模块" class="headerlink" title="三、用户操作日志模块"></a>三、用户操作日志模块</h3><p>用户操作日志这里采用 <strong>Django</strong> 的信号机制来实现。<br><strong>Django</strong> 提供一个“信号分发器”，允许解耦的应用在框架的其它地方发生操作时会被通知到。 简单来说，信号允许特定的 <strong>sender</strong> 通知一组 <strong>receiver</strong> 某些操作已经发生。 这在多处代码和同一事件有关联的情况下很有用。</p>
+<h4 id="1、添加用户操作日志"><a href="#1、添加用户操作日志" class="headerlink" title="1、添加用户操作日志"></a>1、添加用户操作日志</h4><p>建模<br><em>myangular/users.model.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserLogs</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    用户操作日志</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    username = models.CharField(max_length=<span class="number">30</span>, verbose_name=<span class="string">'用户名'</span>)</span><br><span class="line">    action = models.CharField(max_length=<span class="number">30</span>, verbose_name=<span class="string">'动作'</span>)</span><br><span class="line">    action_time = models.DateTimeField(default=datetime.datetime.now,verbose_name=<span class="string">'操作时间'</span>)</span><br></pre></td></tr></table></figure></p>
+<p>定义序列化类<br><em>myangular/users/serializer.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> .models <span class="keyword">import</span> UserLogs</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserLogsSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    用户操作日志</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = UserLogs</span><br><span class="line">        fields = <span class="string">"__all__"</span></span><br></pre></td></tr></table></figure></p>
+<p>添加viewset<br><em>myangular/users/views.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> filters</span><br><span class="line"><span class="keyword">from</span> .models <span class="keyword">import</span> UserLogs</span><br><span class="line"><span class="keyword">from</span> .serializers <span class="keyword">import</span> UserLogsSerializer</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserlogsViewset</span><span class="params">(mixins.ListModelMixin,viewsets.GenericViewSet)</span>:</span></span><br><span class="line">    authentication_classes = (JSONWebTokenAuthentication,authentication.SessionAuthentication)</span><br><span class="line">    permission_classes = (permissions.IsAuthenticated,)</span><br><span class="line">    serializer_class = UserLogsSerializer</span><br><span class="line">    queryset = UserLogs.objects.all()</span><br><span class="line">    filter_backends = (filters.SearchFilter,filters.OrderingFilter)</span><br><span class="line">    search_fields = (<span class="string">'username'</span>, <span class="string">'action'</span>)</span><br><span class="line">    ordering_fields = (<span class="string">'action_time'</span>,)</span><br></pre></td></tr></table></figure></p>
+<p>添加路由<br><em>myangular/myangular/urls.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.routers <span class="keyword">import</span> DefaultRouter</span><br><span class="line"><span class="keyword">from</span> users.views <span class="keyword">import</span> UserlogsViewset</span><br><span class="line"></span><br><span class="line">router = DefaultRouter()</span><br><span class="line">router.register(<span class="string">r'logs'</span>, UserlogsViewset, base_name=<span class="string">'logs'</span>)</span><br></pre></td></tr></table></figure></p>
+<h4 id="2、登录日志"><a href="#2、登录日志" class="headerlink" title="2、登录日志"></a>2、登录日志</h4><p>由于我们自定义了登录验证，因此无法收到 <strong>django</strong> 默认的 <strong>user_logged_in()</strong> 信号。<br>这里我们自定义信号，并在密码验证通过后发送信号。<br><em>myangular/myangular/views.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.dispatch <span class="keyword">import</span> Signal</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="comment">#定义信号，在用户登录成功后发出</span></span><br><span class="line">login_done = Signal(providing_args=[<span class="string">'name'</span>,<span class="string">'content'</span>,<span class="string">'time'</span>])</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomBackend</span><span class="params">(ModelBackend)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    自定义用户验证</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">authenticate</span><span class="params">(self, request, username=None, password=None, **kwargs)</span>:</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            user = User.objects.get(Q(username=username)|Q(email=username))</span><br><span class="line">            <span class="keyword">if</span> user.check_password(password):</span><br><span class="line">                <span class="comment"># 登录验证成功后发出上面定义的信号</span></span><br><span class="line">                login_done.send(CustomBackend, name=user.username, content=<span class="string">'登录成功'</span>,time=time.strftime(<span class="string">"%Y-%m-%d %H:%M:%S"</span>))</span><br><span class="line">                <span class="keyword">return</span> user</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">None</span></span><br></pre></td></tr></table></figure></p>
+<p>接收信号，自定义 <strong>signals.py</strong> 文件<br><em>myangular/users/signals.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.dispatch <span class="keyword">import</span> receiver</span><br><span class="line"><span class="keyword">from</span> users.views <span class="keyword">import</span> login_done</span><br><span class="line"><span class="keyword">from</span> users.models <span class="keyword">import</span> UserLogs</span><br><span class="line"><span class="keyword">from</span> users.views <span class="keyword">import</span> CustomBackend</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">createlogs</span><span class="params">(username,action)</span>:</span></span><br><span class="line">    action_time = time.strftime(<span class="string">"%Y-%m-%d %H:%M:%S"</span>)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        UserLogs.objects.create(username= username, action = action)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        print(str(e))</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        print(username + action + <span class="string">"时间"</span> + action_time)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 用户登录成功信号量</span></span><br><span class="line"><span class="meta">@receiver(login_done, sender=CustomBackend)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sign</span><span class="params">(sender, **kwargs)</span>:</span></span><br><span class="line">    createlogs(kwargs[<span class="string">'name'</span>],kwargs[<span class="string">'content'</span>])</span><br></pre></td></tr></table></figure></p>
+<p><span style="color:blue">这里有个BUG：由于采用扩展 <strong>AbstractUser</strong> 定义用户模型，每次用户登录的时候都会更新用户表的 <strong>last_login</strong> 字段，生成一个 <strong>post_save</strong> 信号，所以每次登录成功都会多出一个编辑用户的log，此BUG后面解决。</span></p>
+<h4 id="3、登出日志"><a href="#3、登出日志" class="headerlink" title="3、登出日志"></a>3、登出日志</h4><p>由于 <strong>JWT</strong> 的 <strong>token</strong> 并不是保存在服务器端的，在登出操作的时候客户端自己清空 <strong>token</strong> 就行了，服务器不用做任何操作。<br>但我我们服务器还要记录登出log，我的实现方法是在视图中定义一个 <strong>UserlogoutViewset</strong> 类，客户端登出的时候请求这个viewset的 <strong>RetrieveModelMixin</strong> 方法， 服务器收到此请求后发送登出信号。<br><span style="color:red;font-weight:bold;">客户端请求必须携带userid 和 token。</span><br>定义序列化类，成功只返回username。<br><em>myangular/users/serializer.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserlogoutSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    用户登出</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = User</span><br><span class="line">        fields = (<span class="string">"username"</span>,)</span><br></pre></td></tr></table></figure></p>
+<p>定义viewset，定义登出信号，并在收到请求后发出信号。<br><em>myangular/users/views.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.dispatch <span class="keyword">import</span> Signal</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义登出信号，并在UserlogoutViewset 里发出信号</span></span><br><span class="line">logout_done = Signal(providing_args=[<span class="string">'name'</span>,<span class="string">'content'</span>,<span class="string">'time'</span>])</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserlogoutViewset</span><span class="params">(mixins.RetrieveModelMixin,viewsets.GenericViewSet)</span>:</span></span><br><span class="line">    authentication_classes = (JSONWebTokenAuthentication,authentication.SessionAuthentication)</span><br><span class="line">    permission_classes = (permissions.IsAuthenticated,)</span><br><span class="line"></span><br><span class="line">    serializer_class = UserlogoutSerializer</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 用户退出只能携带自己的ID</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_queryset</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> User.objects.filter(username=self.request.user.username)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">retrieve</span><span class="params">(self, request, *args, **kwargs)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        重载RetrieveModelMixin的retrieve方法，使发出退出信号量</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        instance = self.get_object()</span><br><span class="line">        serializer = self.get_serializer(instance)</span><br><span class="line">        logout_done.send(UserlogoutViewset, name= instance.username, content=<span class="string">"退出成功"</span>, time=time.strftime(<span class="string">"%Y-%m-%d %H:%M:%S"</span>))</span><br><span class="line">        <span class="keyword">return</span> Response(serializer.data)</span><br></pre></td></tr></table></figure></p>
+<p>添加路由<br><em>myangular/myangular/urls.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.routers <span class="keyword">import</span> DefaultRouter</span><br><span class="line"><span class="keyword">from</span> users.views <span class="keyword">import</span> UserlogoutViewset</span><br><span class="line"></span><br><span class="line">router = DefaultRouter()</span><br><span class="line">router.register(<span class="string">r'logout'</span>, UserlogoutViewset, base_name=<span class="string">'logout'</span>)</span><br></pre></td></tr></table></figure></p>
+<p>在 <strong>signals.py</strong> 中接收信号。<br><em>myangular/users/signals.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.dispatch <span class="keyword">import</span> receiver</span><br><span class="line"><span class="keyword">from</span> users.views <span class="keyword">import</span> logout_done</span><br><span class="line"><span class="keyword">from</span> users.models <span class="keyword">import</span> UserLogs</span><br><span class="line"><span class="keyword">from</span> users.views <span class="keyword">import</span> UserlogoutViewset</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="comment"># 用户退出成功信号量</span></span><br><span class="line"><span class="meta">@receiver(logout_done, sender=UserlogoutViewset)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sigout</span><span class="params">(sender,**kwargs)</span>:</span></span><br><span class="line">    createlogs(kwargs[<span class="string">'name'</span>], kwargs[<span class="string">'content'</span>])</span><br></pre></td></tr></table></figure></p>
+<h4 id="4、用户管理日志"><a href="#4、用户管理日志" class="headerlink" title="4、用户管理日志"></a>4、用户管理日志</h4><p>这个模块的实现方式就相对简单，直接接收 <strong>django內建信号</strong> 来实现，主要用到 <strong>post_save和post_delete</strong> 两个信号。<br>这里引入了一个第三方模块 <span style="color:red;font-weight:bold;">CrequestMiddleware</span>，使用它来获取当前操作用户。<br><strong>CrequestMiddleware官网地址:</strong><a href="https://pypi.org/project/django-crequest/" target="_blank" rel="noopener">https://pypi.org/project/django-crequest/</a><br><em>myangular/users/signals.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.dispatch <span class="keyword">import</span> receiver</span><br><span class="line"><span class="keyword">from</span> django.db.models.signals <span class="keyword">import</span> post_save, post_delete</span><br><span class="line"><span class="keyword">from</span> crequest.middleware <span class="keyword">import</span> CrequestMiddleware</span><br><span class="line"><span class="keyword">from</span> users.models <span class="keyword">import</span> UserProfile</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加、编辑用户成功</span></span><br><span class="line"><span class="meta">@receiver(post_save,sender=UserProfile)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">adduser</span><span class="params">(sender,instance=None,created=False,**kwargs)</span>:</span></span><br><span class="line">    current_request = CrequestMiddleware.get_request()</span><br><span class="line">    <span class="comment"># 如果create为True就是新建用户，否则是编辑用户</span></span><br><span class="line">    <span class="keyword">if</span> created:</span><br><span class="line">        <span class="comment"># 用户密码加密此处注销，由viewset来实现</span></span><br><span class="line">        <span class="comment"># password = instance.password</span></span><br><span class="line">        <span class="comment"># instance.set_password(password)</span></span><br><span class="line">        <span class="comment"># instance.save()</span></span><br><span class="line"></span><br><span class="line">        action = <span class="string">"添加用户:"</span> + instance.username</span><br><span class="line">        createlogs(username=current_request.user.username,action=action)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        action = <span class="string">"编辑用户:"</span> + instance.username</span><br><span class="line">        createlogs(username=current_request.user.username, action=action)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除用户成功</span></span><br><span class="line"><span class="meta">@receiver(post_delete, sender=UserProfile)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">deluser</span><span class="params">(sender,instance=None,**kwargs)</span>:</span></span><br><span class="line">    current_request = CrequestMiddleware.get_request()</span><br><span class="line">    action = <span class="string">"删除用户:"</span> + instance.username</span><br><span class="line">    createlogs(username=current_request.user.username,action=action)</span><br></pre></td></tr></table></figure></p>
+<h4 id="5、设备管理日志"><a href="#5、设备管理日志" class="headerlink" title="5、设备管理日志"></a>5、设备管理日志</h4><p>实现方式同用户管理模块，<strong>Server</strong> 没有删除操作。<br><em>myangular/users/signals.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加编辑Server</span></span><br><span class="line"><span class="meta">@receiver(post_save,sender=Server)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">addpc</span><span class="params">(sender, instance=None,created=False,**kwargs)</span>:</span></span><br><span class="line">    current_request = CrequestMiddleware.get_request()</span><br><span class="line">    <span class="keyword">if</span> created:</span><br><span class="line">        action = <span class="string">'添加Server:'</span> + instance.ip</span><br><span class="line">        createlogs(username=current_request.user.username,action=action)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        action = <span class="string">'更新Server:'</span> + instance.ip</span><br><span class="line">        createlogs(username=current_request.user.username,action=action)</span><br></pre></td></tr></table></figure></p>
+<p>此演示Demo github地址为：<a href="https://github.com/zhanghonged/DRFdemo.git" target="_blank" rel="noopener">https://github.com/zhanghonged/DRFdemo.git</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/drf/" rel="tag"># drf</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/27/Zabbix-接口开发/" rel="next" title="Zabbix-接口开发">
+                <i class="fa fa-chevron-left"></i> Zabbix-接口开发
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/09/07/ELK处理Nginx日志/" rel="prev" title="ELK处理Nginx日志">
+                ELK处理Nginx日志 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#实例功能"><span class="nav-number">1.</span> <span class="nav-text">实例功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#软件环境"><span class="nav-number">2.</span> <span class="nav-text">软件环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码实现解析"><span class="nav-number">3.</span> <span class="nav-text">代码实现解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#项目目录结构"><span class="nav-number">3.1.</span> <span class="nav-text">项目目录结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一、用户模块"><span class="nav-number">3.2.</span> <span class="nav-text">一、用户模块</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、用户信息建模"><span class="nav-number">3.2.1.</span> <span class="nav-text">1、用户信息建模</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、自定义用户后台认证实现登录"><span class="nav-number">3.2.2.</span> <span class="nav-text">2、自定义用户后台认证实现登录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3、DRF实现用户增删改查"><span class="nav-number">3.2.3.</span> <span class="nav-text">3、DRF实现用户增删改查</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4、views中配置用户viewset"><span class="nav-number">3.2.4.</span> <span class="nav-text">4、views中配置用户viewset</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5、使用JWT实现用户身份验证"><span class="nav-number">3.2.5.</span> <span class="nav-text">5、使用JWT实现用户身份验证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6、用户登出"><span class="nav-number">3.2.6.</span> <span class="nav-text">6、用户登出</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7、配置Url路由"><span class="nav-number">3.2.7.</span> <span class="nav-text">7、配置Url路由</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、设备管理模块"><span class="nav-number">3.3.</span> <span class="nav-text">二、设备管理模块</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、搜索"><span class="nav-number">3.3.1.</span> <span class="nav-text">1、搜索</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、排序"><span class="nav-number">3.3.2.</span> <span class="nav-text">2、排序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3、分页"><span class="nav-number">3.3.3.</span> <span class="nav-text">3、分页</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4、PC自动获取mac功能"><span class="nav-number">3.3.4.</span> <span class="nav-text">4、PC自动获取mac功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5、Server获取配置功能"><span class="nav-number">3.3.5.</span> <span class="nav-text">5、Server获取配置功能</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、用户操作日志模块"><span class="nav-number">3.4.</span> <span class="nav-text">三、用户操作日志模块</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、添加用户操作日志"><span class="nav-number">3.4.1.</span> <span class="nav-text">1、添加用户操作日志</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、登录日志"><span class="nav-number">3.4.2.</span> <span class="nav-text">2、登录日志</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3、登出日志"><span class="nav-number">3.4.3.</span> <span class="nav-text">3、登出日志</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4、用户管理日志"><span class="nav-number">3.4.4.</span> <span class="nav-text">4、用户管理日志</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5、设备管理日志"><span class="nav-number">3.4.5.</span> <span class="nav-text">5、设备管理日志</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

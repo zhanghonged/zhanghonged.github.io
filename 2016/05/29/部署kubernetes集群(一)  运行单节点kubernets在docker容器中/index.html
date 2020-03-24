@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="k8s,部署,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="本文将介绍如何通过docker部署一个简单的、单节点的kubernets集群。下图显示了最终结构图：">
+<meta name="keywords" content="k8s,部署">
+<meta property="og:type" content="article">
+<meta property="og:title" content="部署kubernetes集群(一)  运行单节点kubernets在docker容器中">
+<meta property="og:url" content="http://zhanghonged.github.io/2016/05/29/部署kubernetes集群(一)  运行单节点kubernets在docker容器中/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="本文将介绍如何通过docker部署一个简单的、单节点的kubernets集群。下图显示了最终结构图：">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/k8s-singlenode-docker.png">
+<meta property="og:updated_time" content="2016-08-10T03:01:48.182Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="部署kubernetes集群(一)  运行单节点kubernets在docker容器中">
+<meta name="twitter:description" content="本文将介绍如何通过docker部署一个简单的、单节点的kubernets集群。下图显示了最终结构图：">
+<meta name="twitter:image" content="http://zhanghonged.github.io/uploads/k8s-singlenode-docker.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2016/05/29/部署kubernetes集群(一)  运行单节点kubernets在docker容器中/">
+
+
+
+
+
+  <title>部署kubernetes集群(一)  运行单节点kubernets在docker容器中 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2016/05/29/部署kubernetes集群(一)  运行单节点kubernets在docker容器中/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">部署kubernetes集群(一)  运行单节点kubernets在docker容器中</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-29T19:55:05+08:00">
+                2016-05-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/" itemprop="url" rel="index">
+                    <span itemprop="name">Kubernetes</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文将介绍如何通过docker部署一个简单的、单节点的kubernets集群。<br>下图显示了最终结构图：<br><img src="/uploads/k8s-singlenode-docker.png" alt="k8s-singlenode-docker"></p>
+<a id="more"></a>
+<h2 id="先决条件"><a href="#先决条件" class="headerlink" title="先决条件"></a>先决条件</h2><p>1、需要有一台安装docker的机器。<br>2、决定使用哪个kubernetes版本。设置变量 ${K8S_VERSION} 指定一个&gt;= 1.2.0的kubernets版本。<br>如果需要使用稳定版本，运行下面命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export K8S_VERSION=$(curl -sS https://storage.googleapis.com/kubernetes-release/release/stable.txt)</span><br></pre></td></tr></table></figure></p>
+<p>如果要使用最新版本(包含不稳定版本)：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export K8S_VERSION=$(curl -sS https://storage.googleapis.com/kubernetes-release/release/latest.txt)</span><br></pre></td></tr></table></figure></p>
+<h2 id="部署Kubernetes集群"><a href="#部署Kubernetes集群" class="headerlink" title="部署Kubernetes集群"></a>部署Kubernetes集群</h2><p>通过docker运行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">export ARCH=amd64</span><br><span class="line">docker run -d \</span><br><span class="line">    --volume=/:/rootfs:ro \</span><br><span class="line">    --volume=/sys:/sys:rw \</span><br><span class="line">    --volume=/var/lib/docker/:/var/lib/docker:rw \</span><br><span class="line">    --volume=/var/lib/kubelet/:/var/lib/kubelet:rw \</span><br><span class="line">    --volume=/var/run:/var/run:rw \</span><br><span class="line">    --net=host \</span><br><span class="line">    --pid=host \</span><br><span class="line">    --privileged \</span><br><span class="line">    gcr.io/google_containers/hyperkube-$&#123;ARCH&#125;:$&#123;K8S_VERSION&#125; \</span><br><span class="line">    /hyperkube kubelet \</span><br><span class="line">        --containerized \</span><br><span class="line">        --hostname-override=127.0.0.1 \</span><br><span class="line">        --api-servers=http://localhost:8080 \</span><br><span class="line">        --config=/etc/kubernetes/manifests \</span><br><span class="line">        --cluster-dns=10.0.0.10 \</span><br><span class="line">        --cluster-domain=cluster.local \</span><br><span class="line">        --allow-privileged --v=2</span><br></pre></td></tr></table></figure></p>
+<p>注意：<br>–cluster-dns 和–cluster-domain 用来部署dns，如果不需要dns可以去除此配置项。<br>如果需要挂载一个外部磁盘卷，在上面命令中添加 –volume=/dev:/dev,但是这样可能会带来一些<a href="https://github.com/kubernetes/kubernetes/issues/18230" target="_blank" rel="noopener">问题</a>。<br>ARM在kubernetes版本v1.3.0-alpha.2及以上可用，ARM 64-bit和PowerPC 64 little-endian也在v1.3.0-alpha.3版本及以上才可用，更多arch相关帮助在<a href="https://github.com/kubernetes/kubernetes/issues/17981" target="_blank" rel="noopener">这里</a>。<br><span style="color: #ff0000;">安全警告:</span><br>此处Kubernetes通过Hyperkube进行应用服务访问，在主机节点的公共IP地址上可以直接访问。正因为如此，此教程不适用于直接提供互联网访问的主机节点，<a href="https://github.com/kubernetes/kubernetes/issues/21735" target="_blank" rel="noopener">详细原因请看这里</a>。</p>
+<h2 id="下载kubectl"><a href="#下载kubectl" class="headerlink" title="下载kubectl"></a>下载kubectl</h2><p>此刻你已经有了一个正在运行的Kubernetes集群，可以通过下载kebectl二进制的对应版本 ${K8S_VERSION} 文件去测试它。(下面例子是v1.2.0版本)<br>各版本下载链接：</p>
+<ul>
+<li>linux/amd64 :<a href="http://storage.googleapis.com/kubernetes-release/release/v1.2.0/bin/linux/amd64/kubectl" target="_blank" rel="noopener">http://storage.googleapis.com/kubernetes-release/release/v1.2.0/bin/linux/amd64/kubectl</a></li>
+<li>linux/386 :<a href="http://storage.googleapis.com/kubernetes-release/release/v1.2.0/bin/linux/386/kubectl" target="_blank" rel="noopener">http://storage.googleapis.com/kubernetes-release/release/v1.2.0/bin/linux/386/kubectl</a></li>
+<li>linux/arm :<a href="http://storage.googleapis.com/kubernetes-release/release/v1.2.0/bin/linux/arm/kubectl" target="_blank" rel="noopener">http://storage.googleapis.com/kubernetes-release/release/v1.2.0/bin/linux/arm/kubectl</a></li>
+<li>linux/arm64 :<a href="http://storage.googleapis.com/kubernetes-release/release/v1.2.0/bin/linux/arm64/kubectl" target="_blank" rel="noopener">http://storage.googleapis.com/kubernetes-release/release/v1.2.0/bin/linux/arm64/kubectl</a></li>
+<li>linux/ppc64le :<a href="http://storage.googleapis.com/kubernetes-release/release/v1.2.0/bin/linux/ppc64le/kubectl" target="_blank" rel="noopener">http://storage.googleapis.com/kubernetes-release/release/v1.2.0/bin/linux/ppc64le/kubectl</a></li>
+<li>OS X/amd64 :<a href="http://storage.googleapis.com/kubernetes-release/release/v1.2.0/bin/darwin/amd64/kubectl" target="_blank" rel="noopener">http://storage.googleapis.com/kubernetes-release/release/v1.2.0/bin/darwin/amd64/kubectl</a></li>
+<li>OS X/386 :<a href="http://storage.googleapis.com/kubernetes-release/release/v1.2.0/bin/darwin/386/kubectl" target="_blank" rel="noopener">http://storage.googleapis.com/kubernetes-release/release/v1.2.0/bin/darwin/386/kubectl</a></li>
+<li>windows/amd64 :<a href="http://storage.googleapis.com/kubernetes-release/release/v1.2.0/bin/windows/amd64/kubectl" target="_blank" rel="noopener">http://storage.googleapis.com/kubernetes-release/release/v1.2.0/bin/windows/amd64/kubectl</a></li>
+<li>windows/386 :<a href="http://storage.googleapis.com/kubernetes-release/release/v1.2.0/bin/windows/386/kubectl" target="_blank" rel="noopener">http://storage.googleapis.com/kubernetes-release/release/v1.2.0/bin/windows/386/kubectl</a></li>
+</ul>
+<p>一般下载路径为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://storage.googleapis.com/kubernetes-release/release/$&#123;K8S_VERSION&#125;/bin/$&#123;GOOS&#125;/$&#123;GOARCH&#125;/$&#123;K8S_BINARY&#125;</span><br></pre></td></tr></table></figure></p>
+<p>linux/amd64下安装例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -sSL &quot;http://storage.googleapis.com/kubernetes-release/release/v1.2.0/bin/linux/amd64/kubectl&quot; &gt; /usr/bin/kubectl</span><br><span class="line">chmod +x /usr/bin/kubectl</span><br></pre></td></tr></table></figure></p>
+<p>在OS X下，为了使API Server对本地可访问，建立一个ssh隧道：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-machine ssh `docker-machine active` -N -L 8080:localhost:8080</span><br></pre></td></tr></table></figure></p>
+<p>建立一个ssh隧道使远程docker主机可用。</p>
+<p>(可选)建立Kubernetes集群配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl config set-cluster test-doc --server=http://localhost:8080</span><br><span class="line">kubectl config set-context test-doc --cluster=test-doc</span><br><span class="line">kubectl config use-context test-doc</span><br></pre></td></tr></table></figure></p>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>列出集群下的节点：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">kubectl get nodes</span><br><span class="line">#结果如下：</span><br><span class="line">NAME        STATUS    AGE</span><br><span class="line">127.0.0.1   Ready     1h</span><br></pre></td></tr></table></figure></p>
+<h2 id="运行应用程序"><a href="#运行应用程序" class="headerlink" title="运行应用程序"></a>运行应用程序</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl run nginx --image=nginx --port=80</span><br></pre></td></tr></table></figure>
+<p>现在运行 docker ps 命令就可以看到有nginx容器在运行，你可能需要等待一段时间用来下载镜像。</p>
+<h2 id="开启服务访问"><a href="#开启服务访问" class="headerlink" title="开启服务访问"></a>开启服务访问</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl expose deployment nginx --port=80</span><br></pre></td></tr></table></figure>
+<p>运行下面命令以获取刚才创建的服务在集群下的本地IP<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ip=$(kubectl get svc nginx --template=&#123;&#123;.spec.clusterIP&#125;&#125;)</span><br><span class="line">echo $ip</span><br></pre></td></tr></table></figure></p>
+<p>通过这个IP查看webserver<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get svc nginx --template=&#123;&#123;.spec.clusterIP&#125;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>OS X下，在docker运行在一个VM里后，运行此命令获取IP<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-machine ssh `docker-machine active` curl $ip</span><br></pre></td></tr></table></figure></p>
+<h2 id="部署DNS"><a href="#部署DNS" class="headerlink" title="部署DNS"></a>部署DNS</h2><p>具体操作说明在<a href="http://kubernetes.io/docs/getting-started-guides/docker-multinode/deployDNS/" target="_blank" rel="noopener">这里</a>，后续文章会详细介绍。</p>
+<h3 id="清理Kubernetes集群"><a href="#清理Kubernetes集群" class="headerlink" title="清理Kubernetes集群"></a>清理Kubernetes集群</h3><p>1、删除包含在kubelet下的所有容器:</p>
+<p>使用kubelet管理工具删除容器，它是来保持容器运行的工具。如果一些容器删除失败的话，为了清理kubernetes集群，你必须kill掉kubelet容器，和其他所有容器。</p>
+<p>你可以使用这个命令，会删除daocker下的所有容器，所以要谨慎使用。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker rm -f $(docker ps -aq)</span><br></pre></td></tr></table></figure></p>
+<p>2、清理文件系统<br>在OS X下，首先ssh到docker VM里面：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker-machine ssh `docker-machine active`</span><br><span class="line">sudo umount `cat /proc/mounts | grep /var/lib/kubelet | awk &apos;&#123;print $2&#125;&apos;` </span><br><span class="line">sudo rm -rf /var/lib/kubelet</span><br></pre></td></tr></table></figure></p>
+<h2 id="问题处理"><a href="#问题处理" class="headerlink" title="问题处理"></a>问题处理</h2><h4 id="Nodes是NotReady状态"><a href="#Nodes是NotReady状态" class="headerlink" title="Nodes是NotReady状态"></a>Nodes是NotReady状态</h4><p>如果你看到node是NotReady状态，有可能是你的系统没有启用memcg支持。<br>1、你的操作系统内核必须支持memory accounting,确保你的linux内核开启下面配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CONFIG_RESOURCE_COUNTERS=y</span><br><span class="line">CONFIG_MEMCG=y</span><br></pre></td></tr></table></figure></p>
+<p>2、下面配置确保memory accounting在系统启动时以命令行参数启动<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GRUB_CMDLINE_LINUX=&quot;cgroup_enable=memory=1&quot;</span><br></pre></td></tr></table></figure></p>
+<p>注意：以上配置是适用于GRUB2的。你可以通过内核/proc/cmdline输出文件检查命令行参数。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cat /proc/cmdline</span><br><span class="line">BOOT_IMAGE=/boot/vmlinuz-3.18.4-aufs root=/dev/sda5 ro cgroup_enable=memory=1</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/k8s/" rel="tag"># k8s</a>
+          
+            <a href="/tags/部署/" rel="tag"># 部署</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/23/Nexus oss 3.0 构建docker仓库/" rel="next" title="Nexus oss 3.0 构建docker仓库">
+                <i class="fa fa-chevron-left"></i> Nexus oss 3.0 构建docker仓库
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/29/部署kubernetes集群(二) 本地单节点运行Kubernetes无VM/" rel="prev" title="部署kubernetes集群(二) 本地单节点运行Kubernetes无VM">
+                部署kubernetes集群(二) 本地单节点运行Kubernetes无VM <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#先决条件"><span class="nav-number">1.</span> <span class="nav-text">先决条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#部署Kubernetes集群"><span class="nav-number">2.</span> <span class="nav-text">部署Kubernetes集群</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#下载kubectl"><span class="nav-number">3.</span> <span class="nav-text">下载kubectl</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试"><span class="nav-number">4.</span> <span class="nav-text">测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行应用程序"><span class="nav-number">5.</span> <span class="nav-text">运行应用程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开启服务访问"><span class="nav-number">6.</span> <span class="nav-text">开启服务访问</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#部署DNS"><span class="nav-number">7.</span> <span class="nav-text">部署DNS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#清理Kubernetes集群"><span class="nav-number">7.1.</span> <span class="nav-text">清理Kubernetes集群</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题处理"><span class="nav-number">8.</span> <span class="nav-text">问题处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Nodes是NotReady状态"><span class="nav-number">8.0.1.</span> <span class="nav-text">Nodes是NotReady状态</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

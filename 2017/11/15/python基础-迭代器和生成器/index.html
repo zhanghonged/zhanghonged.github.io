@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="python,迭代,生成器,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="先说明下可迭代对象：可以用循环语句循环的对象就是可迭代对象。">
+<meta name="keywords" content="python,迭代,生成器">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python基础-迭代器和生成器">
+<meta property="og:url" content="http://zhanghonged.github.io/2017/11/15/python基础-迭代器和生成器/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="先说明下可迭代对象：可以用循环语句循环的对象就是可迭代对象。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-11-15T09:54:05.127Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python基础-迭代器和生成器">
+<meta name="twitter:description" content="先说明下可迭代对象：可以用循环语句循环的对象就是可迭代对象。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2017/11/15/python基础-迭代器和生成器/">
+
+
+
+
+
+  <title>python基础-迭代器和生成器 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2017/11/15/python基础-迭代器和生成器/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">python基础-迭代器和生成器</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-15T11:08:09+08:00">
+                2017-11-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python/" itemprop="url" rel="index">
+                    <span itemprop="name">python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><strong>先说明下可迭代对象：可以用循环语句循环的对象就是可迭代对象。</strong><br><a id="more"></a></p>
+<h2 id="迭代器"><a href="#迭代器" class="headerlink" title="迭代器"></a>迭代器</h2><blockquote>
+<p>&emsp;迭代器是访问集合元素的一种方式。迭代器对象从集合的第一个元素开始访问，直到所有的元素被访问完结束。<br>本质上说迭代器是一个对象，但这个对象有一个特使的 <strong>next()</strong> 方法(python3中替代为<strong>next</strong>())。当使用for循环来遍历整个对象时候，就会自动调用此对象的<strong>next</strong>()方法并获取下一个item。<br>使用迭代器时，当所有的item全部取出后就会抛出一个StopIteration异常，这并不是错误的发生，而是告诉外部调用者迭代完成了，外部的调用者尝试去捕获这个异常去做进一步的处理。</p>
+</blockquote>
+<p><strong>迭代器的优点：</strong></p>
+<ol>
+<li>对于原生支持随机访问的数据结构（如tuple、list），迭代器和经典for循环的索引访问相比并无优势，反而丢失了索引值（可以使用内建函数enumerate()找回这个索引值）。但对于无法随机访问的数据结构（比如set）而言，迭代器是唯一的访问元素的方式。</li>
+<li>迭代器不要求事先准备好整个迭代过程中所有的元素。迭代器仅仅在迭代到某个元素时才计算该元素，而在这之前或之后，元素可以不存在或者被销毁。这个特点使得它特别适合用于遍历一些巨大的或是无限的集合。</li>
+<li>迭代器提供了一个统一的访问集合的接口，只要定义了<strong>iter</strong>()方法对象，就可以使用迭代器访问。</li>
+</ol>
+<p><strong>迭代器的限制：</strong></p>
+<ol>
+<li>不能向后移动</li>
+<li>不能回到开始</li>
+<li>无法复制一个迭代器。因此要再次进行迭代只能重新生成一个新的迭代器对象。</li>
+</ol>
+<p><strong>迭代器的两个基本方法：</strong></p>
+<ul>
+<li>next方法：返回迭代器的下一个元素</li>
+<li>__iter__方法：返回迭代器对象本身</li>
+</ul>
+<h3 id="使用迭代器"><a href="#使用迭代器" class="headerlink" title="使用迭代器"></a>使用迭代器</h3><p>使用内建的工厂函数 <strong>iter(iterable)</strong> 可以获取迭代器对象：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">l=[1,2,3,4,5]</span><br><span class="line">l1=iter(l)</span><br><span class="line">print type(l),l</span><br><span class="line">print type(l1),l1</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">&lt;type &apos;list&apos;&gt; [1, 2, 3]</span><br><span class="line">&lt;type &apos;listiterator&apos;&gt; &lt;listiterator object at 0x00AD2070&gt;</span><br></pre></td></tr></table></figure></p>
+<p>使用 <strong>next()</strong> 方法可以访问下一个元素：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">l=[1,2,3]</span><br><span class="line">l1=iter(l)</span><br><span class="line">print l1.next()</span><br><span class="line">print l1.next()</span><br><span class="line">print l1.next()</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td></tr></table></figure></p>
+<p>python处理迭代器越界是抛出 <strong>StopIteration</strong> 异常<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">l=[1,2,3]</span><br><span class="line">l1=iter(l)</span><br><span class="line">print l1.next()</span><br><span class="line">print l1.next()</span><br><span class="line">print l1.next()</span><br><span class="line">print l1.next()</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;yiqun.py&quot;, line 18, in &lt;module&gt;</span><br><span class="line">    print l1.next()</span><br><span class="line">StopIteration</span><br></pre></td></tr></table></figure></p>
+<p>了解迭代器越界异常后就可以使用 <strong>try</strong> 对迭代器进行遍历了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">l=[1,2,3]</span><br><span class="line">l1=iter(l)</span><br><span class="line">try:</span><br><span class="line">	while 1:</span><br><span class="line">		print l1.next()</span><br><span class="line">except StopIteration:</span><br><span class="line">	print </span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td></tr></table></figure></p>
+<p>python专门为for关键字做了迭代器的语法糖。在for循环中，Python将自动调用工厂函数 <strong>iter()</strong> 获得迭代器，自动调用 <strong>next()</strong> 获取元素，还完成了检查 <strong>StopIteration</strong> 异常的工作。</p>
+<h3 id="创建迭代器对象"><a href="#创建迭代器对象" class="headerlink" title="创建迭代器对象"></a>创建迭代器对象</h3><p>除了使用 <strong>iter()</strong> 函数将内置的序列对象转换成相应的迭代器，我们可以自己实现迭代器协议创建迭代器对象，要实现迭代器协议也就是要在类中实现 <strong>__iter__()</strong> 和 <strong>next()</strong> 方法。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">class Aiter(object):</span><br><span class="line"></span><br><span class="line">	def __init__(self, list):</span><br><span class="line">		self.list = list</span><br><span class="line">		self.count=0</span><br><span class="line">	def __iter__(self):</span><br><span class="line">		return self</span><br><span class="line">	def next(self):</span><br><span class="line">		if self.count &lt; len(self.list):</span><br><span class="line">			val= self.list[self.count]</span><br><span class="line">			self.count+=1</span><br><span class="line">			return val</span><br><span class="line">		else:</span><br><span class="line">			raise StopIteration</span><br><span class="line"></span><br><span class="line">a=Aiter(range(5))</span><br><span class="line">print a.next()</span><br><span class="line">print a.next()</span><br><span class="line">print a.next()</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">0</span><br><span class="line">1</span><br><span class="line">2</span><br></pre></td></tr></table></figure></p>
+<p>再来一个斐波那契序列的例子:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">class Fib(object):</span><br><span class="line">	def __init__(self, num):</span><br><span class="line">		self.num = num</span><br><span class="line">		self.n,self.a,self.b = 0,0,1</span><br><span class="line">	def __iter__(self):</span><br><span class="line">		return self</span><br><span class="line">	def next(self):</span><br><span class="line">		if self.n &lt; self.num:</span><br><span class="line">			r=self.b</span><br><span class="line">			self.a,self.b = self.b,self.a+self.b</span><br><span class="line">			self.n+=1</span><br><span class="line">			return r</span><br><span class="line">		else:</span><br><span class="line">			raise StopIteration</span><br><span class="line"></span><br><span class="line">b=Fib(5)</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">1</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">5</span><br></pre></td></tr></table></figure></p>
+<h2 id="生成器"><a href="#生成器" class="headerlink" title="生成器"></a>生成器</h2><p>如果列表元素可以按照某种算法推算出来，那我们是否可以在循环的过程中不断推算出后续的元素呢？这样就不必创建完整的list，从而节省大量的空间。<br><span style="color:red;background:yellow;">在Python中，这种一边循环一边计算的机制，称为生成器：<strong>generator</strong>。</span></p>
+<h3 id="简单生成器"><a href="#简单生成器" class="headerlink" title="简单生成器"></a>简单生成器</h3><p>创建一个简单的生成器，只需要只要把一个列表生成式的 <strong>[]</strong> 改成 <strong>()</strong>。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; L=[x*x for x in range(3)]</span><br><span class="line">&gt;&gt;&gt; L</span><br><span class="line">[0, 1, 4, 9, 16]</span><br><span class="line">&gt;&gt;&gt; g=(x*x for x in range(3))</span><br><span class="line">&gt;&gt;&gt; g</span><br><span class="line">&lt;generator object &lt;genexpr&gt; at 0x0274BE40&gt;</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure></p>
+<p>创建L和g的区别仅在于最外层的 <strong>[]</strong> 和 <strong>()</strong> ，L是一个list，而g是一个generator。</p>
+<p>通过next()函数获得generator的下一个返回值,直到计算到最后一个元素，没有更多的元素时，抛出StopIteration的错误。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; next(g)</span><br><span class="line">0</span><br><span class="line">&gt;&gt;&gt; next(g)</span><br><span class="line">1</span><br><span class="line">&gt;&gt;&gt; next(g)</span><br><span class="line">4</span><br><span class="line">&gt;&gt;&gt; next(g)</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</span><br><span class="line">StopIteration</span><br></pre></td></tr></table></figure></p>
+<p>因为generator也是可迭代对象，因此可以用 <strong>for</strong> 循环来处理：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; g=(x*x for x in range(3))</span><br><span class="line">&gt;&gt;&gt; for i in g:</span><br><span class="line">...   print i</span><br><span class="line">...</span><br><span class="line">0</span><br><span class="line">1</span><br><span class="line">4</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure></p>
+<p>并且通过for循环来迭代它，并且不需要关心StopIteration的错误。</p>
+<h3 id="函数生成器"><a href="#函数生成器" class="headerlink" title="函数生成器"></a>函数生成器</h3><p>如果推算的算法比较复杂，用类似列表生成式的 <strong>for</strong> 循环无法实现的时候，还可以用函数来实现。<br>就有定义generator的另一种方法，<span style="color:red;background:yellow;">带有 <strong>yield</strong> 的函数在Python中被称之为 <strong>generator</strong> (生成器)。</span><br>比如斐波那契序列只能用函数来实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">def fab(max):</span><br><span class="line">    n, a, b = 0, 0, 1</span><br><span class="line">    while n &lt; max:</span><br><span class="line">        yield b</span><br><span class="line">        a, b = b, a + b</span><br><span class="line">        n = n + 1</span><br><span class="line"></span><br><span class="line">print fab(6)</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">&lt;generator object fab at 0x02C49B48&gt;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>&emsp;简单地讲，<strong>yield</strong> 的作用就是把一个函数变成一个 <strong>generator</strong>，带有 <strong>yield</strong> 的函数不再是一个普通函数，Python解释器会将其视为一个 <strong>generator</strong>，调用fab(5)不会执行fab函数，而是返回一个 <span style="color:red;"><strong>iterable</strong></span> 对象！<br>在for循环执行时，每次循环都会执行fab函数内部的代码，执行到 <span style="color:blue;">yield b</span> 时，fab函数就<span style="color:blue;">返回一个迭代值</span>，下次迭代时，代码从 <strong>yield b</strong> 的下一条语句继续执行，而函数的本地变量看起来和上次中断执行前是完全一样的，于是函数继续执行，直到再次遇到 <strong>yield</strong>。看起来就好像一个函数在正常执行的过程中被 <strong>yield</strong> 中断了数次，每次中断都会通过 <strong>yield</strong> 返回当前的迭代值。</p>
+</blockquote>
+<p>也可以手动调用fab(6)的 <strong>next</strong> 方法，因为 fab(6) 是一个 <strong>generator</strong> 对象，该对象具有 <strong>next()</strong> 方法。</p>
+<p><strong>return在generator中作用</strong></p>
+<p>在一个生成器中，如果没有<strong> return</strong>则默认执行到函数完毕；如果遇到 <strong>return</strong>,如果在执行过程中 <strong>return</strong>则直接抛出 <strong>StopIteration</strong> 终止迭代。</p>
+<h3 id="生成器实例"><a href="#生成器实例" class="headerlink" title="生成器实例"></a>生成器实例</h3><p>1、文件读取<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">def read_file(fpath):</span><br><span class="line">	block_size=10</span><br><span class="line">	with open(fpath,&apos;rb&apos;) as f:</span><br><span class="line">		while True:</span><br><span class="line">			block=f.read(block_size)</span><br><span class="line">			if block:</span><br><span class="line">				yield block</span><br><span class="line">			else:</span><br><span class="line">				return</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;如果直接对文件对象调用read()方法，会导致不可预测的内存占用。好的方法是利用固定长度的缓冲区来不断读取文件内容。通过yield我们不再需要编写读文件的迭代类，就可以轻松实现文件读取。<br>2、用生成器写杨辉三角<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">def triangles():</span><br><span class="line">    ret = [1]</span><br><span class="line">    while True:</span><br><span class="line">        yield ret</span><br><span class="line">        for i in range(1, len(ret)):</span><br><span class="line">            ret[i] = pre[i] + pre[i - 1]</span><br><span class="line">        ret.append(1)</span><br><span class="line">        pre = ret[:]</span><br><span class="line"></span><br><span class="line">a=triangles()</span><br><span class="line">print a.next()</span><br><span class="line">print a.next()</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/迭代/" rel="tag"># 迭代</a>
+          
+            <a href="/tags/生成器/" rel="tag"># 生成器</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/13/Python基础-编码小结python2/" rel="next" title="Python基础-编码小结python2">
+                <i class="fa fa-chevron-left"></i> Python基础-编码小结python2
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/21/Python基础-面向对象/" rel="prev" title="Python基础-面向对象">
+                Python基础-面向对象 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#迭代器"><span class="nav-number">1.</span> <span class="nav-text">迭代器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用迭代器"><span class="nav-number">1.1.</span> <span class="nav-text">使用迭代器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建迭代器对象"><span class="nav-number">1.2.</span> <span class="nav-text">创建迭代器对象</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生成器"><span class="nav-number">2.</span> <span class="nav-text">生成器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简单生成器"><span class="nav-number">2.1.</span> <span class="nav-text">简单生成器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#函数生成器"><span class="nav-number">2.2.</span> <span class="nav-text">函数生成器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#生成器实例"><span class="nav-number">2.3.</span> <span class="nav-text">生成器实例</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

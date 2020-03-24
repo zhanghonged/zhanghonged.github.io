@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="k8s,service,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="Kubernetes容器访问体系现在已经有了一个可以连续运行，多份副本的应用，你可以在网络上发布它。在讨论Kubernetes网络配置前，有必要和Docker中连接网络的普通方式进行一下比较。">
+<meta name="keywords" content="k8s,service">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes service服务发现和负载均衡(一) 通过service访问应用">
+<meta property="og:url" content="http://zhanghonged.github.io/2016/06/03/Kubernetes service服务发现和负载均衡(一) 通过service访问应用/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="Kubernetes容器访问体系现在已经有了一个可以连续运行，多份副本的应用，你可以在网络上发布它。在讨论Kubernetes网络配置前，有必要和Docker中连接网络的普通方式进行一下比较。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2016-08-10T07:11:10.787Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kubernetes service服务发现和负载均衡(一) 通过service访问应用">
+<meta name="twitter:description" content="Kubernetes容器访问体系现在已经有了一个可以连续运行，多份副本的应用，你可以在网络上发布它。在讨论Kubernetes网络配置前，有必要和Docker中连接网络的普通方式进行一下比较。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2016/06/03/Kubernetes service服务发现和负载均衡(一) 通过service访问应用/">
+
+
+
+
+
+  <title>Kubernetes service服务发现和负载均衡(一) 通过service访问应用 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2016/06/03/Kubernetes service服务发现和负载均衡(一) 通过service访问应用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Kubernetes service服务发现和负载均衡(一) 通过service访问应用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-06-03T00:00:01+08:00">
+                2016-06-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/" itemprop="url" rel="index">
+                    <span itemprop="name">Kubernetes</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Kubernetes容器访问体系"><a href="#Kubernetes容器访问体系" class="headerlink" title="Kubernetes容器访问体系"></a>Kubernetes容器访问体系</h2><p>现在已经有了一个可以连续运行，多份副本的应用，你可以在网络上发布它。在讨论Kubernetes网络配置前，有必要和Docker中连接网络的普通方式进行一下比较。</p>
+<a id="more"></a>
+<p>默认情况下，docker使用host-private(主机私有)网络，所以容器之间可以互相交互，只要它们在同一台机器上。为了让容器可以跨主机通讯，必须在主机IP上为容器分配端口，然后通过主机IP和端口转发或代理到容器。这意味着容器之间必须谨慎地使用和协调端口号的分配，或者动态分配端口号。</p>
+<p>在众多开发者之间协调端口号的分配是十分困难的，会将集群级别之外的复杂问题暴露给用户来处理。在Kubernetes中假设Pods之间可以相互通讯，而不管他们位于哪个宿主机。我们给每个Pod分配自己的cluster-private-ip(集群私有ip),如此一来你就不需要明确地在Pod之间创建连接，或者将容器的端口映射到主机的端口中。这意味着Pod中的容器可以在主机上使用任意彼此的端口，并且在cluster内所有pods可以不通过NAT互相连通。下面文档将详细说明如何通过这样一个网络连接模型来运行稳定的Services。<br>本文档使用一个简单的nginx服务器来验证以上概念，相同的原理体现在一个更完整的架构上<a href="http://blog.kubernetes.io/2015/07/strong-simple-ssl-for-kubernetes.html" target="_blank" rel="noopener">Jenkins CI application</a>。</p>
+<h2 id="在cluster上暴露pod"><a href="#在cluster上暴露pod" class="headerlink" title="在cluster上暴露pod"></a>在cluster上暴露pod</h2><p>创建一个有容器端口的nginx pod：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$ cat run-my-nginx.yaml</span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: ReplicationController</span><br><span class="line">metadata:</span><br><span class="line">  name: my-nginx</span><br><span class="line">spec:</span><br><span class="line">  replicas: 2</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        run: my-nginx</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - name: nginx</span><br><span class="line">        image: nginx</span><br><span class="line">        ports:</span><br><span class="line">        - containerPort: 80</span><br></pre></td></tr></table></figure></p>
+<p>这样在集群中任何node都可以访问到它。在node上检查pod是否正在运行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f ./run-my-nginx.yaml</span><br><span class="line">$ kubectl get pods -l run=my-nginx -o wide</span><br><span class="line">NAME                        READY     STATUS    RESTARTS   AGE       NODE</span><br><span class="line">my-nginx-3800858182-jr4a2   1/1       Running   0          13s       kubernetes-minion-905m</span><br><span class="line">my-nginx-3800858182-kna2y   1/1       Running   0          13s       kubernetes-minion-ljyd&lt;/pre&gt;</span><br><span class="line">检查pod的IPs:</span><br><span class="line">&lt;pre class=&quot;lang:default decode:true &quot;&gt;$ kubectl get pods -l run-my-nginx -o yaml | grep podIP</span><br><span class="line">    podIP: 10.244.3.4</span><br><span class="line">    podIP: 10.244.2.5</span><br></pre></td></tr></table></figure></p>
+<p>你应该可以ssh到cluster内任何nodes上通过curl去连接此IP。注意container并没有使用node上的80端口，也没有任何特殊的NAT规则路由到pod。这意味着可以在相同的node节点上运行多个nginx pod并且都使用相同的容器端口，而且在cluster上任何pod或node上都可以通过这个IP来访问。和docker一样，端口仍然可以映射到宿主机的网络接口上，但是由于Kubernetes的这种网络架构，需求的必须性已经被彻底削弱了。</p>
+<h2 id="创建Service"><a href="#创建Service" class="headerlink" title="创建Service"></a>创建Service</h2><p>现在，在集群上我们有了一个运行着niginx并且有分配IP地址空间的的Pod，理论上你可以直接访问这些pods，但是如果node宕机了怎么办，这些pods也会跟着挂掉，然后RC会在另一个健康的node上重新创建新的pods来代替，这些Pod分配的IP地址也会跟着变化。针对这个问题service可以解决。<br>Service是一个抽象的概念，其定义了一组运行在集群之上的Pod的逻辑集合，这些Pod是重复的，复制出来的，所以提供相同的功能。创建后每个service都会分配到一个唯一的IP地址(也称clusterIP)。这个地址和service的生命周期相关联，而且只要service一直运行，这个地址都不会改变。Pods进行配置来和这个Service进行交互，之后Service将会自动做负载均衡到Service中的Pod。</p>
+<p>你可以通过以下的YAML文件来为你的两个nginx容器副本创建一个Service：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ cat nginx-svc.yaml</span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: my-nginx</span><br><span class="line">  labels:</span><br><span class="line">    run: my-nginx</span><br><span class="line">spec:</span><br><span class="line">  ports:</span><br><span class="line">  - port: 80</span><br><span class="line">    protocol: TCP</span><br><span class="line">  selector:</span><br><span class="line">    run: my-nginx</span><br></pre></td></tr></table></figure></p>
+<p>这个YAML定义创建创建一个Service，带有Label为run=my-nginx的Pod都将会开放80端口，并将其关联到一个抽象的Service端口。<br>（targetPort字段是指容器内开放的端口，port字段是指抽象Service的端口，其他Pods可以通过这个端口来连接到Service。）<br>点击这里查看完整的Service字段列表：<a href="http://kubernetes.io/docs/api-reference/v1/definitions/#_v1_service" target="_blank" rel="noopener">service API object</a></p>
+<p>现在查看你创建的Service：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get svc my-nginx</span><br><span class="line">NAME       CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE</span><br><span class="line">my-nginx   10.0.162.149   &amp;lt;none&amp;gt;        80/TCP    21s</span><br></pre></td></tr></table></figure></p>
+<p>和之前提到的一样，Service是以一组Pod为基础的。这些Pod通过endpoints字段开放出来。<br>Service的selector将会不断地进行Pod的Label匹配，结果将会通知一个Endpoints Object，这里创建的也叫做my-nginx。当Pod挂掉之后，将会自动从Endpoints中移除，当有新的Pod被Service的selector匹配到之后将会自动加入这个Endpoints。<br>你可以查看这个Endpoint，注意，这些IP和第一步中创建Pods的时候是一样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl describe svc my-nginx</span><br><span class="line">Name:			my-nginx</span><br><span class="line">Namespace:		default</span><br><span class="line">Labels:			run=my-nginx</span><br><span class="line">Selector:		run=my-nginx</span><br><span class="line">Type:			ClusterIP</span><br><span class="line">IP:			10.0.162.149</span><br><span class="line">Port:			&amp;lt;unset&amp;gt;	80/TCP</span><br><span class="line">Endpoints:		10.244.2.5:80,10.244.3.4:80</span><br><span class="line">Session Affinity:	None</span><br><span class="line">No events.</span><br><span class="line"></span><br><span class="line">$ kubectl get ep my-nginx</span><br><span class="line">NAME       ENDPOINTS                     AGE</span><br><span class="line">my-nginx   10.244.2.5:80,10.244.3.4:80   1m</span><br></pre></td></tr></table></figure></p>
+<p>你现在应该可以通过10.0.162.149:80这个IP从集群上的任何一个节点使用curl命令来连接到nginx的Service。<br>注意，Service的IP是完全虚拟的，如果你想知道它是怎么工作的，请点击：<a href="http://kubernetes.io/docs/user-guide/services/#virtual-ips-and-service-proxies" target="_blank" rel="noopener">service proxy</a></p>
+<h2 id="访问Service"><a href="#访问Service" class="headerlink" title="访问Service"></a>访问Service</h2><p>k8s提供了两种基本的方式来发现Service：环境变量和DNS。<br>环境变量是立即可以使用的，DNS则需要kube-dns集群插件。</p>
+<h2 id="环境变量"><a href="#环境变量" class="headerlink" title="环境变量"></a>环境变量</h2><p>当Pod运行在一个节点上，kubelet将会为每个激活的Service添加一系列的环境变量。<br>为你的nginx Pod检查一下环境：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl exec my-nginx-3800858182-jr4a2 -- printenv | grep SERVICE</span><br><span class="line">KUBERNETES_SERVICE_HOST=10.0.0.1</span><br><span class="line">KUBERNETES_SERVICE_PORT=443</span><br><span class="line">KUBERNETES_SERVICE_PORT_HTTPS=443</span><br></pre></td></tr></table></figure></p>
+<p>注意，这里没有显示和Service相关的东西，因为这个Pod是在Service之前创建的，这种做法另外一个缺点是，<br>Scheduler可能会将两个Pod都在同一个机器上启动，这样一来，当节点挂掉之后整个Service也会挂掉。<br>这里正确的做法是杀死两个Pod，等待RC重新启动新的Pod来代替。<br>这样一来，Service就在那些副本之前存在，并将环境变量设置到所有的Pod中。<br>正确的环境变量应为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl scale rc my-nginx --replicas=0</span><br><span class="line">kubectl scale rc my-nginx --replicas=2;</span><br><span class="line"></span><br><span class="line">$ kubectl get pods -l run-my-nginx -o wide</span><br><span class="line">NAME                        READY     STATUS    RESTARTS   AGE       NODE</span><br><span class="line">my-nginx-3800858182-e9ihh   1/1       Running   0          5s        kubernetes-minion-ljyd</span><br><span class="line">my-nginx-3800858182-j4rm4   1/1       Running   0          5s        kubernetes-minion-905m</span><br></pre></td></tr></table></figure></p>
+<p>你应该可以注意到pods杀掉然后重新创建后名字已经和之前不一样了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl exec my-nginx-3800858182-e9ihh -- printenv | grep SERVICE</span><br><span class="line">KUBERNETES_SERVICE_PORT=443</span><br><span class="line">MY_NGINX_SERVICE_HOST=10.0.162.149</span><br><span class="line">KUBERNETES_SERVICE_HOST=10.0.0.1</span><br><span class="line">MY_NGINX_SERVICE_PORT=80</span><br><span class="line">KUBERNETES_SERVICE_PORT_HTTPS=443</span><br></pre></td></tr></table></figure></p>
+<h2 id="DNS"><a href="#DNS" class="headerlink" title="DNS"></a>DNS</h2><p>k8s提供了一个DNS集群服务插件，使用skydns来自动分配DNS给其他的Service。如果你的集群上有运行的话，你可以查看它的状态：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get services kube-dns --namespace=kube-system</span><br><span class="line">NAME       CLUSTER-IP   EXTERNAL-IP   PORT(S)         AGE</span><br><span class="line">kube-dns   10.0.0.10    &amp;lt;none&amp;gt;        53/UDP,53/TCP   8m</span><br></pre></td></tr></table></figure></p>
+<p>DNS如果集群上没有运行，那么你可以启用它：<a href="https://github.com/kubernetes/kubernetes/blob/release-1.2/cluster/addons/dns/README.md#how-do-i-configure-it" target="_blank" rel="noopener">enable it</a></p>
+<p>本节剩下的内容是在假设你拥有一个长时间可以使用IP的Service（my-nginx）并且DNS域名已经通过dns服务（DNS集群服务插件）分配给这个IP的前提下。<br>所以你可以在集群上的任一节点中使用标准的请求方法来连接Service，让我们运行另外一个curl应用程序来进行测试：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl run curl --image=radial/busyboxplus:curl -i --tty</span><br><span class="line">Waiting for pod default/curl-131556218-9fnch to be running, status is Pending, pod ready: false</span><br><span class="line">Hit enter for command prompt</span><br></pre></td></tr></table></figure></p>
+<p>然后运行命令nslookup my-nginx 并回车<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[ root@curl-131556218-9fnch:/ ]$ nslookup my-nginx</span><br><span class="line">Server:    10.0.0.10</span><br><span class="line">Address 1: 10.0.0.10</span><br><span class="line"></span><br><span class="line">Name:      my-nginx</span><br><span class="line">Address 1: 10.0.162.149</span><br></pre></td></tr></table></figure></p>
+<h2 id="暴漏Service"><a href="#暴漏Service" class="headerlink" title="暴漏Service"></a>暴漏Service</h2><p>在你的应用中可能需要将其开放到一个外部的IP中。<br>k8s提供了两种方式：NodePorts和LoadBalancers。<br>删除上面创建的service，创建新的service，增加type：NodePort字段：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">$ cat nginx-svc.yaml</span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: my-nginx</span><br><span class="line">  labels:</span><br><span class="line">    run: my-nginx</span><br><span class="line">spec:</span><br><span class="line">  type: NodePort</span><br><span class="line">  ports:</span><br><span class="line">  - port: 8888</span><br><span class="line">    targetPort: 80</span><br><span class="line">    protocol: TCP</span><br><span class="line">    name: http</span><br><span class="line">  selector:</span><br><span class="line">    run: my-nginx</span><br></pre></td></tr></table></figure></p>
+<p>如果你有公网IP，你的nginx服务就可以在Internet上访问了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get svc my-nginx -o yaml | grep nodePort -C 5</span><br><span class="line">  uid: 07191fb3-f61a-11e5-8ae5-42010af00002</span><br><span class="line">spec:</span><br><span class="line">  clusterIP: 10.0.162.149</span><br><span class="line">  ports:</span><br><span class="line">  - name: http</span><br><span class="line">    nodePort: 31704</span><br><span class="line">    port: 8888</span><br><span class="line">    protocol: TCP</span><br><span class="line">    targetPort: 80</span><br><span class="line">  selector:</span><br><span class="line">    run: my-nginx</span><br><span class="line"></span><br><span class="line">$ kubectl get nodes -o yaml | grep ExternalIP -C 1</span><br><span class="line">    - address: 192.168.1.26</span><br><span class="line">      type: ExternalIP</span><br><span class="line">    allocatable:</span><br><span class="line">--</span><br><span class="line">    - address: 192.168.1.94</span><br><span class="line">      type: ExternalIP</span><br><span class="line">    allocatable:</span><br><span class="line"></span><br><span class="line">$ curl http://&lt;EXTERNAL-IP&gt;:&lt;NODE-PORT&gt;;</span><br><span class="line">...</span><br><span class="line">&lt;h1&gt;Welcome to nginx!&lt;/h1&gt;</span><br></pre></td></tr></table></figure></p>
+<p>现在，我们将通过负载均衡器重新创建一个Service，只需要将nginx-svc.yaml文件中的type字段从NodePort改为LoadBalancer即可：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl edit svc my-nginx</span><br><span class="line">$ kubectl get svc my-nginx</span><br><span class="line">NAME       CLUSTER-IP     EXTERNAL-IP        PORT(S)               AGE</span><br><span class="line">my-nginx   10.0.162.149   192.168.1.26    80/TCP,81/TCP,82/TCP  21s</span><br><span class="line"></span><br><span class="line">$ curl http://&lt;EXTERNAL-IP&gt;:&lt;NODE-PORT&gt;</span><br><span class="line">...</span><br><span class="line">&lt;title&gt;Welcome to nginx!&lt;/title&gt;</span><br></pre></td></tr></table></figure></p>
+<p>EXTERNAL_IP这列的IP即是可以在公网上访问的IP，CLUSTER_IP只能在自己的集群node节点上通过port端口访问访问到。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl http://CLUSTER-IP:8888</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/k8s/" rel="tag"># k8s</a>
+          
+            <a href="/tags/service/" rel="tag"># service</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/31/centos7部署分布式Kubernetes集群/" rel="next" title="centos7部署分布式Kubernetes集群">
+                <i class="fa fa-chevron-left"></i> centos7部署分布式Kubernetes集群
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/06/04/Kubernetes service服务发现和负载均衡(二) service配置/" rel="prev" title="Kubernetes service服务发现和负载均衡(二) service配置">
+                Kubernetes service服务发现和负载均衡(二) service配置 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Kubernetes容器访问体系"><span class="nav-number">1.</span> <span class="nav-text">Kubernetes容器访问体系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在cluster上暴露pod"><span class="nav-number">2.</span> <span class="nav-text">在cluster上暴露pod</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建Service"><span class="nav-number">3.</span> <span class="nav-text">创建Service</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#访问Service"><span class="nav-number">4.</span> <span class="nav-text">访问Service</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#环境变量"><span class="nav-number">5.</span> <span class="nav-text">环境变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DNS"><span class="nav-number">6.</span> <span class="nav-text">DNS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#暴漏Service"><span class="nav-number">7.</span> <span class="nav-text">暴漏Service</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

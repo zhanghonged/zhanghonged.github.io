@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="已经部署了应用程序，并通过service暴露它。现在还有什么？Kubernetes提供了一些工具来帮助你管理你的应用程序的部署，包括scaling和updating。下来我们将讨论更多的功能是配置文件和label。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes工作中部署和管理(三) 管理Resources">
+<meta property="og:url" content="http://zhanghonged.github.io/2016/06/30/Kubernetes工作中部署和管理(三) 管理Resources/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="已经部署了应用程序，并通过service暴露它。现在还有什么？Kubernetes提供了一些工具来帮助你管理你的应用程序的部署，包括scaling和updating。下来我们将讨论更多的功能是配置文件和label。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2016-08-10T06:52:17.985Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kubernetes工作中部署和管理(三) 管理Resources">
+<meta name="twitter:description" content="已经部署了应用程序，并通过service暴露它。现在还有什么？Kubernetes提供了一些工具来帮助你管理你的应用程序的部署，包括scaling和updating。下来我们将讨论更多的功能是配置文件和label。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2016/06/30/Kubernetes工作中部署和管理(三) 管理Resources/">
+
+
+
+
+
+  <title>Kubernetes工作中部署和管理(三) 管理Resources | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2016/06/30/Kubernetes工作中部署和管理(三) 管理Resources/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Kubernetes工作中部署和管理(三) 管理Resources</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-06-30T15:05:38+08:00">
+                2016-06-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/" itemprop="url" rel="index">
+                    <span itemprop="name">Kubernetes</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>已经部署了应用程序，并通过service暴露它。现在还有什么？<br>Kubernetes提供了一些工具来帮助你管理你的应用程序的部署，包括scaling和updating。<br>下来我们将讨论更多的功能是配置文件和label。</p>
+<a id="more"></a>
+<h2 id="组织rescource配置文件"><a href="#组织rescource配置文件" class="headerlink" title="组织rescource配置文件"></a>组织rescource配置文件</h2><p>一些应用需要创建多个resources，比如Deployment和Service。管理多个resources可以将他们组合在同一个配置文件中(yaml中使用—来分隔):<br>例如下面例子：<br><strong>nginx-app.yaml</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: my-nginx-svc</span><br><span class="line">  labels:</span><br><span class="line">    app: nginx</span><br><span class="line">spec:</span><br><span class="line">  type: LoadBalancer</span><br><span class="line">  ports:</span><br><span class="line">  - port: 80</span><br><span class="line">  selector:</span><br><span class="line">    app: nginx</span><br><span class="line">---</span><br><span class="line">apiVersion: extensions/v1beta1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: my-nginx</span><br><span class="line">spec:</span><br><span class="line">  replicas: 3</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: nginx</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - name: nginx</span><br><span class="line">        image: nginx:1.7.9</span><br><span class="line">        ports:</span><br><span class="line">        - containerPort: 80</span><br></pre></td></tr></table></figure></p>
+<p>多resources的创建方式和单resources的方式一样：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f docs/user-guide/nginx-app.yaml</span><br><span class="line">service &quot;my-nginx-svc&quot; created</span><br><span class="line">deployment &quot;my-nginx&quot; created</span><br></pre></td></tr></table></figure></p>
+<p>这些resources将以它们出现在配置文件里的顺序来创建。因此最好先指定service，这将确保调度器可以关联pods和services。<br>kubectl create 依然支持接受多个-f参数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f docs/user-guide/nginx/nginx-svc.yaml -f docs/user-guide/nginx/nginx-deployment.yaml</span><br></pre></td></tr></table></figure></p>
+<p>还可以指定一个目录：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f docs/user-guide/nginx/</span><br></pre></td></tr></table></figure></p>
+<p>kubectl支持多个文件类型：.yaml，.yam，.json。<br>一个推荐的做法是，把相关服务或应用的resources放到同一个文件中，并且把应用所有相关联的文件都放在同一个目录中。<br>如果你的应用程序各组件之间使用DNS相互通讯，那么你可以把所有组件部署在一个栈中。<br>还可以指定一个URL配置文件，这方便与直接调取github中的配置文件来部署。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f https://raw.githubusercontent.com/kubernetes/kubernetes/master/docs/user-guide/nginx-deployment.yaml</span><br><span class="line">deployment &quot;nginx-deployment&quot; created</span><br></pre></td></tr></table></figure></p>
+<h2 id="kubectl大量操作"><a href="#kubectl大量操作" class="headerlink" title="kubectl大量操作"></a>kubectl大量操作</h2><p>创建resources并不是kubectl可以执行的唯一操作，它还可以从配置文件中提取resource名称以便于其他操作，特别是删除你创建的相同的resources。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl delete -f docs/user-guide/nginx/</span><br><span class="line">deployment &quot;my-nginx&quot; deleted</span><br><span class="line">service &quot;my-nginx-svc&quot; deleted</span><br></pre></td></tr></table></figure></p>
+<p>对于两个resources来说，在命令行上使用resource名称来进行同时操作是非常容易的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl delete deployments/my-nginx services/my-nginx-svc</span><br></pre></td></tr></table></figure></p>
+<p>在有数量较多的resources的时候，你可以通过指定selector来过滤出想要的resources。使用-l或者–selector:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl delete deployment,services -l app=nginx</span><br><span class="line">deployment &quot;my-nginx&quot; deleted</span><br><span class="line">service &quot;my-nginx-svc&quot; deleted</span><br></pre></td></tr></table></figure></p>
+<p>因为kubectl接受使用相同的语法输出资源名称，所以很容易使用$()或xargs连续操作：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get $(kubectl create -f docs/user-guide/nginx/ -o name | grep service)</span><br><span class="line">NAME           CLUSTER-IP   EXTERNAL-IP   PORT(S)      AGE</span><br><span class="line">my-nginx-svc   10.0.0.208                 80/TCP       0s</span><br></pre></td></tr></table></figure></p>
+<p>上面的命令，首先通过docs/user-guide/nginx/下配置文件创建resource，然后-o name输出resource格式(打印每个resource的resource/名称)，然后grep查找有“service”的行，最后通过kubectl get 打印出信息。</p>
+<h2 id="高效使用labels"><a href="#高效使用labels" class="headerlink" title="高效使用labels"></a>高效使用labels</h2><p>迄今为止我们所使用的例子适用于任何单一label的resource，但在很多情况下多个labels用来互相区分。<br>例如：不用的应用会使用不同的app label值，但是一个多层次的应用，还需要区分每一次个，比如<a href="https://github.com/kubernetes/kubernetes/tree/release-1.2/examples/guestbook/" target="_blank" rel="noopener">guestbook 例子</a>。<br>前端携带以下labels：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">labels:</span><br><span class="line">   app: guestbook</span><br><span class="line">   tier: frontend</span><br></pre></td></tr></table></figure></p>
+<p>Redis主和从会有不同的tier labels，甚至还有一个额外的role label：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">labels:</span><br><span class="line">   app: guestbook</span><br><span class="line">   tier: backend</span><br><span class="line">   role: master</span><br></pre></td></tr></table></figure></p>
+<p>和<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">labels:</span><br><span class="line">   app: guestbook</span><br><span class="line">   tier: backend</span><br><span class="line">   role: slave</span><br></pre></td></tr></table></figure></p>
+<p>labels允许我们按照指定的类型去组合我们的resources：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f examples/guestbook/all-in-one/guestbook-all-in-one.yaml</span><br><span class="line">$ kubectl get pods -Lapp -Ltier -Lrole</span><br><span class="line">NAME                           READY     STATUS    RESTARTS   AGE       APP         TIER       ROLE</span><br><span class="line">guestbook-fe-4nlpb             1/1       Running   0          1m        guestbook   frontend   &lt;none&gt;</span><br><span class="line">guestbook-fe-ght6d             1/1       Running   0          1m        guestbook   frontend   &lt;none&gt;</span><br><span class="line">guestbook-fe-jpy62             1/1       Running   0          1m        guestbook   frontend   &lt;none&gt;</span><br><span class="line">guestbook-redis-master-5pg3b   1/1       Running   0          1m        guestbook   backend    master</span><br><span class="line">guestbook-redis-slave-2q2yf    1/1       Running   0          1m        guestbook   backend    slave</span><br><span class="line">guestbook-redis-slave-qgazl    1/1       Running   0          1m        guestbook   backend    slave</span><br><span class="line">my-nginx-divi2                 1/1       Running   0          29m       nginx       &lt;none&gt;     &lt;none&gt;</span><br><span class="line">my-nginx-o0ef1                 1/1       Running   0          29m       nginx       &lt;none&gt;     &lt;none&gt;</span><br><span class="line">$ kubectl get pods -lapp=guestbook,role=slave</span><br><span class="line">NAME                          READY     STATUS    RESTARTS   AGE</span><br><span class="line">guestbook-redis-slave-2q2yf   1/1       Running   0          3m</span><br><span class="line">guestbook-redis-slave-qgazl   1/1       Running   0          3m</span><br></pre></td></tr></table></figure></p>
+<h2 id="Canary-deployments"><a href="#Canary-deployments" class="headerlink" title="Canary deployments"></a>Canary deployments</h2><p>另一种情况下，多labels用来区分不同的版本部署或配置一些相同的组件。<br>常见的做法是为一个新的应用部署一个canary版(在pot template中指定image tag)和旧版本并存，使新版本可以获取当前生产环境中的访问。<br>例如，你可以使用track label来区分不同的版本<br>稳定版本使用stable label<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">name: frontend</span><br><span class="line">replicas: 3</span><br><span class="line">...</span><br><span class="line">labels:</span><br><span class="line">   app: guestbook</span><br><span class="line">   tier: frontend</span><br><span class="line">   track: stable</span><br><span class="line">...</span><br><span class="line">image: gb-frontend:v3</span><br></pre></td></tr></table></figure></p>
+<p>你可以创建一个guestbook新版本前端，track label使用不同的值(比如canary)，使两个pods不会发生重叠。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">name: frontend-canary</span><br><span class="line">replicas: 1</span><br><span class="line">...</span><br><span class="line">labels:</span><br><span class="line">   app: guestbook</span><br><span class="line">   tier: frontend</span><br><span class="line">   track: canary</span><br><span class="line">...</span><br><span class="line">image: gb-frontend:v4</span><br></pre></td></tr></table></figure></p>
+<p>前端service将跨越两套副本选择labels公共子集(不考虑 track label),这样流量将被重定向到两个应用程序。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">selector:</span><br><span class="line">   app: guestbook</span><br><span class="line">   tier: frontend</span><br></pre></td></tr></table></figure></p>
+<p>你可以调整稳定版和canary版的副本数量以确定每个版本接受到的当前访问量(这里是1:3),一旦确认稳定后，你可以更新稳定版到一个新的版本并删除canary版。</p>
+<h2 id="更新labels"><a href="#更新labels" class="headerlink" title="更新labels"></a>更新labels</h2><p>有时在创建新的resources时已存在的pods和其他resouces需要标记一下，可以通过kubectl label 命令来实现。<br>比如，你想要将所有的nginx pods标记为frontend，只需要运行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl label pods -l app=nginx tier=fe</span><br><span class="line">pod &quot;my-nginx-2035384211-j5fhi&quot; labeled</span><br><span class="line">pod &quot;my-nginx-2035384211-u2c7e&quot; labeled</span><br><span class="line">pod &quot;my-nginx-2035384211-u3t6x&quot; labeled</span><br></pre></td></tr></table></figure></p>
+<p>首先过滤所有label”app=nginx”的pods，然后标记“tier=fe”，查看你刚才所做的标记：<br><figure class="highlight plain"><figcaption><span>kubectl get pods -l app</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">NAME                        READY     STATUS    RESTARTS   AGE       TIER</span><br><span class="line">my-nginx-2035384211-j5fhi   1/1       Running   0          23m       fe</span><br><span class="line">my-nginx-2035384211-u2c7e   1/1       Running   0          23m       fe</span><br><span class="line">my-nginx-2035384211-u3t6x   1/1       Running   0          23m       fe</span><br></pre></td></tr></table></figure></p>
+<p>输出所有”app=nginx” label的pods，并且pods的额外label层tier(指定使用-L 或 –label-columns)。</p>
+<h2 id="更新注释"><a href="#更新注释" class="headerlink" title="更新注释"></a>更新注释</h2><p>有时你需要将注释附加到resources上，注释是任何client API都识别不了的元数据，比如tools、libraries等。<br>可以使用kubectl annotate命令在实现，例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl annotate pods my-nginx-v4-9gw19 description=&apos;my frontend running nginx&apos;</span><br><span class="line">$ kubectl get pods my-nginx-v4-9gw19 -o yaml</span><br><span class="line">apiversion: v1</span><br><span class="line">kind: pod</span><br><span class="line">metadata:</span><br><span class="line">  annotations:</span><br><span class="line">    description: my frontend running nginx</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
+<h2 id="扩展应用"><a href="#扩展应用" class="headerlink" title="扩展应用"></a>扩展应用</h2><p>当你的应用负载变小或变大，可以容易的使用kubectl来变更。<br>比如下面例子，减少nginx replicas的数量从3到1：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl scale deployment/my-nginx --replicas=1</span><br><span class="line">deployment &quot;my-nginx&quot; scaled</span><br></pre></td></tr></table></figure></p>
+<p>现在就只有一个pod了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get pods -l app=nginx</span><br><span class="line">NAME                        READY     STATUS    RESTARTS   AGE</span><br><span class="line">my-nginx-2035384211-j5fhi   1/1       Running   0          30m</span><br></pre></td></tr></table></figure></p>
+<p>让系统去自动选择nginx replicas的数量，范围在1-3之间：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl autoscale deployment/my-nginx --min=1 --max=3</span><br><span class="line">deployment &quot;my-nginx&quot; autoscaled</span><br></pre></td></tr></table></figure></p>
+<p>现在你的nginx将会自动增加或减小replicas的数量。</p>
+<h2 id="就地更新resources"><a href="#就地更新resources" class="headerlink" title="就地更新resources"></a>就地更新resources</h2><p>有时需要对你的resources进行精确的、非破坏性的更新。</p>
+<h3 id="kubectl-apply"><a href="#kubectl-apply" class="headerlink" title="kubectl apply"></a>kubectl apply</h3><p>建议把配置文件成组的进行保存，这样可以保持版本和配置代码的更新同步进行。<br>可以使用kubectl apply把配置变更push到cluster中。<br>此命令将对比先前和当前push的配置文件版本，而不会覆盖更改你没有指定的属性。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl apply -f docs/user-guide/nginx/nginx-deployment.yaml</span><br><span class="line">deployment &quot;my-nginx&quot; configured</span><br></pre></td></tr></table></figure></p>
+<p><strong>注意：</strong>kubectl apply一定要加上详细注释，以确定上次调用以来的变更。当它被调用时，kubectl apply使用一个不同于先前配置、所提供的输入和当前配置3方的方法，以确定如何修改resources。</p>
+<h3 id="kubectl-edit"><a href="#kubectl-edit" class="headerlink" title="kubectl edit"></a>kubectl edit</h3><p>作为上面可代替方案，你可以使用kubecto edit来更新resources<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl edit deployment/my-nginx</span><br></pre></td></tr></table></figure></p>
+<p>这个相当于首先通过get获取resource，在编辑器里编辑，最后通过apply来更新。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get deployment my-nginx -o yaml &gt; /tmp/nginx.yaml</span><br><span class="line">$ vi /tmp/nginx.yaml</span><br><span class="line"># do some edit, and then save the file</span><br><span class="line">$ kubectl apply -f /tmp/nginx.yaml</span><br><span class="line">deployment &quot;my-nginx&quot; configured</span><br><span class="line">$ rm /tmp/nginx.yaml</span><br></pre></td></tr></table></figure></p>
+<p>这使你可以很方面的进行更新操作，注意你可以通过环境变量来指定默认编辑器(比如EDITOR或KUBE_EDITOR)。</p>
+<h3 id="kubectl-patch"><a href="#kubectl-patch" class="headerlink" title="kubectl patch"></a>kubectl patch</h3><p>假设你需要修正Deployment里某个container的images错误，一个方法是使用kubectl patch<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"># Suppose you have a Deployment with a container named &quot;nginx&quot; and its image &quot;nignx&quot; (typo), </span><br><span class="line"># use container name &quot;nginx&quot; as a key to update the image from &quot;nignx&quot; (typo) to &quot;nginx&quot;</span><br><span class="line">$ kubectl get deployment my-nginx -o yaml</span><br><span class="line"></span><br><span class="line">apiVersion: extensions/v1beta1</span><br><span class="line">kind: Deployment</span><br><span class="line">...</span><br><span class="line">spec:</span><br><span class="line">  template:</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - image: nignx</span><br><span class="line">        name: nginx</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">$ kubectl patch deployment my-nginx -p&apos;&#123;&quot;spec&quot;:&#123;&quot;template&quot;:&#123;&quot;spec&quot;:&#123;&quot;containers&quot;:[&#123;&quot;name&quot;:&quot;nginx&quot;,&quot;image&quot;:&quot;nginx&quot;&#125;]&#125;&#125;&#125;&#125;&apos;</span><br><span class="line">&quot;my-nginx&quot; patched</span><br><span class="line">$ kubectl get pod my-nginx-1jgkf -o yaml</span><br><span class="line"></span><br><span class="line">apiVersion: extensions/v1beta1</span><br><span class="line">kind: Deployment</span><br><span class="line">...</span><br><span class="line">spec:</span><br><span class="line">  template:</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - image: nginx</span><br><span class="line">        name: nginx</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
+<p>patch必须指定使用json格式。</p>
+<h2 id="不中断service更新应用"><a href="#不中断service更新应用" class="headerlink" title="不中断service更新应用"></a>不中断service更新应用</h2><p>有时你需要更新你的应用程序的image或者image tag，比如canary方式。<br>kubectl支持更新操作，分别适用于不同的情况。<br>下面将介绍如何在Deployment中创建和更新应用，如果你的应用部署在rc下，参看这里<a href="http://kubernetes.io/docs/user-guide/rolling-updates/" target="_blank" rel="noopener">方法kubectl rolling-update</a><br>当前运行nginx1.7.9<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl run my-nginx --image=nginx:1.7.9 --replicas=3</span><br><span class="line">deployment &quot;my-nginx&quot; created</span><br></pre></td></tr></table></figure></p>
+<p>需要更新到1.9.1，只需要更改字段.spec.template.spec.containers[0].image从nginx:1.7.9到nginx:1.9.1,然后运行上面介绍的命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl edit deployment/my-nginx</span><br></pre></td></tr></table></figure></p>
+<p>Deployment将在后台逐步的更新nginx应用，在更新的时候之前数量的老的replicas将被关掉，并且指定数据的新replicas将被创建。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/29/部署Kubernetes DNS - skydns/" rel="next" title="部署Kubernetes DNS - skydns">
+                <i class="fa fa-chevron-left"></i> 部署Kubernetes DNS - skydns
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/07/Kubernets监控 Heapster+InfluxDB+Grafana/" rel="prev" title="Kubernets监控 Heapster+InfluxDB+Grafana">
+                Kubernets监控 Heapster+InfluxDB+Grafana <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#组织rescource配置文件"><span class="nav-number">1.</span> <span class="nav-text">组织rescource配置文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kubectl大量操作"><span class="nav-number">2.</span> <span class="nav-text">kubectl大量操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高效使用labels"><span class="nav-number">3.</span> <span class="nav-text">高效使用labels</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Canary-deployments"><span class="nav-number">4.</span> <span class="nav-text">Canary deployments</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更新labels"><span class="nav-number">5.</span> <span class="nav-text">更新labels</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更新注释"><span class="nav-number">6.</span> <span class="nav-text">更新注释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展应用"><span class="nav-number">7.</span> <span class="nav-text">扩展应用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#就地更新resources"><span class="nav-number">8.</span> <span class="nav-text">就地更新resources</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#kubectl-apply"><span class="nav-number">8.1.</span> <span class="nav-text">kubectl apply</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#kubectl-edit"><span class="nav-number">8.2.</span> <span class="nav-text">kubectl edit</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#kubectl-patch"><span class="nav-number">8.3.</span> <span class="nav-text">kubectl patch</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#不中断service更新应用"><span class="nav-number">9.</span> <span class="nav-text">不中断service更新应用</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

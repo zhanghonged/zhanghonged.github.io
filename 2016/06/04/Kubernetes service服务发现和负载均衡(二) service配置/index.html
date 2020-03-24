@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="k8s,service,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="Service为每个cluster映射端口到一个或多个pod上。映射关系使用service上selector的一对key:value，这对值由pods上的labels提供。任何pods的lables只要匹配到service的selector，就可以通过servcie的port访问到。更多信息请查看这里：Services Overview">
+<meta name="keywords" content="k8s,service">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes service服务发现和负载均衡(二) service配置">
+<meta property="og:url" content="http://zhanghonged.github.io/2016/06/04/Kubernetes service服务发现和负载均衡(二) service配置/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="Service为每个cluster映射端口到一个或多个pod上。映射关系使用service上selector的一对key:value，这对值由pods上的labels提供。任何pods的lables只要匹配到service的selector，就可以通过servcie的port访问到。更多信息请查看这里：Services Overview">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2016-08-10T08:30:29.457Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kubernetes service服务发现和负载均衡(二) service配置">
+<meta name="twitter:description" content="Service为每个cluster映射端口到一个或多个pod上。映射关系使用service上selector的一对key:value，这对值由pods上的labels提供。任何pods的lables只要匹配到service的selector，就可以通过servcie的port访问到。更多信息请查看这里：Services Overview">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2016/06/04/Kubernetes service服务发现和负载均衡(二) service配置/">
+
+
+
+
+
+  <title>Kubernetes service服务发现和负载均衡(二) service配置 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2016/06/04/Kubernetes service服务发现和负载均衡(二) service配置/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Kubernetes service服务发现和负载均衡(二) service配置</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-06-04T12:44:59+08:00">
+                2016-06-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/" itemprop="url" rel="index">
+                    <span itemprop="name">Kubernetes</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Service为每个cluster映射端口到一个或多个pod上。<br>映射关系使用service上<strong>selector</strong>的一对key:value，这对值由pods上的<strong>labels</strong>提供。<br>任何pods的lables只要匹配到service的selector，就可以通过servcie的port访问到。<br>更多信息请查看这里：<a href="http://kubernetes.io/docs/user-guide/services/" target="_blank" rel="noopener">Services Overview</a></p>
+<a id="more"></a>
+<h2 id="创建一个service"><a href="#创建一个service" class="headerlink" title="创建一个service"></a>创建一个service</h2><p>Services的创建通过一个配置文件使用<strong>kubectl create</strong>来完成<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f FILE</span><br></pre></td></tr></table></figure></p>
+<p><strong>-f FILE</strong> 或 <strong>–filename FILE</strong> 是一个相对路径的，采用yaml或json格式service配置文件<br>service成功创建后会返回service的名称。你可以使用下面的示例配置文件来创建一个service。</p>
+<h2 id="Service配置文件"><a href="#Service配置文件" class="headerlink" title="Service配置文件"></a>Service配置文件</h2><p>创建service时，必须使用-f 指向这个配置文件，配置文件可以为YAML或者JSON格式，包括以下配置项：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;apiVersion&quot;: &quot;v1&quot;,</span><br><span class="line">  &quot;kind&quot;: &quot;Service&quot;,</span><br><span class="line">  &quot;metadata&quot;: &#123;</span><br><span class="line">    &quot;name&quot;: string</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;spec&quot;: &#123;</span><br><span class="line">    &quot;ports&quot;: [&#123;</span><br><span class="line">      &quot;port&quot;: int,</span><br><span class="line">      &quot;targetPort&quot;: int</span><br><span class="line">    &#125;],</span><br><span class="line">    &quot;selector&quot;: &#123;</span><br><span class="line">      string: string</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;type&quot;: &quot;LoadBalancer&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>配置项：</p>
+<ul>
+<li><strong>kind</strong>：固定是<strong>Service</strong></li>
+<li><strong>apiVersion</strong>：当前为<strong>v1</strong></li>
+<li><p><strong>metadata</strong>：包括以下：</p>
+<ul>
+<li><strong>name</strong>：为service分配的名称</li>
+</ul>
+</li>
+<li><p><strong>spec</strong>：包括：</p>
+<ul>
+<li><strong>ports</strong>：端口映射。<strong>port</strong>是暴露在cluster ip上的service端口，<strong>targetPort</strong>是service 端口指向的pods端口</li>
+<li><strong>selector</strong>：指向pods上定义的labes key:value 键值对</li>
+<li><strong>type</strong>：可选项，如果设置为<strong>LoadBalancer</strong>，将在你的service上建立一个负载均衡网络，生成一个外部可访问的IP地址，将外部访问指向cluster节点。</li>
+</ul>
+</li>
+</ul>
+<p>完整的service架构请看这里：<a href="http://kubernetes.io/docs/api-reference/v1/definitions/#_v1_service" target="_blank" rel="noopener">Kubernetes api reference.</a></p>
+<h2 id="示例文件"><a href="#示例文件" class="headerlink" title="示例文件"></a>示例文件</h2><p>下面的service配置文件假的你已经有了一组正在运行的pods端口为9376并且包括lables为 <strong>app=example</strong>。<br>两个文件都建立一个名称为<strong>myapp</strong>的service，使用TCP的9376端口指向包含 <strong>app=example</strong> 的labels。<br>两者不同之处是如何来访问这个service，第一个文件并没有创建一个外部负载均衡，service可以通过所有nodes节点的8765端口上来进行访问。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: myapp</span><br><span class="line">spec:</span><br><span class="line">  ports:</span><br><span class="line">    -</span><br><span class="line">      port: 8765</span><br><span class="line">      targetPort: 9376</span><br><span class="line">  selector:</span><br><span class="line">    app: example</span><br></pre></td></tr></table></figure></p>
+<p>第二个文件使用网络负载均衡生成一个单独的IP地址来把网络访问流量引人到cluster的nodes主机。配置项为：<strong>type: LoadBalancer</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: myapp</span><br><span class="line">spec:</span><br><span class="line">  ports:</span><br><span class="line">    -</span><br><span class="line">      port: 8765</span><br><span class="line">      targetPort: 9376</span><br><span class="line">  selector:</span><br><span class="line">    app: example</span><br><span class="line">  type: LoadBalancer</span><br></pre></td></tr></table></figure></p>
+<p>访问service的时候，客户端连接到这个外部IP地址，转发到集群中的一个node节点的8765端口，然后再访问pods的9736端口。<br>查看此文档的servcie配置文件来寻找外部服务地址。</p>
+<h2 id="查看service"><a href="#查看service" class="headerlink" title="查看service"></a>查看service</h2><p>列出cluster上的所有services，使用<strong>kubectl get</strong> 命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get services</span><br></pre></td></tr></table></figure></p>
+<p>执行成功会列出此cluster上的所有services：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">NAME           CLUSTER-IP       EXTERNAL-IP   PORT(S)         AGE</span><br><span class="line">dns-svc-test   10.254.200.200   &lt;none&gt;        53/UDP,53/TCP   1d</span><br><span class="line">kubernetes     10.254.0.1       &lt;none&gt;        443/TCP         3d</span><br><span class="line">myapp         10.254.49.75                   8766/TCP        3s</span><br></pre></td></tr></table></figure></p>
+<p>查找一个指定servcies的详细信息，使用<strong>kubectl describe</strong> 命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl describe service NAME</span><br></pre></td></tr></table></figure></p>
+<p>返回如下详细信息：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Name:			myapp</span><br><span class="line">Namespace:		default</span><br><span class="line">Labels:			&amp;lt;none&amp;gt;</span><br><span class="line">Selector:		app=example</span><br><span class="line">Type:			LoadBalancer</span><br><span class="line">IP:			10.254.49.75</span><br><span class="line">Port:			&amp;lt;unset&amp;gt;	8766/TCP</span><br><span class="line">NodePort:		&amp;lt;unset&amp;gt;	30818/TCP</span><br><span class="line">Endpoints:		&amp;lt;none&amp;gt;</span><br><span class="line">Session Affinity:	None</span><br><span class="line">No events.</span><br></pre></td></tr></table></figure></p>
+<p>当需要返回信息不包括事件详细信息时，使用<strong>get</strong>替换<strong>describe</strong>。</p>
+<h2 id="删除service"><a href="#删除service" class="headerlink" title="删除service"></a>删除service</h2><p>删除service使用<strong>kubectl delete</strong>命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl delete service NAME</span><br></pre></td></tr></table></figure></p>
+<p>成功删除后返回删除的service名称。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/k8s/" rel="tag"># k8s</a>
+          
+            <a href="/tags/service/" rel="tag"># service</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/03/Kubernetes service服务发现和负载均衡(一) 通过service访问应用/" rel="next" title="Kubernetes service服务发现和负载均衡(一) 通过service访问应用">
+                <i class="fa fa-chevron-left"></i> Kubernetes service服务发现和负载均衡(一) 通过service访问应用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/06/04/Kubernetes service服务发现和负载均衡(三) 创建External Load Balancer/" rel="prev" title="Kubernetes service服务发现和负载均衡(三) 创建External Load Balancer">
+                Kubernetes service服务发现和负载均衡(三) 创建External Load Balancer <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建一个service"><span class="nav-number">1.</span> <span class="nav-text">创建一个service</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Service配置文件"><span class="nav-number">2.</span> <span class="nav-text">Service配置文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#示例文件"><span class="nav-number">3.</span> <span class="nav-text">示例文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看service"><span class="nav-number">4.</span> <span class="nav-text">查看service</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除service"><span class="nav-number">5.</span> <span class="nav-text">删除service</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="python,Django,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="渲染HttpResponse是将服务器端的数据发送到客户端浏览器。">
+<meta name="keywords" content="python,Django">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Django静态文件和url控制系统">
+<meta property="og:url" content="http://zhanghonged.github.io/2018/01/05/Django静态文件和url控制系统/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="渲染HttpResponse是将服务器端的数据发送到客户端浏览器。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-01-06T07:40:59.877Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Django静态文件和url控制系统">
+<meta name="twitter:description" content="渲染HttpResponse是将服务器端的数据发送到客户端浏览器。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2018/01/05/Django静态文件和url控制系统/">
+
+
+
+
+
+  <title>Django静态文件和url控制系统 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2018/01/05/Django静态文件和url控制系统/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Django静态文件和url控制系统</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-05T16:15:51+08:00">
+                2018-01-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Django/" itemprop="url" rel="index">
+                    <span itemprop="name">Django</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="渲染"><a href="#渲染" class="headerlink" title="渲染"></a>渲染</h2><p><span style="font-size:20px;font-weight:bold;">HttpResponse</span><br>是将服务器端的数据发送到客户端浏览器。<br><a id="more"></a><br><span style="font-size:20px;font-weight:bold;">render</span><br>结合一个给定的模板和一个给定的上下文字典，并返回一个渲染后的 <strong>HttpResponse</strong> 对象，最终解析为HTML语言。<br>通俗的讲就是把 <strong>context</strong> 的内容, 加载进 <strong>templates</strong> 中定义的文件, 并通过浏览器渲染呈现。<br><strong>用法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">render(request, template_name, context=None, content_type=None, status=None, using=None)</span><br></pre></td></tr></table></figure></p>
+<p>参数讲解:</p>
+<ul>
+<li>request: 固定参数。</li>
+<li>template_name: templates 中定义的文件, 要注意路径名。</li>
+<li>context: 要传入文件中用于渲染呈现的数据, 默认是字典格式</li>
+<li>content_type: 生成的文档要使用的MIME 类型。默认为DEFAULT_CONTENT_TYPE 设置的值。</li>
+<li>status: http的响应代码,默认是200.</li>
+<li>using: 用于加载模板使用的模板引擎的名称。</li>
+</ul>
+<p>通常加前3个参数即可。</p>
+<p><span style="font-size:20px;font-weight:bold;">render_to_response</span><br>和 <strong>render</strong> 的作用和使用方法基本相同，区别是 <strong>render_to_response</strong> 的参数没有 <strong>request</strong> ，后面的参数和 <strong>render</strong>相同。<br><span style="color:red;">由于参数中没有 <strong>request</strong>，造成了一个最直接的问题：<br>能否在模板中使用request的属性，例如session等。<br>所以，如果你要在模板中使用request的属性，请务必使用render。否则模板渲染时是得不到相应的request变量值的。</span></p>
+<h2 id="static配置"><a href="#static配置" class="headerlink" title="static配置"></a>static配置</h2><p>采用static方式处理静态文件，比如网站的css js images等。</p>
+<h3 id="1、别名设置方式"><a href="#1、别名设置方式" class="headerlink" title="1、别名设置方式"></a>1、别名设置方式</h3><p><strong>配置settings.py</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">STATIC_URL = &apos;/static/&apos; #静态目录的别名，这个是默认配置</span><br><span class="line"># 配置静态文件存放目录，下面是新增的配置</span><br><span class="line">STATICFILES_DIRS = (</span><br><span class="line">    os.path.join(BASE_DIR,&apos;static&apos;), # 实际路径名</span><br><span class="line">)</span><br></pre></td></tr></table></figure></p>
+<p><strong>在 templates 模板文件中调用静态文件</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;meta charset=&quot;UTF-8&quot;&gt;</span><br><span class="line">    &lt;title&gt;渲染&lt;/title&gt;</span><br><span class="line">	&lt;!--此处的static就是静态目录的别名--&gt;</span><br><span class="line">    &lt;script src=&quot;/static/jquery-3.1.1.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">    &lt;script&gt;</span><br><span class="line">        $(function () &#123;</span><br><span class="line">            $(&apos;h1&apos;).css(&apos;color&apos;,&apos;green&apos;);</span><br><span class="line">        &#125;)</span><br><span class="line">    &lt;/script&gt;</span><br><span class="line">&lt;/head&gt;</span><br></pre></td></tr></table></figure></p>
+<p><span style="color:blue;"><strong>延伸：</strong><br>1、在配置存放静态文件目录时定义的目录名可以自定义，只要位置正确且真实存在就行，和静态目录别名无关，模板调用时只需知道别名即可。<br>2、如果将 <strong>settings.py</strong> 中静态目录的默认别名 <strong>static</strong> 修改为其他，则在模板调用时要相应修改，和具体存放静态文件的目录名无关。</span></p>
+<h3 id="2、模板调用方式"><a href="#2、模板调用方式" class="headerlink" title="2、模板调用方式"></a>2、模板调用方式</h3><p><strong>模板调用示例</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&lt;html lang=&quot;en&quot;&gt;</span><br><span class="line">&#123;% load staticfiles %&#125;   # 引入staticfiles</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;meta charset=&quot;UTF-8&quot;&gt;</span><br><span class="line">    &lt;title&gt;渲染&lt;/title&gt;</span><br><span class="line">    &lt;script src=&quot;&#123;% static &apos;jquery-3.1.1.js&apos; %&#125;&quot;&gt;&lt;/script&gt;  # 采用django方式调用</span><br><span class="line">    &lt;script&gt;</span><br><span class="line">        $(function () &#123;</span><br><span class="line">            $(&apos;h1&apos;).css(&apos;color&apos;,&apos;pink&apos;);</span><br><span class="line">        &#125;)</span><br><span class="line">    &lt;/script&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;h1&gt;时间：&#123;&#123; t &#125;&#125;&lt;/h1&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure></p>
+<p><strong>settings.py</strong>里面配置不变。</p>
+<h3 id="3、不同app调用方式"><a href="#3、不同app调用方式" class="headerlink" title="3、不同app调用方式"></a>3、不同app调用方式</h3><p>如果项目内有多个app，可以让每个app调用自己目录下的静态文件，方便管理。<br>settings.py配置如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">STATICFILES_DIRS = (</span><br><span class="line">    os.path.join(BASE_DIR,&quot;app01&quot;,&quot;static&quot;),</span><br><span class="line">    os.path.join(BASE_DIR,&quot;app02&quot;,&quot;static&quot;),</span><br><span class="line">)</span><br></pre></td></tr></table></figure></p>
+<p>然后在app01和app02下面分别建立static目录，每个目录里存放自己的静态文件。<br><span style="color:red;font-weight:bold">这样操作只是做到了物理上的划分，逻辑上还是一个。不同app还是调用共享一个资源池。</span></p>
+<h2 id="URL匹配"><a href="#URL匹配" class="headerlink" title="URL匹配"></a>URL匹配</h2><p><span style="color:red;">url匹配规则：从上至下，以此匹配，如果匹配成功就不继续往下匹配了，如果匹配失败，继续匹配，直到匹配成功为止，如果没有匹配的对应规则，则报错。</span></p>
+<h3 id="1、完全匹配"><a href="#1、完全匹配" class="headerlink" title="1、完全匹配"></a>1、完全匹配</h3><p><strong>urls.py</strong>：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">url(r&apos;^date/&apos;,views.showdate),</span><br></pre></td></tr></table></figure></p>
+<h3 id="2、无命名分组"><a href="#2、无命名分组" class="headerlink" title="2、无命名分组"></a>2、无命名分组</h3><p>在<strong>urls.py</strong>中采用正则无命名分组写法，此分组将传值到视图函数的形参中，按顺序传递。<br><strong>urls.py</strong>：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">url(r&apos;^(\d&#123;4&#125;)/(\d&#123;2&#125;)&apos;,views.group)</span><br></pre></td></tr></table></figure></p>
+<p><strong>views.py</strong>：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">def group(request,y,m):</span><br><span class="line">    return HttpResponse(str(y) + &apos;年&apos; + str(m) + &apos;月&apos;)</span><br></pre></td></tr></table></figure></p>
+<h3 id="3、命名分组"><a href="#3、命名分组" class="headerlink" title="3、命名分组"></a>3、命名分组</h3><p>在<strong>urls.py</strong>中采用正则命名分组写法，此分组将有一个自定义别名，在视图函数中以形参方式调用，形参名就是分组别名。<br><strong>urls.py</strong>：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">url(r&apos;^name/(?P&lt;year&gt;\d&#123;4&#125;)/(?P&lt;month&gt;\d&#123;2&#125;)&apos;,views.year),</span><br></pre></td></tr></table></figure></p>
+<p><strong>views.py</strong>：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">def year(request,month,year):</span><br><span class="line">    return HttpResponse(str(year) + &apos;年&apos; + str(month) + &apos;月&apos;)</span><br></pre></td></tr></table></figure></p>
+<h2 id="URL控制系统"><a href="#URL控制系统" class="headerlink" title="URL控制系统"></a>URL控制系统</h2><h3 id="1、url别名"><a href="#1、url别名" class="headerlink" title="1、url别名"></a>1、url别名</h3><p><strong>urls.py配置</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">url(r&apos;^date/&apos;,views.showdate),</span><br><span class="line">url(r&apos;^add/$&apos;,views.add,name=&apos;myadd&apos;),</span><br></pre></td></tr></table></figure></p>
+<p>这里的 <strong>name=’add’</strong> 是用来干什么的呢？<br>这个 <strong>name</strong> 可以用于在 <span style="text-shadow:2px 2px 3px #DF2B04;">templates, models, views ……</span>中得到对应的网址，相当于“给网址取了个名字”，只要这个名字不变，网址变了也能通过名字获取到。<br><strong>views.py配置</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">def showdate(request):</span><br><span class="line">    t = time.ctime()</span><br><span class="line">    return render(request,&apos;index.html&apos;,&#123;&apos;t&apos;:t&#125;)</span><br><span class="line"></span><br><span class="line">def add(request):</span><br><span class="line">    s = &apos;我是add&apos;</span><br><span class="line">    return render(request,&apos;add.html&apos;,locals())</span><br></pre></td></tr></table></figure></p>
+<p><strong>模板html配置</strong><br>index.html<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;h1&gt;时间：&#123;&#123; t &#125;&#125;&lt;/h1&gt;</span><br><span class="line">    &lt;hr&gt;</span><br><span class="line">    &lt;h2&gt;&lt;a href=&quot;&#123;% url &apos;myadd&apos; %&#125;&quot;&gt;计算&lt;/a&gt; &lt;/h2&gt;</span><br><span class="line">&lt;/body&gt;</span><br></pre></td></tr></table></figure></p>
+<p>add.html<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;h1&gt;&#123;&#123; s &#125;&#125;&lt;/h1&gt;</span><br><span class="line">&lt;/body&gt;</span><br></pre></td></tr></table></figure></p>
+<p>这样就可以实现在 <strong>index.html</strong> 通过url别名调用 <strong>add</strong> 页面。</p>
+<h3 id="2、不同app内的定义url"><a href="#2、不同app内的定义url" class="headerlink" title="2、不同app内的定义url"></a>2、不同app内的定义url</h3><p>此方式可实现在每个app里面定义自己的 <strong>url</strong>，方便管理。<br><strong>项目urls.py配置：</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">urlpatterns = [</span><br><span class="line">    url(r&apos;^admin/&apos;, include(admin.site.urls)),</span><br><span class="line">    url(r&apos;^app01/&apos;,include(&apos;app01.urls&apos;)),             # 增加app01</span><br><span class="line">    url(r&apos;^app02/&apos;,include(&apos;app02.urls&apos;)),             # 增加app02</span><br><span class="line">]</span><br></pre></td></tr></table></figure></p>
+<p><strong>在app里面新建 </strong>urls.py<strong> 文件：</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">from django.conf.urls import url,include</span><br><span class="line">from app01 import views</span><br><span class="line"></span><br><span class="line">urlpatterns = [</span><br><span class="line">    url(r&apos;^time/&apos;,views.showtime,name=&apos;time&apos;),</span><br><span class="line">    url(r&apos;^date/&apos;,views.showdate),</span><br><span class="line">    url(r&apos;^(\d&#123;4&#125;)/(\d&#123;2&#125;)$&apos;,views.group),</span><br><span class="line">    url(r&apos;^name/(?P&lt;year&gt;\d&#123;4&#125;)/(?P&lt;month&gt;\d&#123;2&#125;)&apos;,views.year),</span><br><span class="line">    url(r&apos;^add/$&apos;,views.add,name=&apos;myadd&apos;),</span><br><span class="line">]</span><br></pre></td></tr></table></figure></p>
+<p>在浏览器访问的时候，通过项目 <strong>urls.py</strong> 调度到应用各自的 <strong>url.py</strong> 来完成。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/Django/" rel="tag"># Django</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/05/Django初体验/" rel="next" title="Django初体验">
+                <i class="fa fa-chevron-left"></i> Django初体验
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/06/Django之HttpRequest和HttpResponse/" rel="prev" title="Django之HttpRequest和HttpResponse">
+                Django之HttpRequest和HttpResponse <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#渲染"><span class="nav-number">1.</span> <span class="nav-text">渲染</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#static配置"><span class="nav-number">2.</span> <span class="nav-text">static配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、别名设置方式"><span class="nav-number">2.1.</span> <span class="nav-text">1、别名设置方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、模板调用方式"><span class="nav-number">2.2.</span> <span class="nav-text">2、模板调用方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、不同app调用方式"><span class="nav-number">2.3.</span> <span class="nav-text">3、不同app调用方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#URL匹配"><span class="nav-number">3.</span> <span class="nav-text">URL匹配</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、完全匹配"><span class="nav-number">3.1.</span> <span class="nav-text">1、完全匹配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、无命名分组"><span class="nav-number">3.2.</span> <span class="nav-text">2、无命名分组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、命名分组"><span class="nav-number">3.3.</span> <span class="nav-text">3、命名分组</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#URL控制系统"><span class="nav-number">4.</span> <span class="nav-text">URL控制系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、url别名"><span class="nav-number">4.1.</span> <span class="nav-text">1、url别名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、不同app内的定义url"><span class="nav-number">4.2.</span> <span class="nav-text">2、不同app内的定义url</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

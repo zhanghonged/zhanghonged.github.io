@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="python,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="进程是由若干线程组成的，一个进程至少有一个线程。由于线程是操作系统直接支持的执行单元，因此，高级语言通常都内置多线程的支持，Python也不例外，并且Python的线程是真正的Posix Thread，而不是模拟出来的线程。">
+<meta name="keywords" content="python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python基础-多线程">
+<meta property="og:url" content="http://zhanghonged.github.io/2017/11/28/Python基础-多线程/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="进程是由若干线程组成的，一个进程至少有一个线程。由于线程是操作系统直接支持的执行单元，因此，高级语言通常都内置多线程的支持，Python也不例外，并且Python的线程是真正的Posix Thread，而不是模拟出来的线程。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-11-29T09:14:54.333Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python基础-多线程">
+<meta name="twitter:description" content="进程是由若干线程组成的，一个进程至少有一个线程。由于线程是操作系统直接支持的执行单元，因此，高级语言通常都内置多线程的支持，Python也不例外，并且Python的线程是真正的Posix Thread，而不是模拟出来的线程。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2017/11/28/Python基础-多线程/">
+
+
+
+
+
+  <title>Python基础-多线程 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2017/11/28/Python基础-多线程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Python基础-多线程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-28T15:28:49+08:00">
+                2017-11-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python/" itemprop="url" rel="index">
+                    <span itemprop="name">python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>进程是由若干线程组成的，一个进程至少有一个线程。<br>由于线程是操作系统直接支持的执行单元，因此，高级语言通常都内置多线程的支持，Python也不例外，并且Python的线程是真正的Posix Thread，而不是模拟出来的线程。<br><a id="more"></a><br>Python标准库提供两个模块<strong>thread</strong>和<strong>threading</strong>：<br>&emsp;<strong>thread模块:</strong> 允许程序员创建和管理线程，它提供了基本的线程和锁的支持。<br>&emsp;<strong>threading模块:</strong> 允许程序员创建和管理线程，它提供了更高级别，更强的线程管理的功能。</p>
+<p><strong>避免使用thread模块</strong><br>主要原因是<strong>thread</strong>对你的进程什么时候应该结束完全没有控制，当主线程结束时，所有的线程都会被强制结束掉，没有警告也不会有正常的清除工作。而<strong>threading</strong>模块能确保重要的子线程退出后进程才退出。</p>
+<p>为了你更好的理解线程，我们还是会对thread进行介绍。</p>
+<h2 id="thread模块"><a href="#thread模块" class="headerlink" title="thread模块"></a>thread模块</h2><p>常用的thread模块函数</p>
+<table>
+<thead>
+<tr>
+<th>模块名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>start_new_thread(function, args kwargs=None)</td>
+<td>产生一个新线程，在新线程中用指定的参数和可选的kwargs来调用该函数</td>
+</tr>
+<tr>
+<td>allocate_lock()</td>
+<td>分配一个LockType类型的锁对象</td>
+</tr>
+<tr>
+<td>exit()</td>
+<td>让线程退出</td>
+</tr>
+</tbody>
+</table>
+<p>LockType类型锁对象方法</p>
+<table>
+<thead>
+<tr>
+<th>类型锁对象方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>acquire(wait=None)</td>
+<td>尝试获取锁对象</td>
+</tr>
+<tr>
+<td>locked()</td>
+<td>如果获取了锁对象返回True，否则返回False</td>
+</tr>
+<tr>
+<td>release()</td>
+<td>释放锁</td>
+</tr>
+</tbody>
+</table>
+<p><strong>start_new_thread()</strong>函数是thread模块的一个关键函数，它的语法和内建的apply()函数一样，其参数为：函数，函数的参数以及可选的关键字的参数。<br>不同的是，函数不是在主线程里运行，而是产生一个新的线程来运行这个函数。<br>代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">import time</span><br><span class="line">import thread</span><br><span class="line">def student():</span><br><span class="line">    print &apos;Student start at:%s&apos;%time.strftime(&quot;%Y-%m-%d %H:%M:%S&quot;)</span><br><span class="line">    time.sleep(4)</span><br><span class="line">    print &apos;Student stop at:%s&apos;%time.strftime(&quot;%Y-%m-%d %H:%M:%S&quot;)</span><br><span class="line">def teacher():</span><br><span class="line">    print &apos;Teacher start at:%s&apos;%time.strftime(&quot;%Y-%m-%d %H:%M:%S&quot;)</span><br><span class="line">    time.sleep(2)</span><br><span class="line">    print &apos;Teacher stop at:%s&apos;%time.strftime(&quot;%Y-%m-%d %H:%M:%S&quot;)</span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    thread.start_new_thread(student,())</span><br><span class="line">    thread.start_new_thread(teacher,())</span><br><span class="line">    time.sleep(6)</span><br><span class="line">    print &apos;All down at:%s&apos;%time.strftime(&quot;%Y-%m-%d %H:%M:%S&quot;)</span><br><span class="line">	</span><br><span class="line">##result</span><br><span class="line">Student start at:2017-11-28 18:00:20</span><br><span class="line">Teacher start at:2017-11-28 18:00:20</span><br><span class="line">Teacher stop at:2017-11-28 18:00:22</span><br><span class="line">Student stop at:2017-11-28 18:00:24</span><br><span class="line">All down at:2017-11-28 18:00:26</span><br></pre></td></tr></table></figure></p>
+<p>解释：</p>
+<blockquote>
+<p>&emsp;使用 <strong>thread</strong> 模块提供简单的额多线程机制。student和teacher并发地被执行(短的那个先结束)，总的运行时间为最慢的那个线程的运行时间，而不是所有的线程的运行时间之和。<br><strong>start_new_thread()</strong>要求一定要有前两个参数，即使运行的函数不要参数，也要传一个空的元组。<br>同时程序主函数中加了个<strong>sleep(6)</strong>，为什么要加这一句话呢？<br>如果我们没有让主线程停下来，那主线程就会运行下一条语句，显示“All done”，然后就关闭运行着student和teacher的两个线程退出了。<br>在这里我们使用sleep(6)作为同步机制，让主线程停下来等所有子线程结束后再关闭。设置6秒，两个线程一个4秒(20-24)，一个2秒(20-22)，在主线程等待6秒(20-26)后应该已经结束了。</p>
+</blockquote>
+<p><strong>thread</strong>模块的加锁这里就不在说明了，最后再强调下，<strong>thread</strong>模块仅仅了解就行，你应该使用更高级别的<strong>threading</strong>等模块。</p>
+<h2 id="threading模块"><a href="#threading模块" class="headerlink" title="threading模块"></a>threading模块</h2><p><strong>threading</strong>模块不仅提供了 <strong>Thread</strong> 类，还提供了各种非常好用的同步机制。如下表列出了 <strong>threading</strong> 模块里所有的对象。</p>
+<table>
+<thead>
+<tr>
+<th>threading模块对象</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Thread</td>
+<td>表示一个线程的执行的对象</td>
+</tr>
+<tr>
+<td>Lock</td>
+<td>锁原语对象(和thread模块里的锁对象相同)</td>
+</tr>
+<tr>
+<td>RLock</td>
+<td>可重入锁对象。使单线程可以再次获得已经获得了的锁(递归锁定)</td>
+</tr>
+<tr>
+<td>Condition</td>
+<td>条件变量对象能让一个线程停下来，等待其他线程满足了某个“条件”。如状态的改变或值的改变</td>
+</tr>
+<tr>
+<td>Event</td>
+<td>通用的条件变量。多个线程可以等待某个时间的发生，在事件发生后，所有的线程都被激活</td>
+</tr>
+<tr>
+<td>Semaphore</td>
+<td>为等待锁的线程提供一个类似“等候室”的结构</td>
+</tr>
+<tr>
+<td>BoundedSemaphore</td>
+<td>与Semaphore类似，只是它不允许超过初始值</td>
+</tr>
+<tr>
+<td>Timer</td>
+<td>与thread类似，只是它要等待一段时间后才开始运行</td>
+</tr>
+</tbody>
+</table>
+<h3 id="守护线程"><a href="#守护线程" class="headerlink" title="守护线程"></a>守护线程</h3><p>&emsp;其中 <strong>thread</strong> 模块需要避免的一个原因是：它不支持守护线程的概念。当主线程退出时，所有的子线程不论它们是否还在工作，都会被强行退出。有时我们并不期望这种行为，这就引入了守护线程的概念。<br><span style="color:red;background:yellow;"><strong>Threading</strong>模块支持守护线程，如果你设定一个线程为守护线程，就表示你在说这个线程是不重要的，在进程退出时，不用等待这个线程退出。</span><br><span style="color:red;background:blue;font-size:150%">守护线程会在主线程运行完毕后就被销毁。</span><br><span style="color:red">但需要强调的是：运行完毕并非终止运行。<br>对主线程来说，运行完毕指的是主线程所在的进程内所有非守护线程统统运行完毕，主线程才算运行完毕。</span><br>详细来说：主线程在其他非守护线程运行完毕后才算运行完毕（守护线程在此时就被回收）。因为主线程的结束意味着进程的结束，进程整体的资源都将被回收，而进程必须保证非守护线程都运行完毕后才能结束。<br>&emsp;如果你的主线程要退出的时候，不需要等待那些子线程完成，那就设定这些线程的 <strong>daemon属性</strong>。即，线程开始(调用thread.start())之前，调用 <strong>setDaemon()</strong> 函数设定线程的daemon标志(thread.setDaemon(True))就表示这个线程“不重要”。<br>如果你想要等待子线程完成再退出，那就什么都不用做，或者显示地调用 <strong>thread.setDaemon(False)</strong> 以保证其daemon标志位False。你可以调用 <strong>thread.isDaemon()</strong> 函数来判断其daemon标志的值。<br><span style="color:red;">新的子线程会继承其父线程的daemon标志，整个Python会在所有的非守护线程退出后才会结束，即进程中没有非守护线程存在的时候才结束。</span></p>
+<h3 id="threading-Thread类"><a href="#threading-Thread类" class="headerlink" title="threading.Thread类"></a>threading.Thread类</h3><p><strong>Thread</strong> 是 <strong>threading</strong> 模块的主要类，主要函数如下：</p>
+<table>
+<thead>
+<tr>
+<th>Thread类的函数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>start()</td>
+<td>开始线程的执行</td>
+</tr>
+<tr>
+<td>run()</td>
+<td>定义线程的功能的函数(一般会被子类重写)</td>
+</tr>
+<tr>
+<td>join(timeout=None)</td>
+<td>程序挂起，知道线程结束；如果给定了timeout,则最多阻塞timeout秒</td>
+</tr>
+<tr>
+<td>getName()</td>
+<td>返回线程名字</td>
+</tr>
+<tr>
+<td>setName(name)</td>
+<td>设置线程名字</td>
+</tr>
+<tr>
+<td>isAlive()</td>
+<td>布尔标志，表示这个线程是否还在运行中</td>
+</tr>
+<tr>
+<td>isDaemon()</td>
+<td>返回线程的daemon标志</td>
+</tr>
+<tr>
+<td>setDaemon(daemonic)</td>
+<td>把线程的daemon标志设为daemonic(一定要在调用start()函数前调用)，True为设置为守护线程，False为非守护线程</td>
+</tr>
+</tbody>
+</table>
+<p>使用 <strong>Thread</strong> 类可以用多种方法来创建线程。现在介绍三种方法，可根据自己喜好来使用(通常选择最后一个)：<br>1、创建一个 <strong>Thread</strong> 实例，传递给它一个函数。<br>2、创建一个 <strong>Thread</strong> 实例，传递给它一个可调用的类对象。<br>3、从 <strong>Thread</strong> 派生出一个子类，创建一个这个子类的实例。</p>
+<h3 id="创建Thread实例传递函数"><a href="#创建Thread实例传递函数" class="headerlink" title="创建Thread实例传递函数"></a>创建Thread实例传递函数</h3><p>在实例化 <strong>Thread</strong> 对象时，把函数<strong>(target)</strong>和参数<strong>(args)</strong>都传进去，得到返回的 <strong>Thread</strong> 实例。<br>调用 <strong>start()</strong> 方法去开启线程。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">import time,threading</span><br><span class="line">loops = [2,4]</span><br><span class="line">def loop(name,sec):</span><br><span class="line">    print  &apos;%s start at:%s&apos;%(name,time.strftime(&quot;%Y-%m-%d %H:%M:%S&quot;))</span><br><span class="line">    time.sleep(sec)</span><br><span class="line">    print &apos;%s stop at:%s&apos;%(name,time.strftime(&quot;%Y-%m-%d %H:%M:%S&quot;))</span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    threads = []</span><br><span class="line">    names = [&apos;student&apos;,&apos;teacher&apos;]</span><br><span class="line">    for i in range(len(names)):</span><br><span class="line">        t = threading.Thread(target = loop,args = (names[i],loops[i]))</span><br><span class="line">        threads.append(t)</span><br><span class="line">    for i in range(len(names)):</span><br><span class="line">        threads[i].start()</span><br><span class="line">    for i in range(len(names)):</span><br><span class="line">        threads[i].join()</span><br><span class="line">    print &apos;All end at:%s&apos;%time.strftime(&quot;%Y-%m-%d %H:%M:%S&quot;)</span><br></pre></td></tr></table></figure></p>
+<p>运行结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">student start at:2017-11-29 14:33:03</span><br><span class="line">teacher start at:2017-11-29 14:33:03</span><br><span class="line">student stop at:2017-11-29 14:33:05</span><br><span class="line">teacher stop at:2017-11-29 14:33:07</span><br><span class="line">All end at:2017-11-29 14:33:07</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>&emsp;student和teacher并行开始执行，student共执行2秒先结束；teacher共执行4秒后结束，总共执行时间为4秒。<br>所有的线程都创建之后，再一起调用 <strong>start()</strong> 函数启动线程，而不是创建一个启动一个。并简单地对每个线程调用 <strong>join()</strong> 函数。<br><strong>threading</strong>模块的 <strong>Thread</strong> 类有一个 <strong>join()</strong> 函数，作用是让主线程等待调用<strong>join()</strong> 方法的线程的结束。<br><span style="color:red;">join()会等到线程结束，或者在给了timeout参数的时候，等到超时为止。</span><br><strong>join()</strong>的另一个比较重要的方法是它<strong>可以完全不用调用</strong>。一旦线程启动后，就会一直运行，直到线程的函数结束，退出为止。<br>如果你的主线程还有其他的事情要做(如处理或等待其他的客户请求)，而且不必在等待线程结束后才能执行，那就不用调用 <strong>join()</strong>，只有在你需要等待线程结束的时候才要调用<strong>join()</strong>。</p>
+</blockquote>
+<p>如果在上面示例代码中去掉 <strong>join()</strong> 方法的调用，结果将如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">student start at:2017-11-29 14:45:34</span><br><span class="line">teacher start at:2017-11-29 14:45:34</span><br><span class="line"> All end at:2017-11-29 14:45:34</span><br><span class="line">student stop at:2017-11-29 14:45:36</span><br><span class="line">teacher stop at:2017-11-29 14:45:38</span><br></pre></td></tr></table></figure></p>
+<p>主线程并不会等待students和teacher执行结束后，再调用最后一句print语句，而是继续执行这个print语句。</p>
+<h3 id="创建Thread实例传递可调用类对象"><a href="#创建Thread实例传递可调用类对象" class="headerlink" title="创建Thread实例传递可调用类对象"></a>创建Thread实例传递可调用类对象</h3><p>传递一个可调用的类实例供线程启动的时候去执行，相对于传递方法更灵活一些。<br>在此之前说明下这两个内置方法的作用:<br>如果在创建class的时候写了 <strong>__call__()</strong> 方法， 那么该class实例化出实例后， 实例名()就是调用 <strong>__call__()</strong> 方法。<br>使用 <strong>__call__()</strong> 将一个类实例变为可调用对象<br><strong>apply(func [, args [, kwargs ]])</strong> 函数：用于当函数参数已经存在于一个元组或字典中时，间接地调用函数。args是一个包含将要提供给函数的按位置传递的参数的元组。如果省略了args，任何参数都不会被传递，kwargs是一个包含关键字参数的字典。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">loops = [2,4]</span><br><span class="line">class Threadfunc(object):</span><br><span class="line">    def __init__(self,func,args):</span><br><span class="line">        self.func = func</span><br><span class="line">        self.args = args</span><br><span class="line">    def __call__(self):</span><br><span class="line">        apply(self.func,self.args)</span><br><span class="line">def loop(name,sec):</span><br><span class="line">    print  &apos;%s start at:%s&apos;%(name,time.strftime(&quot;%Y-%m-%d %H:%M:%S&quot;))</span><br><span class="line">    time.sleep(sec)</span><br><span class="line">    print &apos;%s stop at:%s&apos;%(name,time.strftime(&quot;%Y-%m-%d %H:%M:%S&quot;))</span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    threads = []</span><br><span class="line">    names = [&apos;student&apos;,&apos;teacher&apos;]</span><br><span class="line">    for i in range(len(names)):</span><br><span class="line">        t = threading.Thread(target = Threadfunc(loop,(names[i], loops[i])))</span><br><span class="line">        threads.append(t)</span><br><span class="line">    for i in range(len(names)):</span><br><span class="line">        threads[i].start()</span><br><span class="line">    for i in range(len(names)):</span><br><span class="line">        threads[i].join()</span><br><span class="line">    print &apos;All end at:%s&apos;%time.strftime(&quot;%Y-%m-%d %H:%M:%S&quot;)</span><br></pre></td></tr></table></figure>
+<p>运行结果和上面传递函数的是一样的。<br>创建 <strong>Thread</strong> 对象时会实例化一个可调用类 <strong>ThreadFunc</strong> 的类对象。这个类保存了函数本身和函数的参数。<br>构造器__init__()函数：初始化赋值工作；<br>特殊函数__call__()：由于我们已经有要用的参数，所以就不用再传到 <strong>Thread()</strong> 构造器中；由于我们有一个参数的元组，这时要在代码中使用 <strong>apply()</strong> 函数。</p>
+<h3 id="创建Thread派生子类的实例"><a href="#创建Thread派生子类的实例" class="headerlink" title="创建Thread派生子类的实例"></a>创建Thread派生子类的实例</h3><p>这个子类化 <strong>Thread</strong> 类的方法主要注意下面2点：<br>1、MyThread子类的构造器一定要先调用基类的构造器。<br>2、之前特殊函数__call__()在子类中，名字要改为run()。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">loops = [2,4]</span><br><span class="line">class MyThread(threading.Thread):</span><br><span class="line">    def __init__(self,func,args):</span><br><span class="line">        threading.Thread.__init__(self)</span><br><span class="line">        self.func = func</span><br><span class="line">        self.args = args</span><br><span class="line">    def run(self):</span><br><span class="line">        apply(self.func,self.args)</span><br><span class="line">def loop(name,sec):</span><br><span class="line">    print  &apos;%s start at:%s&apos;%(name,time.strftime(&quot;%Y-%m-%d %H:%M:%S&quot;))</span><br><span class="line">    time.sleep(sec)</span><br><span class="line">    print &apos;%s stop at:%s&apos;%(name,time.strftime(&quot;%Y-%m-%d %H:%M:%S&quot;))</span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    threads = []</span><br><span class="line">    names = [&apos;student&apos;,&apos;teacher&apos;]</span><br><span class="line">    for i in range(len(names)):</span><br><span class="line">        t = MyThread(loop,(names[i], loops[i]))</span><br><span class="line">        threads.append(t)</span><br><span class="line">    for i in range(len(names)):</span><br><span class="line">        threads[i].start()</span><br><span class="line">    for i in range(len(names)):</span><br><span class="line">        threads[i].join()</span><br><span class="line">    print &apos;All end at:%s&apos;%time.strftime(&quot;%Y-%m-%d %H:%M:%S&quot;)</span><br></pre></td></tr></table></figure></p>
+<h3 id="设置守护线程"><a href="#设置守护线程" class="headerlink" title="设置守护线程"></a>设置守护线程</h3><p>通过调用 <strong>setDaemon()</strong> 来设置为守护线程，守护线程的概念前面已经介绍过，下面来看实例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">loops = [2,4]</span><br><span class="line">class MyThread(threading.Thread):</span><br><span class="line">    def __init__(self,n,sec):</span><br><span class="line">        threading.Thread.__init__(self)</span><br><span class="line">        self.n = n</span><br><span class="line">        self.sec = sec</span><br><span class="line">    def run(self):</span><br><span class="line">        print  &apos;%s start at:%s&apos; % (self.n, time.strftime(&quot;%Y-%m-%d %H:%M:%S&quot;))</span><br><span class="line">        time.sleep(self.sec)</span><br><span class="line">        print &apos;%s stop at:%s&apos; % (self.n, time.strftime(&quot;%Y-%m-%d %H:%M:%S&quot;))</span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    threads = []</span><br><span class="line">    names = [&apos;student&apos;,&apos;teacher&apos;]</span><br><span class="line"></span><br><span class="line">    for i in range(len(names)):</span><br><span class="line">        t = MyThread(names[i],loops[i])</span><br><span class="line">        threads.append(t)</span><br><span class="line">    for i in range(len(names)):</span><br><span class="line">        #设置子线程为守护线程</span><br><span class="line">        threads[i].setDaemon(True)</span><br><span class="line">        threads[i].start()</span><br><span class="line">    #调用守护线程的join()方法，可等待子线程结束</span><br><span class="line">    # for i in range(len(names)):</span><br><span class="line">    #     threads[i].join()</span><br><span class="line">    print &apos;All end at:%s&apos;%time.strftime(&quot;%Y-%m-%d %H:%M:%S&quot;)</span><br></pre></td></tr></table></figure></p>
+<p>设置子线程为守护线程后，主线程就不会等待守护线程结束。但调用 <strong>join()</strong> 方法后就会等待。</p>
+<h3 id="线程锁threading-Lock"><a href="#线程锁threading-Lock" class="headerlink" title="线程锁threading.Lock()"></a>线程锁threading.Lock()</h3><p>返回锁对象。用于生成原始锁对象的工厂函数。<br>一旦某个线程获得了这个锁，其他的线程要想获得他就必须阻塞，直到锁被释放。<br>线程锁有两种状态：<strong>锁定</strong> 或 <strong>失锁</strong>。创建时未加锁，锁对象有两个方法：<strong>acquire()</strong> 和 <strong>release()</strong>。<br>下面售票的例子来说明下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">class ticketThread(threading.Thread):</span><br><span class="line">    def __init__(self,tid,monitor):</span><br><span class="line">        threading.Thread.__init__(self)</span><br><span class="line">        self.tid = tid</span><br><span class="line">        self.monitor = monitor</span><br><span class="line"></span><br><span class="line">    def run(self):</span><br><span class="line">        while True:</span><br><span class="line">            self.monitor[&apos;lock&apos;].acquire()</span><br><span class="line">            if self.monitor[&apos;tick&apos;] != 0:</span><br><span class="line">                self.monitor[&apos;tick&apos;] -= 1</span><br><span class="line">                print &apos;%s left %s.&apos; %(self.tid,self.monitor[&apos;tick&apos;])</span><br><span class="line">            else:</span><br><span class="line">                print &apos;%s ticket over!&apos;%self.tid</span><br><span class="line">                break</span><br><span class="line">            self.monitor[&apos;lock&apos;].release()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    monitor = &#123;&apos;tick&apos;:50,&apos;lock&apos;:threading.Lock()&#125;</span><br><span class="line">    for i in range(10):</span><br><span class="line">        t = ticketThread(i,monitor)</span><br><span class="line">        t.start()</span><br></pre></td></tr></table></figure></p>
+<p>使用了一个词典monitor存放全局变量，然后把词典作为参数传递给线程函数。由于词典是可变数据对象，所以当它被传递给函数的时候，函数所使用的依然是同一个对象，相当于被多个线程所共享。这也是多线程乃至于多进程编程的一个技巧。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/27/Python基础-网络编程/" rel="next" title="Python基础-网络编程">
+                <i class="fa fa-chevron-left"></i> Python基础-网络编程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/12/01/Python基础-正则表达式/" rel="prev" title="Python基础-正则表达式">
+                Python基础-正则表达式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#thread模块"><span class="nav-number">1.</span> <span class="nav-text">thread模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#threading模块"><span class="nav-number">2.</span> <span class="nav-text">threading模块</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#守护线程"><span class="nav-number">2.1.</span> <span class="nav-text">守护线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#threading-Thread类"><span class="nav-number">2.2.</span> <span class="nav-text">threading.Thread类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建Thread实例传递函数"><span class="nav-number">2.3.</span> <span class="nav-text">创建Thread实例传递函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建Thread实例传递可调用类对象"><span class="nav-number">2.4.</span> <span class="nav-text">创建Thread实例传递可调用类对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建Thread派生子类的实例"><span class="nav-number">2.5.</span> <span class="nav-text">创建Thread派生子类的实例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设置守护线程"><span class="nav-number">2.6.</span> <span class="nav-text">设置守护线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程锁threading-Lock"><span class="nav-number">2.7.</span> <span class="nav-text">线程锁threading.Lock()</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

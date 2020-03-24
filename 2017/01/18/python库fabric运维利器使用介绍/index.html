@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="python,fabric,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="Fabric是基于python库实现的SSH命令行工具，以简化SSH应用程序部署及系统管理任务。官方网站: http://www.fabfile.org/">
+<meta name="keywords" content="python,fabric">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python库fabric运维利器使用介绍">
+<meta property="og:url" content="http://zhanghonged.github.io/2017/01/18/python库fabric运维利器使用介绍/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="Fabric是基于python库实现的SSH命令行工具，以简化SSH应用程序部署及系统管理任务。官方网站: http://www.fabfile.org/">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-11-07T08:37:44.073Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python库fabric运维利器使用介绍">
+<meta name="twitter:description" content="Fabric是基于python库实现的SSH命令行工具，以简化SSH应用程序部署及系统管理任务。官方网站: http://www.fabfile.org/">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2017/01/18/python库fabric运维利器使用介绍/">
+
+
+
+
+
+  <title>python库fabric运维利器使用介绍 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2017/01/18/python库fabric运维利器使用介绍/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">python库fabric运维利器使用介绍</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-01-18T10:34:49+08:00">
+                2017-01-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python/" itemprop="url" rel="index">
+                    <span itemprop="name">python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Fabric是基于python库实现的SSH命令行工具，以简化SSH应用程序部署及系统管理任务。<br>官方网站: <a href="http://www.fabfile.org/" target="_blank" rel="noopener">http://www.fabfile.org/</a></p>
+<a id="more"></a>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>我这里用最简单的安装方式<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install fabric</span><br></pre></td></tr></table></figure></p>
+<p>也可以用easy_install、源码方式安装。</p>
+<h2 id="脚本使用"><a href="#脚本使用" class="headerlink" title="脚本使用"></a>脚本使用</h2><h3 id="简单示例"><a href="#简单示例" class="headerlink" title="简单示例"></a>简单示例</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">vim fabfile.py</span><br><span class="line"></span><br><span class="line">def hello():</span><br><span class="line">    print(&quot;Hello world!&quot;)</span><br></pre></td></tr></table></figure>
+<p>执行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fab hello</span><br></pre></td></tr></table></figure></p>
+<h3 id="fab常用命令："><a href="#fab常用命令：" class="headerlink" title="fab常用命令："></a>fab常用命令：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">fab -l      # 显示可用的task（命令）</span><br><span class="line">fab -H      # 指定host，支持多个host，以逗号分开</span><br><span class="line">fab -R      # 指定role，支持多个role</span><br><span class="line">fab -P      # 并发数，以异步并行方式运行多主机任务，默认串行</span><br><span class="line">fab -w      # warn_only，命令执行失败发出警告，默认遇到异常直接abort退出</span><br><span class="line">fab -f      # 指定入口文件，默认fabfile.py</span><br><span class="line">fab -g      # 指定网关(中转)设备，填写IP即可，通过此设备进行中转</span><br><span class="line">fab -t      # 设置设备连接超时时间(秒)</span><br><span class="line">fab -T      # 设置远程主机执行命令超时时间(秒)</span><br></pre></td></tr></table></figure>
+<h2 id="fabfile编写规范"><a href="#fabfile编写规范" class="headerlink" title="fabfile编写规范"></a>fabfile编写规范</h2><p>fab命令是结合fabfile.py文件来搭配使用。filefile的主体由多个自定义任务函数组成，不同任务函数实现不同逻辑。</p>
+<h3 id="全局属性设置"><a href="#全局属性设置" class="headerlink" title="全局属性设置"></a>全局属性设置</h3><p>env对象定义fab的全局设定，支持多个属性设置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">env.user                    # 定义用户名，如 env.user=&apos;root&apos;</span><br><span class="line">env.port                    # 定义目标主机端口，默认为22， 如 env.port=&apos;23&apos;</span><br><span class="line">env.hosts                   # 定义目标主机，可用IP或主机名表示。如 env.hosts=[&apos;192.168.1.2&apos;,&apos;192.168.1.3&apos;]</span><br><span class="line">env.password                # 定义主机密码，如 env.password=&apos;123456&apos;</span><br><span class="line">env.passwords               # 功能与password相同，配置passwords时需要配置用户、主机、端口等信息， 如env.passwords=&#123;&apos;root@192.168.1.2:22&apos;:&apos;a1b2c3&apos;,&apos;root@192.168.1.3:2022&apos;:&apos;111111&apos;&#125;</span><br><span class="line">env.gateway                 # 定义网关(中转、堡垒机)， 如 env.gateway=&apos;192.168.1.94&apos;</span><br><span class="line">env.exclude_hosts           # 排除指定主机，如 env.exclude_hosts=[&apos;192.168.1.5&apos;]</span><br><span class="line">env.deploy_release_dir      # 自定义全局变量，格式 env.+&apos;全局变量&apos;</span><br><span class="line">env.roledefs                # 定义角色分组，引用时已python修饰符形式进行，如 env.roledefs=&#123;&apos;app&apos;:[&apos;192.168.1.5&apos;],&apos;db&apos;:[&apos;192.168.1.4&apos;,&apos;192.168.1.94&apos;]&#125;</span><br></pre></td></tr></table></figure></p>
+<p>示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@roles(&apos;db&apos;)</span><br><span class="line">def dbrestart():</span><br><span class="line">	run(&apos;systemctl start mysqld&apos;)</span><br><span class="line">@roles(&apos;app&apos;)</span><br><span class="line">def nginxstart():</span><br><span class="line">	run(&apos;/usr/bin/nginx&apos;)</span><br><span class="line"></span><br><span class="line">def go():</span><br><span class="line">	execute(dbstart)</span><br><span class="line">	execute(nginxstart)</span><br></pre></td></tr></table></figure></p>
+<h3 id="常用API"><a href="#常用API" class="headerlink" title="常用API"></a>常用API</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">lcd(&apos;/tmp&apos;)         # 切换本地目录</span><br><span class="line">cd(&apos;/tmp&apos;)          # 切换远程目录</span><br><span class="line"></span><br><span class="line">local(&apos;pwd&apos;)        # 执行本地命令</span><br><span class="line">run(&apos;uname -a&apos;)     # 执行远程命令</span><br><span class="line"></span><br><span class="line">sudo(&apos;/etc/init.d/nginx start&apos;)              # 执行远程sudo</span><br><span class="line">put(&apos;/home/user.info&apos;,&apos;/data/user.info&apos;)     # 上传本地文件到远程主机</span><br><span class="line">get(&apos;/data/user.info&apos;,&apos;/home/my.info&apos;)       # 从远程下载文件到本地</span><br><span class="line">prompt(&apos;Please input user password:&apos;&apos;)       # 获取用户输入信息</span><br><span class="line">confirm(&apos;Test failed.Continue[Y/N]?&apos;)        # 获得提示信息确认</span><br><span class="line">reboot()                                     # 重启远程主机</span><br><span class="line"></span><br><span class="line">@task               # 函数修饰符，标识的函数为fab可调用，非标识对fab不可见</span><br><span class="line">@run_ones           # 函数修饰符，标识的函数只会执行一次，不受多台主机影响</span><br><span class="line">@parallel           # 函数修饰符，并行执行任务</span><br><span class="line">@serial             # 函数修饰符，串行执行任务，默认为串行</span><br></pre></td></tr></table></figure>
+<h3 id="错误处理"><a href="#错误处理" class="headerlink" title="错误处理"></a>错误处理</h3><p>标准Python程序，出错程序就停止结束了，但很多情况下也许并不想让它就此结束，想让它跳过继续执行后面的，那这里就要用到fab的错误处理方法了。<br>使用错误处理，首先得告诉fab，我要进行这样的处理，它才会去处理。<br>如果/home/mysite目录已存在就会报错，需要继续执行后面的操作，所以先得说一下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">with settings(warn_only = true):</span><br><span class="line">    run(&quot;mkdir -p /home/mysite&quot;)</span><br></pre></td></tr></table></figure></p>
+<p>warn_only = true就是在告诉fab这个事情，有了这一句，后面的语句都能享受到。<br>再说一个，run的每一条命令都有返回，成功或失败，判断，如果失败，执行confirm方法，来提示确认要不要继续，如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 导入confirm</span><br><span class="line">from fabric.contrib.console import confirm</span><br><span class="line"></span><br><span class="line">res = run(&apos;cd deploy&apos;) # 没有deploy这个目录</span><br><span class="line">if res.failed and not confirm(&quot;cd deploy failed, Continue?&quot;):</span><br><span class="line">    abort(&apos;Abort&apos;)</span><br></pre></td></tr></table></figure></p>
+<p>运行上面的程序，res就会得到返回，这时候用res.failed来判断是否失败，如果失败，执行comfirm等待确认，如果选择N，执行abort终止程序.</p>
+<h3 id="带颜色输出"><a href="#带颜色输出" class="headerlink" title="带颜色输出"></a>带颜色输出</h3><p>这个其没什么用，只是想让输出漂亮一点，所以就说一下，方法很简单，使用colors包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 导入包</span><br><span class="line">from fabric.colors import *</span><br><span class="line"></span><br><span class="line">print green(&apos;green txt&apos;)</span><br><span class="line">print red(&apos;red txt&apos;)</span><br><span class="line">print yellow(&apos;yellow txt&apos;)</span><br></pre></td></tr></table></figure></p>
+<h2 id="完整示例"><a href="#完整示例" class="headerlink" title="完整示例"></a>完整示例</h2><p>应用场景一：<br>发布jee应用程序到tomcat服务器，手动通过eclipse打包程序为xxx.war,然后通过fabric发布<br>1、获取svn版本号<br>2、从本地复制war包到远程服务器，在指定release目录解压，目录名称为当前日期+svn版本好的目录<br>3、删除tomcat的webapps下原来的符号链接，建立新的符号链接<br>4、回滚到先前的指定版本<br>5、重启tomcat<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/env python</span><br><span class="line">#coding=utf-8</span><br><span class="line"></span><br><span class="line">#</span><br><span class="line"># Filename:    fabfile.py</span><br><span class="line"># Author：     zhanghong</span><br><span class="line"># Website:     http://blog.codecp.org/</span><br><span class="line"># Description: 部署java应用的war包到tomcat</span><br><span class="line">#</span><br><span class="line"></span><br><span class="line">from fabric.api import run,env,roles,execute,local,lcd,runs_once,cd,run,prompt,task,put,abort,settings</span><br><span class="line">from fabric.contrib.console import confirm</span><br><span class="line">from fabric.colors import *</span><br><span class="line">import time</span><br><span class="line">import os</span><br><span class="line">import sys</span><br><span class="line">import commands</span><br><span class="line"></span><br><span class="line">env.hosts=[&apos;root@192.168.1.101:2026&apos;]</span><br><span class="line">env.passwords=&#123;&apos;root@192.168.1.101:2026&apos;:&apos;a1b2c3&apos;&#125;</span><br><span class="line"></span><br><span class="line">env.project_source=&apos;/Users/pack/Desktop/yiqunProject/&apos;</span><br><span class="line">env.project_svn_path=&apos;/Users/pack/Desktop/working/server/&apos;</span><br><span class="line">env.project_pack_name=&apos;yiqun&apos;</span><br><span class="line">env.deploy_project_root=&apos;/usr/local/apache-tomcat-7.0.68/&apos;</span><br><span class="line">env.deploy_release_server_dir=&apos;/root/release/server/&apos;</span><br><span class="line">env.deploy_version=time.strftime(&quot;%Y%m%d%H&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def get_server_svn():</span><br><span class="line">    with lcd(env.project_svn_path):</span><br><span class="line">        local(&quot;svn update&quot;)</span><br><span class="line">        num=commands.getstatusoutput((&quot;svn info %s| grep &apos;Last Changed Rev&apos; | awk &apos;&#123;print $4&#125;&apos;&quot;) %(env.project_svn_path))[1]</span><br><span class="line">    print type(num),num</span><br><span class="line">    return num</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@runs_once</span><br><span class="line">def input_versionid():</span><br><span class="line">    return prompt(&quot;please input project rollback version ID:&quot;,default=&quot;&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@task</span><br><span class="line">def put_package_server():</span><br><span class="line">    print yellow(&quot;Start put yiqun.war package...&quot;)</span><br><span class="line">    with settings(warn_only=True):</span><br><span class="line">        with cd(env.deploy_release_server_dir):</span><br><span class="line">            run(&quot;mkdir -p %s&quot; % (env.deploy_version_server_path))</span><br><span class="line">    env.deploy_full_path=env.deploy_release_server_dir+env.deploy_version_server_path</span><br><span class="line"></span><br><span class="line">    with settings(warn_only=True):</span><br><span class="line">        result = put(env.project_source + env.project_pack_name + &apos;.war&apos;,env.deploy_full_path)</span><br><span class="line">    if result.failed and not confirm(&quot;put file failed, Continue[Y/N]?&quot;):</span><br><span class="line">        abort(&quot;Aborting file put task!&quot;)</span><br><span class="line"></span><br><span class="line">    with cd(env.deploy_full_path):</span><br><span class="line">        run(&quot;mkdir -p %s&quot; % (env.project_pack_name))</span><br><span class="line">        with cd(env.project_pack_name):</span><br><span class="line">            run(&quot;jar xvf %s&quot; % (env.deploy_full_path+&quot;/&quot;+env.project_pack_name+&quot;.war&quot;))</span><br><span class="line">        run(&quot;rm -rf %s&quot; % (env.project_pack_name+&quot;.war&quot;))</span><br><span class="line"></span><br><span class="line">    print green(&quot;Put &amp; untar package success!&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@task</span><br><span class="line">def make_symlink():</span><br><span class="line">    print yellow(&quot;update yiqun symlink&quot;)</span><br><span class="line">    env.deploy_full_path=env.deploy_release_server_dir+env.deploy_version_server_path</span><br><span class="line">    with settings(warn_only=True):</span><br><span class="line">        run(&quot;rm -rf %s&quot; % (env.deploy_project_root + &apos;webapps/&apos; + env.project_pack_name))</span><br><span class="line">        run(&quot;ln -s %s %s&quot; % (env.deploy_full_path+&quot;/&quot;+env.project_pack_name, env.deploy_project_root + &apos;webapps/&apos; + env.project_pack_name))</span><br><span class="line">    print green(&quot;make symlink success!&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@task</span><br><span class="line">def rollback():</span><br><span class="line">    print yellow(&quot;rollback yiqun project version&quot;)</span><br><span class="line">    versionid= input_versionid()</span><br><span class="line">    if versionid==&apos;&apos;:</span><br><span class="line">        abort(&quot;Project version ID error,abort!&quot;)</span><br><span class="line"></span><br><span class="line">    env.deploy_full_path=env.deploy_release_server_dir+versionid</span><br><span class="line">    run(&quot;rm -f %s&quot; % env.deploy_project_root + &apos;webapps/&apos; + env.project_pack_name)</span><br><span class="line">    run(&quot;ln -s %s %s&quot; % (env.deploy_full_path+&quot;/&quot;+env.project_pack_name, env.deploy_project_root + &apos;webapps/&apos; + env.project_pack_name)) </span><br><span class="line">    print green(&quot;rollback to %s success!&quot; %versionid)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@task</span><br><span class="line">def start():</span><br><span class="line">    startcmd = &apos;%sbin/startup.sh&apos; %env.deploy_project_root</span><br><span class="line">    print green(startcmd)</span><br><span class="line">    #run(&quot;nohup %s &gt; /dev/null&quot; %startcmd)</span><br><span class="line">    # 启动另外的程序，需加上set -m;因为如果不加，启动会随着python进程的结束而结束，达不到启动的目的.</span><br><span class="line">    run(&quot;set -m; %s&quot; %startcmd)</span><br><span class="line"></span><br><span class="line">@task</span><br><span class="line">def stop():</span><br><span class="line">    stopcmd = &apos;%sbin/shutdown.sh&apos; %env.deploy_project_root</span><br><span class="line">    print green(stopcmd)</span><br><span class="line">    run(stopcmd) </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@task</span><br><span class="line">def restart():</span><br><span class="line">    stop()</span><br><span class="line">    count=0</span><br><span class="line">    while(count&lt;6):</span><br><span class="line">        ncount = 6-count</span><br><span class="line">        sys.stdout.write(&quot;\r%d &quot; % ncount)</span><br><span class="line">        sys.stdout.flush()</span><br><span class="line">        time.sleep(1)</span><br><span class="line">        count+=1</span><br><span class="line">    start()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@task</span><br><span class="line">def deploy():</span><br><span class="line">    env.deploy_version_server_path=env.deploy_version+&apos;_&apos;+get_server_svn()</span><br><span class="line">    put_package_server()</span><br><span class="line">    make_symlink()</span><br></pre></td></tr></table></figure></p>
+<p>应用场景二：<br>同时更新2台nginx的web页面<br>1、获取svn版本号<br>2、从svn库打包页面并上传到服务器，在指定release目录解压，目录名称为当前日期+svn版本好的目录<br>3、web1上删除站点目录下之前的符号链接，并建立新的符号链接。web2上不操作。<br>4、回滚到先前的指定版本<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/env python</span><br><span class="line">#coding=utf-8</span><br><span class="line"></span><br><span class="line">#</span><br><span class="line"># Filename:    fabfile.py</span><br><span class="line"># Author：     zhanghong</span><br><span class="line"># Website:     http://blog.codecp.org/</span><br><span class="line"># Description: 打包nginx页面发布到远程主机</span><br><span class="line"># Date:        2017-01-19</span><br><span class="line">#</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">from fabric.api import run,env,roles,execute,local,lcd,runs_once,cd,run,prompt,task,put,abort,settings,parallel</span><br><span class="line">from fabric.contrib.console import confirm</span><br><span class="line">from fabric.colors import *</span><br><span class="line">import time</span><br><span class="line">import os</span><br><span class="line">import sys</span><br><span class="line">import commands</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">env.passwords = &#123;</span><br><span class="line">    &apos;root@192.168.1.2:2026&apos;:&apos;222222&apos;,</span><br><span class="line">    &apos;root@192.168.1.3:22&apos;:&apos;111111&apos;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">env.roledefs = &#123;</span><br><span class="line">    &apos;web1&apos;:[&apos;root@192.168.1.2:2026&apos;],</span><br><span class="line">    &apos;web2&apos;:[&apos;root@192.168.1.3:22&apos;],</span><br><span class="line">    &apos;all&apos;:[&apos;root@192.168.1.2:2026&apos;,&apos;root@192.168.1.3:22&apos;]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">env.project_source=&apos;/Users/pack/Desktop/yiqunProject/&apos;</span><br><span class="line">env.project_svn_path=&apos;/Users/pack/Desktop/working/yiqunweb/&apos;</span><br><span class="line">env.project_pack_name=&apos;yiqunweb&apos;</span><br><span class="line">env.deploy_project_root=&apos;/opt/nginx/&apos;</span><br><span class="line">env.deploy_release_web_dir=&apos;/root/release/yiweb/&apos;</span><br><span class="line">env.deploy_version=time.strftime(&quot;%Y%m%d%H&quot;)</span><br><span class="line"></span><br><span class="line">@runs_once</span><br><span class="line">def get_web_svn():</span><br><span class="line">    with lcd(env.project_svn_path):</span><br><span class="line">        local(&quot;svn update&quot;)</span><br><span class="line">        num=commands.getstatusoutput((&quot;svn info %s| grep &apos;Last Changed Rev&apos; | awk &apos;&#123;print $4&#125;&apos;&quot;) %(env.project_svn_path))[1]</span><br><span class="line">    print type(num),num</span><br><span class="line">    return num</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@runs_once</span><br><span class="line">def input_versionid():</span><br><span class="line">    return prompt(&quot;please input project rollback version ID:&quot;,default=&quot;&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@runs_once</span><br><span class="line">def tar_source():</span><br><span class="line">    print yellow(&quot;Creating %s source package...&quot; %env.project_pack_name)</span><br><span class="line">    with lcd(env.project_svn_path):</span><br><span class="line">        local(&quot;tar -czf %s.tar.gz .&quot; % (env.project_source + env.project_pack_name))</span><br><span class="line">print green(&quot;Creating %s source package success!&quot; %env.project_pack_name)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@parallel</span><br><span class="line">@roles(&apos;all&apos;)</span><br><span class="line">def put_package_web():</span><br><span class="line">    print yellow(&quot;Start put yiqunweb.tar.gz package...&quot;)</span><br><span class="line">    with settings(warn_only=True):</span><br><span class="line">        with cd(env.deploy_release_web_dir):</span><br><span class="line">            run(&quot;mkdir -p %s&quot; % (env.deploy_version_web_path))</span><br><span class="line">    env.deploy_full_path=env.deploy_release_web_dir+env.deploy_version_web_path</span><br><span class="line"></span><br><span class="line">    with settings(warn_only=True):</span><br><span class="line">        result = put(env.project_source + env.project_pack_name + &apos;.tar.gz&apos;,env.deploy_full_path)</span><br><span class="line">    if result.failed and not confirm(&quot;put file failed, Continue[Y/N]?&quot;):</span><br><span class="line">        abort(&quot;Aborting file put task!&quot;)</span><br><span class="line"></span><br><span class="line">    with cd(env.deploy_full_path):</span><br><span class="line">        run(&quot;mkdir -p %s&quot; % (env.project_pack_name))</span><br><span class="line">        with cd(env.project_pack_name):</span><br><span class="line">            run(&quot;tar -zxvf %s&quot; % (env.deploy_full_path+&quot;/&quot;+env.project_pack_name+&quot;.tar.gz&quot;))</span><br><span class="line">        run(&quot;rm -rf %s&quot; % (env.project_pack_name+&quot;.tar.gz&quot;))</span><br><span class="line"></span><br><span class="line">    print green(&quot;Put &amp; untar package success!&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@parallel</span><br><span class="line">@roles(&apos;web1&apos;)</span><br><span class="line">def make_symlink():</span><br><span class="line">    print yellow(&quot;update %s symlink&quot; %env.project_pack_name)</span><br><span class="line">    env.deploy_full_path=env.deploy_release_web_dir+env.deploy_version_web_path</span><br><span class="line">    with settings(warn_only=True):</span><br><span class="line">        run(&quot;rm -rf %s&quot; % (env.deploy_project_root + env.project_pack_name))</span><br><span class="line">        run(&quot;ln -s %s %s&quot; % (env.deploy_full_path+&quot;/&quot;+env.project_pack_name, env.deploy_project_root + env.project_pack_name))</span><br><span class="line">    print green(&quot;make %s symlink success!&quot; %env.project_pack_name)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@task</span><br><span class="line">def rollback():</span><br><span class="line">    print yellow(&quot;rollback yiqun project version&quot;)</span><br><span class="line">    versionid= input_versionid()</span><br><span class="line">    if versionid==&apos;&apos;:</span><br><span class="line">        abort(&quot;Project version ID error,abort!&quot;)</span><br><span class="line"></span><br><span class="line">    env.deploy_full_path=env.deploy_release_web_dir+versionid</span><br><span class="line">    run(&quot;rm -f %s&quot; % env.deploy_project_root + env.project_pack_name)</span><br><span class="line">    run(&quot;ln -s %s %s&quot; % (env.deploy_full_path+&quot;/&quot;+env.project_pack_name, env.deploy_project_root + env.project_pack_name)) </span><br><span class="line">    print green(&quot;rollback to %s success!&quot; %versionid)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@task</span><br><span class="line">def deploy():</span><br><span class="line">    env.deploy_version_web_path=env.deploy_version+&apos;_&apos;+get_web_svn()</span><br><span class="line">    execute(tar_source)</span><br><span class="line">    execute(put_package_web)</span><br><span class="line">    execute(make_symlink)</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/fabric/" rel="tag"># fabric</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/01/06/Svn提交自动构建Maven项目/" rel="next" title="Svn提交自动构建Maven项目">
+                <i class="fa fa-chevron-left"></i> Svn提交自动构建Maven项目
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/03/24/bootstrap-datetimepicker在AngularJS的ngDialog对话框下无法显示/" rel="prev" title="bootstrap-datetimepicker在AngularJS的ngDialog对话框下无法显示">
+                bootstrap-datetimepicker在AngularJS的ngDialog对话框下无法显示 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#脚本使用"><span class="nav-number">2.</span> <span class="nav-text">脚本使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简单示例"><span class="nav-number">2.1.</span> <span class="nav-text">简单示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fab常用命令："><span class="nav-number">2.2.</span> <span class="nav-text">fab常用命令：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fabfile编写规范"><span class="nav-number">3.</span> <span class="nav-text">fabfile编写规范</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#全局属性设置"><span class="nav-number">3.1.</span> <span class="nav-text">全局属性设置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常用API"><span class="nav-number">3.2.</span> <span class="nav-text">常用API</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#错误处理"><span class="nav-number">3.3.</span> <span class="nav-text">错误处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#带颜色输出"><span class="nav-number">3.4.</span> <span class="nav-text">带颜色输出</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#完整示例"><span class="nav-number">4.</span> <span class="nav-text">完整示例</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

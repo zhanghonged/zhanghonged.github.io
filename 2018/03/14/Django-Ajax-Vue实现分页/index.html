@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="python,Django,Ajax,Vue,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="本节内容来介绍Django下使用Ajax和Vue.js来实现数据分页展示。">
+<meta name="keywords" content="python,Django,Ajax,Vue">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Django+Ajax+Vue实现分页">
+<meta property="og:url" content="http://zhanghonged.github.io/2018/03/14/Django-Ajax-Vue实现分页/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="本节内容来介绍Django下使用Ajax和Vue.js来实现数据分页展示。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-03-29T00:54:09.698Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Django+Ajax+Vue实现分页">
+<meta name="twitter:description" content="本节内容来介绍Django下使用Ajax和Vue.js来实现数据分页展示。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2018/03/14/Django-Ajax-Vue实现分页/">
+
+
+
+
+
+  <title>Django+Ajax+Vue实现分页 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2018/03/14/Django-Ajax-Vue实现分页/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Django+Ajax+Vue实现分页</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T15:24:27+08:00">
+                2018-03-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Django/" itemprop="url" rel="index">
+                    <span itemprop="name">Django</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本节内容来介绍Django下使用Ajax和Vue.js来实现数据分页展示。<br><a id="more"></a></p>
+<h2 id="一、Vue用法简介"><a href="#一、Vue用法简介" class="headerlink" title="一、Vue用法简介"></a>一、Vue用法简介</h2><p><strong>Vue</strong> 可以构建一个完全不依赖后端服务的应用，同时也可以与服务端进行数据交互来同步界面的动态更新。<strong>Vue</strong> 通过插件的形式实现了基于AJAX，JSPNP等技术的服务端通信。<br>由于 <strong>Vue</strong> 本身并不支持 <strong>ajax</strong> 请求，因此就使用 <strong>Vue-resource</strong> 插件 。<br><strong>Vue-resource</strong> 是一个通过 <strong>XMLHttpRequrest</strong> 或 <strong>JSONP</strong> 技术实现异步加载服务端数据的 <strong>Vue插件</strong>，提供了一般的 HTTP请求接口和RESTful架构请求接口，并且提供了全局方法和Vue组件实例方法。</p>
+<p><span style="color:green;font-weight:bold;">Vue使用Vue-resource插件方式:</span><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Vue.use(VueResource);</span><br></pre></td></tr></table></figure></p>
+<p><span style="color:blue;font-weight:bold;">设置POST请求时的data格式:</span><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Vue.http.options.emulateJSON = true;</span><br></pre></td></tr></table></figure></p>
+<p><span style="color:red;font-weight:bold;">Vue的变量个和 <strong>django</strong> 的 <strong>jinja2</strong> 模板系统有所冲突,如果在django里面使用vue需要使用 <strong>verbatim</strong> 标签屏蔽django自己的语法标签:</span><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;% verbatim myblock %&#125;</span><br><span class="line">    some content...</span><br><span class="line">&#123;% endverbatim myblock %&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="导入框架"><a href="#导入框架" class="headerlink" title="导入框架"></a>导入框架</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"static/vue/vue.min.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"static/vue/vue-resource.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="vue常见绑定方式"><a href="#vue常见绑定方式" class="headerlink" title="vue常见绑定方式"></a>vue常见绑定方式</h3><p>1、简单的数据绑定<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">  $(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">	<span class="keyword">var</span> abc = <span class="keyword">new</span> Vue(</span></span><br><span class="line">		&#123;</span><br><span class="line"><span class="javascript">			el:<span class="string">'#abc'</span>,</span></span><br><span class="line">			data:&#123;</span><br><span class="line"><span class="javascript">				message:<span class="string">'hello,world.'</span></span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	)</span><br><span class="line">  &#125;)</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">'abc'</span>&gt;</span></span><br><span class="line">  &#123;&#123; message &#125;&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>2、基本的vue循环<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">'abc'</span>&gt;</span></span><br><span class="line">  &#123;&#123; message &#125;&#125;</span><br><span class="line">  <span class="tag">&lt;<span class="name">ul</span> <span class="attr">v-for</span>=<span class="string">'l in language'</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">li</span>&gt;</span>&#123;&#123; l.name &#125;&#125;<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line">  </span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">  $(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">	<span class="keyword">var</span> abc = <span class="keyword">new</span> Vue(</span></span><br><span class="line">		&#123;</span><br><span class="line"><span class="javascript">		el:<span class="string">'#abc'</span>,</span></span><br><span class="line">		data:&#123;</span><br><span class="line"><span class="javascript">			message:<span class="string">'hello,world.'</span>,</span></span><br><span class="line">			language:[</span><br><span class="line"><span class="javascript">					&#123;<span class="string">'name'</span>:<span class="string">'python'</span>&#125;,</span></span><br><span class="line"><span class="javascript">					&#123;<span class="string">'name'</span>:<span class="string">'java'</span>&#125;,</span></span><br><span class="line"><span class="javascript">					&#123;<span class="string">'name'</span>:<span class="string">'go'</span>&#125;</span></span><br><span class="line">				]</span><br><span class="line">		&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	)</span><br><span class="line">  &#125;)</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>3、基本的vue函数绑定<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">'abc'</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">button</span> <span class="attr">v-on:click</span>=<span class="string">'myabc'</span>&gt;</span>&#123;&#123; message &#125;&#125;<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">  </span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">  $(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">	<span class="keyword">var</span> abc = <span class="keyword">new</span> Vue(</span></span><br><span class="line">		&#123;</span><br><span class="line"><span class="javascript">			el:<span class="string">'#abc'</span>,</span></span><br><span class="line">			data:&#123;</span><br><span class="line"><span class="javascript">				message:<span class="string">'click me'</span></span></span><br><span class="line">			&#125;,</span><br><span class="line">			methods:&#123;</span><br><span class="line"><span class="javascript">				myabc:<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">					alert(<span class="string">'Good.'</span>)</span></span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	)</span><br><span class="line">  &#125;)</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>4、基本的vue双向绑定<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">'abc'</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">'text'</span> <span class="attr">v-model</span>=<span class="string">'message'</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123; message &#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">  $(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">	<span class="keyword">var</span> abc = <span class="keyword">new</span> Vue(</span></span><br><span class="line">		&#123;</span><br><span class="line"><span class="javascript">			el:<span class="string">'#abc'</span>,</span></span><br><span class="line">			data:&#123;</span><br><span class="line"><span class="javascript">				message:<span class="string">'click me'</span></span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	)</span><br><span class="line">  &#125;)</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>5、vue中的created方法<br>这是它的一个生命周期钩子函数，就是一个vue实例被生成后调用这个函数。一个vue实例被生成后还要绑定到某个html元素上，之后还要进行编译，然后再插入到document中。每一个阶段都会有一个钩子函数，方便开发者在不同阶段处理不同逻辑。<br>一般可以在created函数中调用ajax获取页面初始化所需的数据。<br>例如，created 这个钩子在实例被创建之后被调用<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">  $(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> abc = <span class="keyword">new</span> Vue(</span><br><span class="line">		&#123;</span><br><span class="line">			el:<span class="string">'#abc'</span>,</span><br><span class="line">			data:&#123;</span><br><span class="line">				message:<span class="string">'click me'</span></span><br><span class="line">			&#125;,</span><br><span class="line">			created:<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">				alert(<span class="string">'message is:'</span>+<span class="keyword">this</span>.message);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	)</span><br><span class="line">  &#125;)</span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="二、分页功能具体实现"><a href="#二、分页功能具体实现" class="headerlink" title="二、分页功能具体实现"></a>二、分页功能具体实现</h2><h3 id="django后台代码逻辑"><a href="#django后台代码逻辑" class="headerlink" title="django后台代码逻辑"></a>django后台代码逻辑</h3><p>查询数据库返回分页信息的方法：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getpage</span><span class="params">(sql, page, num = <span class="number">10</span>, maxpage_num = <span class="number">7</span>)</span>:</span></span><br><span class="line">    <span class="string">'''</span></span><br><span class="line"><span class="string">    查询数据库数据</span></span><br><span class="line"><span class="string">    :param sql: 每次查询的语句</span></span><br><span class="line"><span class="string">    :param page: 当前的页码</span></span><br><span class="line"><span class="string">    :param num: 每页数据的条数</span></span><br><span class="line"><span class="string">    :param maxpage_num: 分页区域显示的页码数量</span></span><br><span class="line"><span class="string">    :return:查询出来的数据和分页信息</span></span><br><span class="line"><span class="string">    '''</span></span><br><span class="line">    page = int(page)</span><br><span class="line">    num = int(num)</span><br><span class="line">    start_page = (page<span class="number">-1</span>) * num</span><br><span class="line">    page_data_sql = sql + <span class="string">' limit %s,%s'</span>%(start_page,num)</span><br><span class="line">    <span class="comment">#print page_data_sql</span></span><br><span class="line">    cursor = connection.cursor() <span class="comment">#实例化游标</span></span><br><span class="line">    cursor.execute(page_data_sql)</span><br><span class="line">    page_data = cursor.fetchall()</span><br><span class="line"></span><br><span class="line">    desc = cursor.description <span class="comment">#取出表的字段值</span></span><br><span class="line">    <span class="comment"># 把表地段和数据拼接为字典个数，存放到list里</span></span><br><span class="line">    data_list = [</span><br><span class="line">        dict(zip([d[<span class="number">0</span>] <span class="keyword">for</span> d <span class="keyword">in</span> desc],row))</span><br><span class="line">        <span class="keyword">for</span> row <span class="keyword">in</span> page_data</span><br><span class="line">    ]</span><br><span class="line">    <span class="comment">#查询总条数</span></span><br><span class="line">    page_total_sql = <span class="string">'select count(f.id) from (%s) as f'</span>%sql</span><br><span class="line">    cursor.execute(page_total_sql)</span><br><span class="line">    nums = cursor.fetchone()[<span class="number">0</span>]</span><br><span class="line">    <span class="comment">#页码最大值</span></span><br><span class="line">    <span class="keyword">if</span> nums%num == <span class="number">0</span>:</span><br><span class="line">        page_total = nums/num</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        page_total = nums/num + <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">#最多页码显示范围</span></span><br><span class="line">    part = maxpage_num/<span class="number">2</span></span><br><span class="line">    <span class="keyword">if</span> page_total &lt; maxpage_num:</span><br><span class="line">        page_range = [i <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,page_total+<span class="number">1</span>)]</span><br><span class="line">    <span class="keyword">elif</span> page &lt;= part:</span><br><span class="line">        page_range = [i <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,maxpage_num+<span class="number">1</span>)]</span><br><span class="line">    <span class="keyword">elif</span> page + part &gt; page_total:</span><br><span class="line">        page_range = [i <span class="keyword">for</span> i <span class="keyword">in</span> range(page_total-maxpage_num,page_total+<span class="number">1</span>)]</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        page_range = [i <span class="keyword">for</span> i <span class="keyword">in</span> range(page-part,page+part+<span class="number">1</span>)]</span><br><span class="line"></span><br><span class="line">    result = &#123;</span><br><span class="line">        <span class="string">'page_data'</span>:data_list,</span><br><span class="line">        <span class="string">'page_range'</span>:page_range,</span><br><span class="line">        <span class="string">'current_page'</span>:page,</span><br><span class="line">        <span class="string">'max_page'</span>:page_total</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result</span><br></pre></td></tr></table></figure></p>
+<p>接收前端ajax请求方法：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">server_list_data</span><span class="params">(request)</span>:</span></span><br><span class="line">    <span class="string">'''</span></span><br><span class="line"><span class="string">    :param request:</span></span><br><span class="line"><span class="string">    :return:json类型返回服务器信息分页数据</span></span><br><span class="line"><span class="string">    '''</span></span><br><span class="line">    <span class="keyword">if</span> request.method == <span class="string">'GET'</span>:</span><br><span class="line">        page = request.GET.get(<span class="string">'page'</span>)</span><br><span class="line">        num = request.GET.get(<span class="string">'num'</span>)</span><br><span class="line">        sql = <span class="string">'select * from Equipment_equipment'</span></span><br><span class="line">        <span class="keyword">if</span> page <span class="keyword">and</span> num:</span><br><span class="line">            result = getpage(sql,page,num)</span><br><span class="line">        <span class="keyword">elif</span> page:</span><br><span class="line">            result = getpage(sql,page)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            result = &#123;</span><br><span class="line">                <span class="string">'page_data'</span>: <span class="string">''</span>,</span><br><span class="line">                <span class="string">'page_range'</span>: <span class="string">''</span>,</span><br><span class="line">                <span class="string">'current_page'</span>: <span class="string">''</span>,</span><br><span class="line">                <span class="string">'max_page'</span>: <span class="string">''</span></span><br><span class="line">            &#125;</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        result = &#123;</span><br><span class="line">            <span class="string">'page_data'</span>: <span class="string">''</span>,</span><br><span class="line">            <span class="string">'page_range'</span>: <span class="string">''</span>,</span><br><span class="line">            <span class="string">'current_page'</span>: <span class="string">''</span>,</span><br><span class="line">            <span class="string">'max_page'</span>: <span class="string">''</span></span><br><span class="line">        &#125;</span><br><span class="line">    <span class="keyword">return</span> JsonResponse(result)</span><br></pre></td></tr></table></figure></p>
+<h3 id="前端模板代码逻辑"><a href="#前端模板代码逻辑" class="headerlink" title="前端模板代码逻辑"></a>前端模板代码逻辑</h3><p>html数据展示及分页代码片段：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--服务器展示部分--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"row"</span>&gt;</span></span><br><span class="line">	&#123;% verbatim myblock %&#125;</span><br><span class="line">		<span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"col-lg-12"</span> <span class="attr">id</span>=<span class="string">"myserver"</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">table</span> <span class="attr">width</span>=<span class="string">"100%"</span> <span class="attr">class</span>=<span class="string">"table table-striped table-bordered table-hover"</span> <span class="attr">id</span>=<span class="string">"dataTables-example"</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">thead</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">th</span>&gt;</span>序号<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">th</span>&gt;</span>IP<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">th</span>&gt;</span>主机名<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">th</span>&gt;</span>连接状态<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">th</span>&gt;</span>系统类型<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">th</span>&gt;</span>系统名称<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">th</span>&gt;</span>CPU<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">th</span>&gt;</span>内存<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">th</span>&gt;</span>硬盘<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">th</span>&gt;</span>MAC<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">th</span>&gt;</span>操作<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;/<span class="name">thead</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">tbody</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">tr</span> <span class="attr">class</span>=<span class="string">"odd gradeX"</span> <span class="attr">v-for</span>=<span class="string">'(server,index) in server_data'</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">td</span>&gt;</span>&#123;&#123; index+1 &#125;&#125;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">td</span>&gt;</span>&#123;&#123; server.ip &#125;&#125;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">td</span>&gt;</span>&#123;&#123; server.hostname &#125;&#125;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">td</span>&gt;</span>&#123;&#123; server.status &#125;&#125;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">td</span>&gt;</span>&#123;&#123; server.sys_type &#125;&#125;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">td</span>&gt;</span>&#123;&#123; server.sys_version &#125;&#125;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">td</span>&gt;</span>&#123;&#123; server.cpu &#125;&#125;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">td</span>&gt;</span>&#123;&#123; server.memory &#125;&#125;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">td</span>&gt;</span>&#123;&#123; server.disk &#125;&#125;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">td</span>&gt;</span>&#123;&#123; server.mac &#125;&#125;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">td</span>&gt;</span></span><br><span class="line">						<span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">"btn btn-success btn-group-justified"</span>&gt;</span></span><br><span class="line">							<span class="tag">&lt;<span class="name">a</span> <span class="attr">v-bind:href</span>=<span class="string">"'/eq/shell?id=' + server.id"</span> <span class="attr">target</span>=<span class="string">"_blank"</span>&gt;</span></span><br><span class="line">								远程命令</span><br><span class="line">							<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">						<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;/<span class="name">tbody</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">nav</span> <span class="attr">aria-label</span>=<span class="string">"Page navigation"</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">ul</span> <span class="attr">class</span>=<span class="string">"pagination"</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">li</span> <span class="attr">v-if</span>=<span class="string">"server_current == 1"</span> <span class="attr">class</span>=<span class="string">"disabled"</span>&gt;</span></span><br><span class="line">						<span class="tag">&lt;<span class="name">a</span> <span class="attr">aria-label</span>=<span class="string">"Previous"</span>&gt;</span></span><br><span class="line">							<span class="tag">&lt;<span class="name">span</span> <span class="attr">aria-hidden</span>=<span class="string">"true"</span>&gt;</span><span class="symbol">&amp;laquo;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">						<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">li</span> <span class="attr">v-if</span>=<span class="string">"server_current &gt; 1"</span>&gt;</span></span><br><span class="line">						<span class="tag">&lt;<span class="name">a</span> <span class="attr">v-on:click</span>=<span class="string">"getpage(server_current-1)"</span> <span class="attr">aria-label</span>=<span class="string">"Previous"</span>&gt;</span></span><br><span class="line">							<span class="tag">&lt;<span class="name">span</span> <span class="attr">aria-hidden</span>=<span class="string">"true"</span>&gt;</span><span class="symbol">&amp;laquo;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">						<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"></span><br><span class="line">					<span class="tag">&lt;<span class="name">li</span> <span class="attr">v-for</span>=<span class="string">"page in server_range"</span> <span class="attr">v-bind:class</span>=<span class="string">"&#123; 'active': page == server_current &#125;"</span>&gt;</span></span><br><span class="line">						<span class="tag">&lt;<span class="name">a</span> <span class="attr">herf</span>=<span class="string">"#"</span> <span class="attr">v-on:click</span>=<span class="string">"getpage(page)"</span>&gt;</span>&#123;&#123; page &#125;&#125;<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">					<span class="tag">&lt;<span class="name">li</span> <span class="attr">v-if</span>=<span class="string">"server_current == server_maxpage"</span> <span class="attr">class</span>=<span class="string">"disabled"</span>&gt;</span></span><br><span class="line">						<span class="tag">&lt;<span class="name">a</span> <span class="attr">aria-label</span>=<span class="string">"Next"</span>&gt;</span></span><br><span class="line">							<span class="tag">&lt;<span class="name">span</span> <span class="attr">aria-hidden</span>=<span class="string">"true"</span>&gt;</span><span class="symbol">&amp;raquo;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">						<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">li</span> <span class="attr">v-if</span>=<span class="string">"server_current &lt; server_maxpage"</span>&gt;</span></span><br><span class="line">						<span class="tag">&lt;<span class="name">a</span> <span class="attr">v-on:click</span>=<span class="string">"getpage(server_current+1)"</span> <span class="attr">aria-label</span>=<span class="string">"Next"</span>&gt;</span></span><br><span class="line">							<span class="tag">&lt;<span class="name">span</span> <span class="attr">aria-hidden</span>=<span class="string">"true"</span>&gt;</span><span class="symbol">&amp;raquo;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">						<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;/<span class="name">nav</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">	&#123;% endverbatim myblock %&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>js控制代码片段：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">Vue.use(VueResource); <span class="comment">//由于Vue本身不支持ajax请求，因此就使用Vue-resource插件</span></span><br><span class="line"><span class="keyword">new</span> Vue(</span><br><span class="line">	&#123;</span><br><span class="line">		el: <span class="string">'#myserver'</span>, <span class="comment">//绑定的对象是id为myserver的对象</span></span><br><span class="line">		data: &#123;</span><br><span class="line">			server_data: <span class="string">''</span>,</span><br><span class="line">			server_range: <span class="string">''</span>,</span><br><span class="line">			server_current:<span class="literal">null</span>,</span><br><span class="line">			server_maxpage:<span class="literal">null</span></span><br><span class="line">		&#125;,<span class="comment">//绑定的数据,定义数据模型</span></span><br><span class="line">		created: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">			<span class="keyword">var</span> url = <span class="string">'/eq/server_list_data/?page=1'</span>;</span><br><span class="line">			<span class="keyword">this</span>.$http.get(url).then(</span><br><span class="line">				<span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</span><br><span class="line">					<span class="built_in">console</span>.log(data);</span><br><span class="line">					<span class="keyword">var</span> Data = data.data;</span><br><span class="line">					<span class="keyword">this</span>.server_data = Data.page_data;</span><br><span class="line">					<span class="keyword">this</span>.server_range = Data.page_range;</span><br><span class="line">					<span class="keyword">this</span>.server_current = Data.current_page;</span><br><span class="line">					<span class="keyword">this</span>.server_maxpage = Data.max_page;</span><br><span class="line">					<span class="comment">//console.log(this.server_maxpage);</span></span><br><span class="line">				&#125;,<span class="comment">//请求成功</span></span><br><span class="line">				<span class="function"><span class="keyword">function</span> (<span class="params">response</span>) </span>&#123;</span><br><span class="line">					<span class="built_in">console</span>.log(response);</span><br><span class="line">				&#125;<span class="comment">//请求失败</span></span><br><span class="line">			)<span class="comment">//ajax请求</span></span><br><span class="line">		&#125;,<span class="comment">//一个回调函数，默认封装了ajax请求</span></span><br><span class="line">		methods: &#123;</span><br><span class="line">			getpage: <span class="function"><span class="keyword">function</span> (<span class="params">page</span>) </span>&#123;</span><br><span class="line">				<span class="keyword">var</span> url = <span class="string">'/eq/server_list_data/?page='</span> + page;</span><br><span class="line">				<span class="keyword">this</span>.$http.get(url).then(</span><br><span class="line">					<span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</span><br><span class="line">						<span class="comment">//console.log(data);</span></span><br><span class="line">						<span class="keyword">var</span> Data = data.data;</span><br><span class="line">						<span class="keyword">this</span>.server_data = Data.page_data;</span><br><span class="line">						<span class="keyword">this</span>.server_range = Data.page_range;</span><br><span class="line">						<span class="keyword">this</span>.server_current = Data.current_page;</span><br><span class="line">						<span class="keyword">this</span>.server_maxpage = Data.max_page;</span><br><span class="line">					&#125;,<span class="comment">//请求成功</span></span><br><span class="line">					<span class="function"><span class="keyword">function</span> (<span class="params">response</span>) </span>&#123;</span><br><span class="line">						<span class="built_in">console</span>.log(response);</span><br><span class="line">					&#125;<span class="comment">//请求失败</span></span><br><span class="line">				)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;<span class="comment">//用来定义被绑定的方法</span></span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/Django/" rel="tag"># Django</a>
+          
+            <a href="/tags/Ajax/" rel="tag"># Ajax</a>
+          
+            <a href="/tags/Vue/" rel="tag"># Vue</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/09/jQueryAjax使用FormData对象上传文件/" rel="next" title="jQueryAjax使用FormData对象上传文件">
+                <i class="fa fa-chevron-left"></i> jQueryAjax使用FormData对象上传文件
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/23/Django基础Gateone实现Web终端SSH功能/" rel="prev" title="Django基础Gateone实现Web终端SSH功能">
+                Django基础Gateone实现Web终端SSH功能 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、Vue用法简介"><span class="nav-number">1.</span> <span class="nav-text">一、Vue用法简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#导入框架"><span class="nav-number">1.1.</span> <span class="nav-text">导入框架</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vue常见绑定方式"><span class="nav-number">1.2.</span> <span class="nav-text">vue常见绑定方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、分页功能具体实现"><span class="nav-number">2.</span> <span class="nav-text">二、分页功能具体实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#django后台代码逻辑"><span class="nav-number">2.1.</span> <span class="nav-text">django后台代码逻辑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#前端模板代码逻辑"><span class="nav-number">2.2.</span> <span class="nav-text">前端模板代码逻辑</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="python,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="python2默认以ASCII编码，但是在实际编码过程中，我们会用到很多中文，为了不使包含中文的程序报错，也是为了符合国际通用惯例，一般将我们的文件编码设置为utf-8格式。#coding:utf-8">
+<meta name="keywords" content="python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python基础-编码小结python2">
+<meta property="og:url" content="http://zhanghonged.github.io/2017/11/13/Python基础-编码小结python2/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="python2默认以ASCII编码，但是在实际编码过程中，我们会用到很多中文，为了不使包含中文的程序报错，也是为了符合国际通用惯例，一般将我们的文件编码设置为utf-8格式。#coding:utf-8">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-11-14T08:11:19.706Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python基础-编码小结python2">
+<meta name="twitter:description" content="python2默认以ASCII编码，但是在实际编码过程中，我们会用到很多中文，为了不使包含中文的程序报错，也是为了符合国际通用惯例，一般将我们的文件编码设置为utf-8格式。#coding:utf-8">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2017/11/13/Python基础-编码小结python2/">
+
+
+
+
+
+  <title>Python基础-编码小结python2 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2017/11/13/Python基础-编码小结python2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Python基础-编码小结python2</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-13T16:58:42+08:00">
+                2017-11-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python/" itemprop="url" rel="index">
+                    <span itemprop="name">python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>python2默认以ASCII编码，但是在实际编码过程中，我们会用到很多中文，为了不使包含中文的程序报错，也是为了符合国际通用惯例，一般将我们的文件编码设置为utf-8格式。<br><strong>#coding:utf-8</strong><br><a id="more"></a><br>先看下面代码:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">str=&apos;你好&apos;</span><br><span class="line">print str</span><br><span class="line"></span><br><span class="line">##result运行结果报错:</span><br><span class="line">  File &quot;■■■py&quot;, line 2</span><br><span class="line">SyntaxError: Non-ASCII character &apos;\xe4&apos; in file ■■■py on line 2, but no encoding declared; see http://python.org/dev/peps/pep-0263/ for details</span><br></pre></td></tr></table></figure></p>
+<p>这是提示程序中有非ASCII编码的字符。如果加上utf-8声明，程序就不会报错。</p>
+<h2 id="Unicode和utf-8的关系："><a href="#Unicode和utf-8的关系：" class="headerlink" title="Unicode和utf-8的关系："></a>Unicode和utf-8的关系：</h2><blockquote>
+<ul>
+<li>Unicode是字符集，UTF-8是Unicode的一种编码方式，并列的还包括UTF-16、UTF-32等。</li>
+<li>某个字符的Unicode通过查询标准得到，其UTF-8编码由Unicode码计算得到。</li>
+</ul>
+</blockquote>
+<blockquote>
+<p>可以这样来理解：字符串是由字符构成，字符在计算机硬件中通过二进制形式存储，这种二进制形式就是编码。<br>如果直接使用 “字符串<-->字符<-->二进制表示(编码)” ，会增加不同类型编码之间转换的复杂性。所以引入了一个抽象层，“字符串<-->字符<-->与存储无关的表示<-->二进制表示(编码)” ，这样可以用一种与存储无关的形式表示字符，不同的编码之间转换时可以先转换到这个抽象层，然后再转换为其他编码形式。<br>在这里，unicode 就是 “与存储无关的表示”，utf—8 就是 “二进制表示”。</--></--></--></--></--></p>
+</blockquote>
+<h2 id="chardet获取编码格式"><a href="#chardet获取编码格式" class="headerlink" title="chardet获取编码格式"></a>chardet获取编码格式</h2><p>有些时候我们是无法知道字符串是什么编码的，比如抓取网页时，有些是utf-8的，有些是gb2312编码的，那我们该怎么获取编码格式并转换为unicode呢。这里就介绍到一个第三方库chardet。使用方式大概如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#coding:utf-8</span><br><span class="line">import chardet</span><br><span class="line">str=&apos;你好&apos;</span><br><span class="line">print chardet.detect(str)</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">&#123;&apos;confidence&apos;: 0.7525, &apos;language&apos;: &apos;&apos;, &apos;encoding&apos;: &apos;utf-8&apos;&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Python2中的str和unicode"><a href="#Python2中的str和unicode" class="headerlink" title="Python2中的str和unicode"></a>Python2中的str和unicode</h2><blockquote>
+<p>Linux下默认编码为utf-8,Windows下默认编码为GBK。<br>Python2 中字符串的设计颇不合理，导致新手经常会出现各种问题，类似下面的提示信息相信很多人都遇到过（UnicodeEncodeError 或者 UnicodeDecodeError）：<br>首先需要搞清楚python中的两个类型：<strong>&lt;itype ‘str’&gt;</strong> 和 <strong>&lt;itype ‘unicode’&gt;</strong><br><span style="color:red;background:yellow;">str：是字节串（container for bytes），由 Unicode 经过编码(encode)后的字节组成的，实际上是字节串。</span><br><span style="color:red;background:yellow">unicode：真正意义上的字符串，其中的每个字符用 Unicode 中对应的 Code Point 表示，真正意义上的字符串。</span><br>我们可以用 GBK，UTF-8 等编码方案将 Unicode 类型转换为 str 类型。</p>
+</blockquote>
+<p>当前环境linux，默认编码utf-8<br>str存储的是已经编码后的字节序列，输出时看到每个字节用16进制表示，以\x开头。每个汉字会占用3个字节的长度。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; a=&apos;中文&apos;</span><br><span class="line">&gt;&gt;&gt; type(a)</span><br><span class="line">&lt;type &apos;str&apos;&gt;</span><br><span class="line">&gt;&gt;&gt; a</span><br><span class="line">&apos;\xe4\xb8\xad\xe6\x96\x87&apos;</span><br><span class="line">&gt;&gt;&gt; len(a)</span><br><span class="line">6</span><br></pre></td></tr></table></figure></p>
+<p>unicode是“字符”串，存储的是编码前的字符，输出是看到字符以\u开头。每个汉字占用一个长度。定义一个Unicode对象时，以u 开头。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; b=u&apos;中文&apos;</span><br><span class="line">&gt;&gt;&gt; type(b)</span><br><span class="line">&lt;type &apos;unicode&apos;&gt;</span><br><span class="line">&gt;&gt;&gt; b</span><br><span class="line">u&apos;\u4e2d\u6587&apos;</span><br><span class="line">&gt;&gt;&gt; len(b)</span><br><span class="line">2</span><br></pre></td></tr></table></figure></p>
+<h2 id="默认编码"><a href="#默认编码" class="headerlink" title="默认编码"></a>默认编码</h2><p>Python2中的默认编码，有多个不同的变量。</p>
+<h3 id="1、代码文件开头的coding"><a href="#1、代码文件开头的coding" class="headerlink" title="1、代码文件开头的coding"></a>1、代码文件开头的coding</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding: utf-8 -*-</span><br></pre></td></tr></table></figure>
+<p>或<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#coding=utf-8</span><br></pre></td></tr></table></figure></p>
+<p>指明代码文件中的字符编码，用于代码文件中出现中文的情况。如果不设置，默认是ascii，就会出现文章开头代码的报错。</p>
+<h3 id="2、sys-stdin-encoding和sys-stdout-encoding"><a href="#2、sys-stdin-encoding和sys-stdout-encoding" class="headerlink" title="2、sys.stdin.encoding和sys.stdout.encoding"></a>2、sys.stdin.encoding和sys.stdout.encoding</h3><p>sdtin和stdout输入输出使用的编码，包命令行参数和print输出，由locale环境变量决定。<br>在en_US.UTF-8的系统中，默认值是UTF-8。</p>
+<h3 id="3、sys-getdefaultencoding"><a href="#3、sys-getdefaultencoding" class="headerlink" title="3、sys.getdefaultencoding()"></a>3、sys.getdefaultencoding()</h3><p>文件读写和字符串处理等操作使用的默认编码。<br>默认值是ascii。</p>
+<h2 id="decode和encode"><a href="#decode和encode" class="headerlink" title="decode和encode"></a>decode和encode</h2><blockquote>
+<p>encode是编码，即从unicode格式到二进制的编码格式如utf-8、gb2312等。<br>decode是解码，即从二进制编码格式到unicode编码格式。</p>
+</blockquote>
+<p>str可以通过decode()方法转化为unicode对象，参数指明编码方式。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; a=&apos;中文&apos;</span><br><span class="line">&gt;&gt;&gt; type(a)</span><br><span class="line">&lt;type &apos;str&apos;&gt;</span><br><span class="line">&gt;&gt;&gt; a.decode(&apos;utf-8&apos;)</span><br><span class="line">u&apos;\u4e2d\u6587&apos;</span><br></pre></td></tr></table></figure></p>
+<p>unicode可以通过encode()方法转化为str对象，参数指明编码方式。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; b=u&apos;中文&apos;</span><br><span class="line">&gt;&gt;&gt; type(b)</span><br><span class="line">&lt;type &apos;unicode&apos;&gt;</span><br><span class="line">&gt;&gt;&gt; b.encode(&apos;utf-8&apos;)</span><br><span class="line">&apos;\xe4\xb8\xad\xe6\x96\x87&apos;</span><br><span class="line">&gt;&gt;&gt; type(b.encode(&apos;utf-8&apos;))</span><br><span class="line">&lt;type &apos;str&apos;&gt;</span><br></pre></td></tr></table></figure></p>
+<h2 id="编码解码错误"><a href="#编码解码错误" class="headerlink" title="编码解码错误"></a>编码解码错误</h2><p>Python2中经常会遇到<strong>UnicodeEncodeError</strong>和<strong>UnicodeDecodeError</strong>，怎么产生的呢？ 如下代码所示：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; u&apos;python你好&apos;.encode(&apos;ascii&apos;)</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</span><br><span class="line">UnicodeEncodeError: &apos;ascii&apos; codec can&apos;t encode characters in position 6-7: ordinal not in range(128)</span><br><span class="line">&gt;&gt;&gt; </span><br><span class="line">&gt;&gt;&gt; </span><br><span class="line">&gt;&gt;&gt; u&apos;python你好&apos;.decode(&apos;ascii&apos;)</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</span><br><span class="line">UnicodeEncodeError: &apos;ascii&apos; codec can&apos;t encode characters in position 6-7: ordinal not in range(128)</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>&emsp;当我们用 ascii 去编码带有中文的unicode字符串时，发生了UnicodeEncodeError，当我们用 ascii 去解码有中文的str字节串时，发生了UnicodeDecodeError。我们知道，ascii 只包含 127 个字符，根本无法表示中文。所以，让 ascii 来编码、解码中文，就超出了其能力范围。这就像你对一个不懂中文的老外说中文，他根本没法听懂。<br>简单来说，<span style="color:red;">所有的编码、解码错误都是由于所选的编码、解码方式无法表示某些字符造成的。</span></p>
+</blockquote>
+<h2 id="隐藏的解码"><a href="#隐藏的解码" class="headerlink" title="隐藏的解码"></a>隐藏的解码</h2><blockquote>
+<p>str和unicode类型都可以用来表示字符串，为了方便它们之间进行操作，python并不要求在操作之前统一类型，所以下面的代码是合法的，并且能得到正确的输出：</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; new_str=u&apos;python&apos; + &apos;hello&apos;</span><br><span class="line">&gt;&gt;&gt; new_str,type(new_str)</span><br><span class="line">(u&apos;pythonhello&apos;, &lt;type &apos;unicode&apos;&gt;)</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>&emsp;因为str类型是隐含有某种编码方式的字节码，所以python内部将其解码为 <strong>unicode</strong> 后，再和 <strong>unicode</strong> 类型进行 <strong>+</strong> 操作，最后返回的结果也是 <strong>unicode</strong> 类型。<br>第2步的解码过程是在幕后悄悄发生的，默认采用 <strong>ascii</strong> 来进行解码，可以通过 <strong>sys.getdefaultencoding()</strong> 来获取默认编码方式。Python之所以采用 <strong>ascii</strong>，是因为 <strong>ascii</strong> 是最早的编码方式，是许多编码方式的子集。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; import sys</span><br><span class="line">&gt;&gt;&gt; sys.getdefaultencoding()</span><br><span class="line">&apos;ascii&apos;</span><br></pre></td></tr></table></figure>
+<p>不过正是这个不可见的解码过程，有时候会导致出乎意料的解码错误，考虑下面的代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; u&apos;python&apos; + &apos;你好&apos;</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</span><br><span class="line">UnicodeDecodeError: &apos;ascii&apos; codec can&apos;t decode byte 0xe4 in position 0: ordinal not in range(128)</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure></p>
+<p>上面在字符串的 <strong>+</strong> 操作时，python偷偷对’你好’用 <strong>ascii</strong> 做解码操作，所以抛出了 <strong>UnicodeDecodeError</strong> 异常。其实上面操作等同于 <span style="color:red;">u’python’ + ‘你好’.decode(‘ascii’) 。</span></p>
+<h2 id="隐藏的编码"><a href="#隐藏的编码" class="headerlink" title="隐藏的编码"></a>隐藏的编码</h2><blockquote>
+<p>&emsp;Python 不只偷偷地用 ascii 来解码str类型的字节串，有时还会偷偷用ascii来编码unicode类型。如果函数或类等对象接收的是 str 类型的字符串，但传进去的是unicode，python2 就会使用 ascii 将其编码成str类型再做运算。<br>以raw_input为例，我们可以给 raw_input 函数提供 prompt 参数，作为输入提示内容。这里如果 prompt 是 unicode 类型，python会先用ascii对其进行编码，所以下面代码会抛出UnicodeEncodeError异常：</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; a=raw_input(u&apos;用户名:&apos;)</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</span><br><span class="line">UnicodeEncodeError: &apos;ascii&apos; codec can&apos;t encode characters in position 0-2: ordinal not in range(128)</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
+<p>上面操作完全等同于 a=raw_input(u’用户名:’.encode(‘utf-8’))，你会发现它们抛出的异常完全一样。</p>
+<h2 id="sys-defaultencoding"><a href="#sys-defaultencoding" class="headerlink" title="sys.defaultencoding"></a>sys.defaultencoding</h2><p><em>之前也遇到过很莫名其妙的编码错误，在网上搜到这样的解决方式，并可以解决问题：</em><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">import sys</span><br><span class="line">reload(sys)</span><br><span class="line">sys.setdefaultencoding(&apos;utf-8&apos;)</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>但并不知道上面是什么原理，下来我们分析下这个：<br>&emsp;Python里面的编码和解码也就是<strong>unicode</strong>和<strong>str</strong>这两种形式的相互转化。编码是 unicode -&gt; str，相反解码就是 str -&gt; unicode。剩下的问题就是确定何时需要进行编码或者解码了。<br>关于文件开头的”编码指示”，也就是 <strong>#conding:utf-8</strong> 这个语句。Python默认脚本文件都是 <strong>utf-8</strong> 编码的，当文件中有非 <strong>utf-8</strong> 编码范围内的字符的时候就要使用”编码指示”来修正.<br>关于 <strong>sys.defaultencoding</strong>，这个在解码没有明确指明解码方式的时候使用。</p>
+</blockquote>
+<p>比如我有如下代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#coding:utf-8</span><br><span class="line">s = &apos;中文&apos;  # 注意这里的 str 是 str 类型的，而不是 unicode</span><br><span class="line">s.encode(&apos;gb18030&apos;)</span><br><span class="line"></span><br><span class="line">##resultult</span><br><span class="line">UnicodeDecodeError: &apos;ascii&apos; codec can&apos;t decode byte 0xe4 in position 0: ordinal not in range(128)</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>&emsp;这句代码是将 <strong>s</strong> 重新编码为 <strong>gb18030</strong> 的格式，即进行 <strong>unicode -&gt; str</strong> 的转换。<br>因为 <strong>s</strong> 本身就是 <strong>str</strong> 类型的，因此Python会自动的先将 <strong>s</strong> 解码为 <strong>unicode</strong> ，然后再编码成 <strong>gb18030</strong>。因为解码是python自动进行的，我们没有指明解码方式，python就会使用 <strong>sys.defaultencoding</strong> 指明的方式来解码。<br>很多情况下 <strong>sys.defaultencoding</strong> 是 <strong>ascii</strong>，如果 <strong>s</strong> 不是这个类型就会出错。拿上面的情况来说，我的 <strong>sys.defaultencoding</strong> 是 <strong>anscii</strong>，而 <strong>s</strong> 的编码方式和文件的编码方式一致，是 <strong>utf8</strong> 的，所以出错了。</p>
+</blockquote>
+<p>对于上面的错误，我们有两种方式来进行修正：<br>一、明确的指示出s的编码方式<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#coding:utf-8</span><br><span class="line">s = &apos;中文&apos;</span><br><span class="line">s.decode(&apos;utf-8&apos;).encode(&apos;gb18030&apos;)</span><br></pre></td></tr></table></figure></p>
+<p>二、更改sys.defaultencoding为文件的编码方式<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#coding:utf-8</span><br><span class="line">import sys</span><br><span class="line">reload(sys)</span><br><span class="line">sys.setdefaultencoding(&apos;utf-8&apos;)</span><br><span class="line">s.encode(&apos;gb18030&apos;)</span><br></pre></td></tr></table></figure></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>str可以看作是unicode字符串经过某种编码后的字节组成的数组</li>
+<li>unicode是真正意义上的字符串</li>
+<li>通过 encode 可以将unicode类型编码为str类型</li>
+<li>通过 decode 可以将str类型解码为unicode类型</li>
+<li>python 会隐式地进行编码、解码，默认采用 ascii</li>
+<li>所有的编码、解码错误都是由于所选的编码、解码方式无法表示某些字符造成的</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/13/字符编码/" rel="next" title="字符编码">
+                <i class="fa fa-chevron-left"></i> 字符编码
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/15/python基础-迭代器和生成器/" rel="prev" title="python基础-迭代器和生成器">
+                python基础-迭代器和生成器 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Unicode和utf-8的关系："><span class="nav-number">1.</span> <span class="nav-text">Unicode和utf-8的关系：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#chardet获取编码格式"><span class="nav-number">2.</span> <span class="nav-text">chardet获取编码格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Python2中的str和unicode"><span class="nav-number">3.</span> <span class="nav-text">Python2中的str和unicode</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#默认编码"><span class="nav-number">4.</span> <span class="nav-text">默认编码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、代码文件开头的coding"><span class="nav-number">4.1.</span> <span class="nav-text">1、代码文件开头的coding</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、sys-stdin-encoding和sys-stdout-encoding"><span class="nav-number">4.2.</span> <span class="nav-text">2、sys.stdin.encoding和sys.stdout.encoding</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、sys-getdefaultencoding"><span class="nav-number">4.3.</span> <span class="nav-text">3、sys.getdefaultencoding()</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#decode和encode"><span class="nav-number">5.</span> <span class="nav-text">decode和encode</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编码解码错误"><span class="nav-number">6.</span> <span class="nav-text">编码解码错误</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#隐藏的解码"><span class="nav-number">7.</span> <span class="nav-text">隐藏的解码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#隐藏的编码"><span class="nav-number">8.</span> <span class="nav-text">隐藏的编码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sys-defaultencoding"><span class="nav-number">9.</span> <span class="nav-text">sys.defaultencoding</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">10.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

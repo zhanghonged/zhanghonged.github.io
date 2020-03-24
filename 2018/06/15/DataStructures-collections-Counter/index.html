@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="python,collections,Counter,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="Counter：可哈希对象个数。Counter 是dict的子类，用于计数可哈希对象。它是一个无序的容器，元素被存储为字典键，它们的计数被存储为字典值。计数允许包括零或负计数的任何整数值。Counter 类与其他语言的 bags 或 multisets 类似。">
+<meta name="keywords" content="python,collections,Counter">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DataStructures-collections-Counter">
+<meta property="og:url" content="http://zhanghonged.github.io/2018/06/15/DataStructures-collections-Counter/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="Counter：可哈希对象个数。Counter 是dict的子类，用于计数可哈希对象。它是一个无序的容器，元素被存储为字典键，它们的计数被存储为字典值。计数允许包括零或负计数的任何整数值。Counter 类与其他语言的 bags 或 multisets 类似。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-06-15T08:41:38.870Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DataStructures-collections-Counter">
+<meta name="twitter:description" content="Counter：可哈希对象个数。Counter 是dict的子类，用于计数可哈希对象。它是一个无序的容器，元素被存储为字典键，它们的计数被存储为字典值。计数允许包括零或负计数的任何整数值。Counter 类与其他语言的 bags 或 multisets 类似。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2018/06/15/DataStructures-collections-Counter/">
+
+
+
+
+
+  <title>DataStructures-collections-Counter | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2018/06/15/DataStructures-collections-Counter/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">DataStructures-collections-Counter</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-15T15:07:22+08:00">
+                2018-06-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PyMOTW-3/" itemprop="url" rel="index">
+                    <span itemprop="name">PyMOTW-3</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><span style="font-size:1.2em;font-weight:bold">Counter：可哈希对象个数。</span><br><strong>Counter</strong> 是dict的子类，用于计数可哈希对象。它是一个无序的容器，元素被存储为字典键，它们的计数被存储为字典值。计数允许包括零或负计数的任何整数值。<strong>Counter</strong> 类与其他语言的 <strong>bags</strong> 或 <strong>multisets</strong> 类似。<br><a id="more"></a></p>
+<p><span style="font-size:20px;"><strong>class</strong> collections.<strong>Counter([iterable-or-mapping])</strong></span></p>
+<h2 id="1、初始化"><a href="#1、初始化" class="headerlink" title="1、初始化"></a>1、初始化</h2><p><strong>Counter</strong> 支持三种形式的初始化，可以通过可迭代对象、字典mapping及默认参数来构造。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># collections_counter_init.py</span></span><br><span class="line"><span class="keyword">import</span> collections</span><br><span class="line"></span><br><span class="line">print(collections.Counter([<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>, <span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'b'</span>]))</span><br><span class="line">print(collections.Counter(&#123;<span class="string">'a'</span>: <span class="number">2</span>, <span class="string">'b'</span>: <span class="number">3</span>, <span class="string">'c'</span>: <span class="number">1</span>&#125;))</span><br><span class="line">print(collections.Counter(a=<span class="number">2</span>, b=<span class="number">3</span>, c=<span class="number">1</span>))</span><br></pre></td></tr></table></figure></p>
+<p>初始化生成的结果是相同的:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ python3 collections_counter_init.py</span><br><span class="line"></span><br><span class="line">Counter(&#123;&apos;b&apos;: 3, &apos;a&apos;: 2, &apos;c&apos;: 1&#125;)</span><br><span class="line">Counter(&#123;&apos;b&apos;: 3, &apos;a&apos;: 2, &apos;c&apos;: 1&#125;)</span><br><span class="line">Counter(&#123;&apos;b&apos;: 3, &apos;a&apos;: 2, &apos;c&apos;: 1&#125;)</span><br></pre></td></tr></table></figure></p>
+<h2 id="2、update更新"><a href="#2、update更新" class="headerlink" title="2、update更新"></a>2、update更新</h2><p><strong>update([iterable-or-mapping])</strong><br>不传递任何参数就生成一个 空 <strong>Counter</strong>，然后使用 <strong>update()</strong> 方法来更新。<br>元素从一个<span style="font-weight:bold;color:#698BD2">可迭代对象</span>计数或从另一个<span style="font-weight:bold;color:#698BD2">映射</span>（或计数器）增加。类似 <strong>dict.update()</strong>，但增加计数，而不是替换它们。此外，<span style="font-weight:bold;color:#698BD2">可迭代对象</span>应为一系列元素，而不是(key, value)对。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># collections_counter_update.py</span></span><br><span class="line"><span class="keyword">import</span> collections</span><br><span class="line"></span><br><span class="line">c = collections.Counter()</span><br><span class="line">print(<span class="string">'Initial :'</span>, c)</span><br><span class="line"></span><br><span class="line">c.update(<span class="string">'abcdaab'</span>)</span><br><span class="line">print(<span class="string">'Sequence:'</span>, c)</span><br><span class="line"></span><br><span class="line">c.update(&#123;<span class="string">'a'</span>: <span class="number">1</span>, <span class="string">'d'</span>: <span class="number">5</span>&#125;)</span><br><span class="line">print(<span class="string">'Dict    :'</span>, c)</span><br></pre></td></tr></table></figure></p>
+<p>这个例子 <strong>a</strong> 的计数从3增加到4。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ python3 collections_counter_update.py</span><br><span class="line"></span><br><span class="line">Initial : Counter()</span><br><span class="line">Sequence: Counter(&#123;&apos;a&apos;: 3, &apos;b&apos;: 2, &apos;c&apos;: 1, &apos;d&apos;: 1&#125;)</span><br><span class="line">Dict    : Counter(&#123;&apos;d&apos;: 6, &apos;a&apos;: 4, &apos;b&apos;: 2, &apos;c&apos;: 1&#125;)</span><br></pre></td></tr></table></figure></p>
+<h2 id="3、访问计数器"><a href="#3、访问计数器" class="headerlink" title="3、访问计数器"></a>3、访问计数器</h2><p>一旦 <strong>Counter</strong> 有值后，就可以字典API来获取值了。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># collections_counter_get_values.py</span></span><br><span class="line"><span class="keyword">import</span> collections</span><br><span class="line"></span><br><span class="line">c = collections.Counter(<span class="string">'abcdaab'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> letter <span class="keyword">in</span> <span class="string">'abcde'</span>:</span><br><span class="line">    print(<span class="string">'&#123;&#125; : &#123;&#125;'</span>.format(letter, c[letter]))</span><br></pre></td></tr></table></figure></p>
+<p><strong>Counter</strong> 对象的接口和字典一样，除了它们对于缺失项目返回一个零计数，而不是引发 <strong>KeyError</strong> 异常。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ python3 collections_counter_get_values.py</span><br><span class="line"></span><br><span class="line">a : 3</span><br><span class="line">b : 2</span><br><span class="line">c : 1</span><br><span class="line">d : 1</span><br><span class="line">e : 0</span><br></pre></td></tr></table></figure></p>
+<h3 id="elements"><a href="#elements" class="headerlink" title="elements()"></a>elements()</h3><p><strong>elements()</strong> 返回一个迭代器，对元素重复迭代其计数次。元素以随机顺序返回。如果元素的计数小于1，<strong>elements()</strong> 将忽略它。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># collections_counter_elements.py</span></span><br><span class="line"><span class="keyword">import</span> collections</span><br><span class="line"></span><br><span class="line">c = collections.Counter(<span class="string">'extremely'</span>)</span><br><span class="line">c[<span class="string">'z'</span>] = <span class="number">0</span></span><br><span class="line">print(c)</span><br><span class="line">print(list(c.elements()))</span><br></pre></td></tr></table></figure></p>
+<p>结果:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ python3 collections_counter_elements.py</span><br><span class="line"></span><br><span class="line">Counter(&#123;&apos;e&apos;: 3, &apos;x&apos;: 1, &apos;t&apos;: 1, &apos;r&apos;: 1, &apos;m&apos;: 1, &apos;l&apos;: 1, &apos;y&apos;: 1,</span><br><span class="line">&apos;z&apos;: 0&#125;)</span><br><span class="line">[&apos;e&apos;, &apos;e&apos;, &apos;e&apos;, &apos;x&apos;, &apos;t&apos;, &apos;r&apos;, &apos;m&apos;, &apos;l&apos;, &apos;y&apos;]</span><br></pre></td></tr></table></figure></p>
+<h3 id="most-common"><a href="#most-common" class="headerlink" title="most_common()"></a>most_common()</h3><p><strong>most_common()</strong> 返回 <strong>n</strong> 个最常见的元素及其计数的列表，从最常见到最少见。如果省略 <strong>n</strong> 或为 <strong>None</strong>，<strong>most_common()</strong> 返回计数器中所有元素。具有相等计数的元素是任意排序的：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># collections_counter_most_common.py</span></span><br><span class="line"><span class="keyword">import</span> collections</span><br><span class="line"></span><br><span class="line">c = collections.Counter()</span><br><span class="line"><span class="keyword">with</span> open(<span class="string">'/usr/share/dict/words'</span>, <span class="string">'rt'</span>) <span class="keyword">as</span> f:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> f:</span><br><span class="line">        c.update(line.rstrip().lower())</span><br><span class="line"></span><br><span class="line">print(<span class="string">'Most common:'</span>)</span><br><span class="line"><span class="keyword">for</span> letter, count <span class="keyword">in</span> c.most_common(<span class="number">3</span>):</span><br><span class="line">    print(<span class="string">'&#123;&#125;: &#123;:&gt;7&#125;'</span>.format(letter, count))</span><br></pre></td></tr></table></figure></p>
+<p>结果:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ python3 collections_counter_most_common.py</span><br><span class="line"></span><br><span class="line">Most common:</span><br><span class="line">e:  235331</span><br><span class="line">i:  201032</span><br><span class="line">a:  199554</span><br></pre></td></tr></table></figure></p>
+<h2 id="4、Counter运算"><a href="#4、Counter运算" class="headerlink" title="4、Counter运算"></a>4、Counter运算</h2><p><strong>Counter</strong> 支持几个数学运算生成聚合结果，加法和减法通过相加或相减相应元素的计数来组合计数器。交集和并集返回相应计数的最小值和最大值。每个操作的输入都可以接受带有符号的计数，但输出将排除计数为零或更少的结果。<br><strong>+=, -=, &amp;=, 和 |=</strong> 也是支持的。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># collections_counter_arithmetic.py</span></span><br><span class="line"><span class="keyword">import</span> collections</span><br><span class="line"></span><br><span class="line">c1 = collections.Counter([<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>, <span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'b'</span>])</span><br><span class="line">c2 = collections.Counter(<span class="string">'alphabet'</span>)</span><br><span class="line"></span><br><span class="line">print(<span class="string">'C1:'</span>, c1)</span><br><span class="line">print(<span class="string">'C2:'</span>, c2)</span><br><span class="line"></span><br><span class="line">print(<span class="string">'\nCombined counts:'</span>)</span><br><span class="line">print(c1 + c2)</span><br><span class="line"></span><br><span class="line">print(<span class="string">'\nSubtraction:'</span>)</span><br><span class="line">print(c1 - c2)</span><br><span class="line"></span><br><span class="line">print(<span class="string">'\nIntersection (taking positive minimums):'</span>)</span><br><span class="line">print(c1 &amp; c2)</span><br><span class="line"></span><br><span class="line">print(<span class="string">'\nUnion (taking maximums):'</span>)</span><br><span class="line">print(c1 | c2)</span><br></pre></td></tr></table></figure></p>
+<p>每个操作都会生成一个新的 <strong>Counter</strong>，任何小于 <strong>1</strong> 的计数都会被抛弃。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">$ python3 collections_counter_arithmetic.py</span><br><span class="line"></span><br><span class="line">C1: Counter(&#123;&apos;b&apos;: 3, &apos;a&apos;: 2, &apos;c&apos;: 1&#125;)</span><br><span class="line">C2: Counter(&#123;&apos;a&apos;: 2, &apos;l&apos;: 1, &apos;p&apos;: 1, &apos;h&apos;: 1, &apos;b&apos;: 1, &apos;e&apos;: 1, &apos;t&apos;: 1&#125;)</span><br><span class="line"></span><br><span class="line">Combined counts:</span><br><span class="line">Counter(&#123;&apos;a&apos;: 4, &apos;b&apos;: 4, &apos;c&apos;: 1, &apos;l&apos;: 1, &apos;p&apos;: 1, &apos;h&apos;: 1, &apos;e&apos;: 1, &apos;t&apos;: 1&#125;)</span><br><span class="line"></span><br><span class="line">Subtraction:</span><br><span class="line">Counter(&#123;&apos;b&apos;: 2, &apos;c&apos;: 1&#125;)</span><br><span class="line"></span><br><span class="line">Intersection (taking positive minimums):</span><br><span class="line">Counter(&#123;&apos;a&apos;: 2, &apos;b&apos;: 1&#125;)</span><br><span class="line"></span><br><span class="line">Union (taking maximums):</span><br><span class="line">Counter(&#123;&apos;b&apos;: 3, &apos;a&apos;: 2, &apos;c&apos;: 1, &apos;l&apos;: 1, &apos;p&apos;: 1, &apos;h&apos;: 1, &apos;e&apos;: 1, &apos;t&apos;: 1&#125;)</span><br></pre></td></tr></table></figure></p>
+<p><span style="font-weight:bold;color:#000080">备注:<span><br><a href="https://docs.python.org/3.6/library/collections.html" target="_blank" rel="noopener">Standard library documentation for collections</a></span></span></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/collections/" rel="tag"># collections</a>
+          
+            <a href="/tags/Counter/" rel="tag"># Counter</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/14/DataStructures-collections-ChainMap/" rel="next" title="DataStructures-collections-ChainMap">
+                <i class="fa fa-chevron-left"></i> DataStructures-collections-ChainMap
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/06/16/DataStructures-collections-defaultdict/" rel="prev" title="DataStructures-collections-defaultdict">
+                DataStructures-collections-defaultdict <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1、初始化"><span class="nav-number">1.</span> <span class="nav-text">1、初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2、update更新"><span class="nav-number">2.</span> <span class="nav-text">2、update更新</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3、访问计数器"><span class="nav-number">3.</span> <span class="nav-text">3、访问计数器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#elements"><span class="nav-number">3.1.</span> <span class="nav-text">elements()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#most-common"><span class="nav-number">3.2.</span> <span class="nav-text">most_common()</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4、Counter运算"><span class="nav-number">4.</span> <span class="nav-text">4、Counter运算</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

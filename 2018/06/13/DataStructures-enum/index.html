@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="python,enum,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="enum：枚举类型。enum 模块定义了具有迭代和比较功能的枚举类型，使用预先定义好的值来代替数值和字符串。">
+<meta name="keywords" content="python,enum">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DataStructures-enum">
+<meta property="og:url" content="http://zhanghonged.github.io/2018/06/13/DataStructures-enum/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="enum：枚举类型。enum 模块定义了具有迭代和比较功能的枚举类型，使用预先定义好的值来代替数值和字符串。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-06-14T03:47:08.215Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DataStructures-enum">
+<meta name="twitter:description" content="enum：枚举类型。enum 模块定义了具有迭代和比较功能的枚举类型，使用预先定义好的值来代替数值和字符串。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2018/06/13/DataStructures-enum/">
+
+
+
+
+
+  <title>DataStructures-enum | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2018/06/13/DataStructures-enum/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">DataStructures-enum</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-13T17:10:39+08:00">
+                2018-06-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PyMOTW-3/" itemprop="url" rel="index">
+                    <span itemprop="name">PyMOTW-3</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><span style="font-size:1.2em;font-weight:bold">enum：枚举类型。</span><br><strong>enum</strong> 模块定义了具有迭代和比较功能的枚举类型，使用预先定义好的值来代替数值和字符串。<br><a id="more"></a></p>
+<h2 id="1、创建枚举"><a href="#1、创建枚举" class="headerlink" title="1、创建枚举"></a>1、创建枚举</h2><p>枚举定义用 <strong>class</strong> 关键字，继承 <strong>Enum</strong> 类，并添加类属性来描述值：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># enum_create.py</span></span><br><span class="line"><span class="keyword">import</span> enum</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BugStatus</span><span class="params">(enum.Enum)</span>:</span></span><br><span class="line"></span><br><span class="line">    new = <span class="number">7</span></span><br><span class="line">    incomplete = <span class="number">6</span></span><br><span class="line">    invalid = <span class="number">5</span></span><br><span class="line">    wont_fix = <span class="number">4</span></span><br><span class="line">    in_progress = <span class="number">3</span></span><br><span class="line">    fix_committed = <span class="number">2</span></span><br><span class="line">    fix_released = <span class="number">1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">print(<span class="string">'\nMember name: &#123;&#125;'</span>.format(BugStatus.wont_fix.name))</span><br><span class="line">print(<span class="string">'Member value: &#123;&#125;'</span>.format(BugStatus.wont_fix.value))</span><br></pre></td></tr></table></figure></p>
+<p>在类被解析的时候枚举的成员被转换为实例。每个实例都有对应于成员名的 <strong>name</strong> 属性以及 <strong>value</strong> 属性：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ python3 enum_create.py</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Member name: wont_fix</span><br><span class="line">Member value: 4</span><br></pre></td></tr></table></figure></p>
+<h2 id="2、迭代"><a href="#2、迭代" class="headerlink" title="2、迭代"></a>2、迭代</h2><p>遍历 <strong>enum</strong> 类将生成枚举的各个成员。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># enum_iterate.py</span></span><br><span class="line"><span class="keyword">import</span> enum</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BugStatus</span><span class="params">(enum.Enum)</span>:</span></span><br><span class="line"></span><br><span class="line">    new = <span class="number">7</span></span><br><span class="line">    incomplete = <span class="number">6</span></span><br><span class="line">    invalid = <span class="number">5</span></span><br><span class="line">    wont_fix = <span class="number">4</span></span><br><span class="line">    in_progress = <span class="number">3</span></span><br><span class="line">    fix_committed = <span class="number">2</span></span><br><span class="line">    fix_released = <span class="number">1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> status <span class="keyword">in</span> BugStatus:</span><br><span class="line">    print(<span class="string">'&#123;:15&#125; = &#123;&#125;'</span>.format(status.name, status.value))</span><br></pre></td></tr></table></figure></p>
+<p>成员按类定义中声明的顺序生成，<strong>names</strong> 和 <strong>values</strong> 不能用于以任何方式对它们进行排序。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ python3 enum_iterate.py</span><br><span class="line"></span><br><span class="line">new             = 7</span><br><span class="line">incomplete      = 6</span><br><span class="line">invalid         = 5</span><br><span class="line">wont_fix        = 4</span><br><span class="line">in_progress     = 3</span><br><span class="line">fix_committed   = 2</span><br><span class="line">fix_released    = 1</span><br></pre></td></tr></table></figure></p>
+<h2 id="3、对比枚举值"><a href="#3、对比枚举值" class="headerlink" title="3、对比枚举值"></a>3、对比枚举值</h2><p>由于枚举成员并不是有序的，因此只能通过身份进行对比<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># enum_comparison.py</span></span><br><span class="line"><span class="keyword">import</span> enum</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BugStatus</span><span class="params">(enum.Enum)</span>:</span></span><br><span class="line"></span><br><span class="line">    new = <span class="number">7</span></span><br><span class="line">    incomplete = <span class="number">6</span></span><br><span class="line">    invalid = <span class="number">5</span></span><br><span class="line">    wont_fix = <span class="number">4</span></span><br><span class="line">    in_progress = <span class="number">3</span></span><br><span class="line">    fix_committed = <span class="number">2</span></span><br><span class="line">    fix_released = <span class="number">1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">actual_state = BugStatus.wont_fix</span><br><span class="line">desired_state = BugStatus.fix_released</span><br><span class="line"></span><br><span class="line">print(<span class="string">'Equality:'</span>,</span><br><span class="line">      actual_state == desired_state,</span><br><span class="line">      actual_state == BugStatus.wont_fix)</span><br><span class="line">print(<span class="string">'Identity:'</span>,</span><br><span class="line">      actual_state <span class="keyword">is</span> desired_state,</span><br><span class="line">      actual_state <span class="keyword">is</span> BugStatus.wont_fix)</span><br><span class="line">print(<span class="string">'Ordered by value:'</span>)</span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    print(<span class="string">'\n'</span>.join(<span class="string">'  '</span> + s.name <span class="keyword">for</span> s <span class="keyword">in</span> sorted(BugStatus)))</span><br><span class="line"><span class="keyword">except</span> TypeError <span class="keyword">as</span> err:</span><br><span class="line">    print(<span class="string">'  Cannot sort: &#123;&#125;'</span>.format(err))</span><br></pre></td></tr></table></figure></p>
+<p>枚举值之间的顺序比较是不受支持的，sort相关的大于小于比较运算符会引发 <strong>TypeError</strong> 异常。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ python3 enum_comparison.py</span><br><span class="line"></span><br><span class="line">Equality: False True</span><br><span class="line">Identity: False True</span><br><span class="line">Ordered by value:</span><br><span class="line">  Cannot sort: &apos;&lt;&apos; not supported between instances of &apos;BugStatus</span><br><span class="line">&apos; and &apos;BugStatus&apos;</span><br></pre></td></tr></table></figure></p>
+<h2 id="4、IntEnum"><a href="#4、IntEnum" class="headerlink" title="4、IntEnum"></a>4、IntEnum</h2><p><strong>class</strong> enum.<strong>IntEnum</strong> 用于创建枚举常量的基类。<br>提供 <strong>Enum</strong> 的变体，其也是 <strong>int</strong> 的子类。<strong>IntEnum</strong> 的成员可以与整数进行比较；通过扩展，不同类型的整数枚举也可以彼此比较：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># enum_intenum.py</span></span><br><span class="line"><span class="keyword">import</span> enum</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BugStatus</span><span class="params">(enum.IntEnum)</span>:</span></span><br><span class="line"></span><br><span class="line">    new = <span class="number">7</span></span><br><span class="line">    incomplete = <span class="number">6</span></span><br><span class="line">    invalid = <span class="number">5</span></span><br><span class="line">    wont_fix = <span class="number">4</span></span><br><span class="line">    in_progress = <span class="number">3</span></span><br><span class="line">    fix_committed = <span class="number">2</span></span><br><span class="line">    fix_released = <span class="number">1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">print(<span class="string">'Ordered by value:'</span>)</span><br><span class="line">print(<span class="string">'\n'</span>.join(<span class="string">'  '</span> + s.name <span class="keyword">for</span> s <span class="keyword">in</span> sorted(BugStatus)))</span><br></pre></td></tr></table></figure></p>
+<p>结果:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ python3 enum_intenum.py</span><br><span class="line"></span><br><span class="line">Ordered by value:</span><br><span class="line">  fix_released</span><br><span class="line">  fix_committed</span><br><span class="line">  in_progress</span><br><span class="line">  wont_fix</span><br><span class="line">  invalid</span><br><span class="line">  incomplete</span><br><span class="line">  new</span><br></pre></td></tr></table></figure></p>
+<p>对于绝大多数代码，强烈建议使用 <strong>Enum</strong>，因为 <strong>IntEnum</strong> 打破了枚举的某些语义承诺（通过与整数相比较，并因此与其他无关的枚举）。它应该仅在没有其他选择的特殊情况下使用；例如，当整数常量被枚举替代，并且向后兼容性需要仍然期望整数的代码。</p>
+<h2 id="5、unique唯一枚举值"><a href="#5、unique唯一枚举值" class="headerlink" title="5、unique唯一枚举值"></a>5、unique唯一枚举值</h2><p>enum.<strong>unique</strong>() 枚举类装饰器，确保只有一个名称绑定到任何一个值。<br>默认情况下，枚举允许多个名称作为同一值的别名，并且别名不会在 <strong>Enum</strong> 迭代器中触发重复的值。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> enum</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BugStatus</span><span class="params">(enum.Enum)</span>:</span></span><br><span class="line"></span><br><span class="line">    new = <span class="number">7</span></span><br><span class="line">    incomplete = <span class="number">6</span></span><br><span class="line">    invalid = <span class="number">5</span></span><br><span class="line">    wont_fix = <span class="number">4</span></span><br><span class="line">    in_progress = <span class="number">3</span></span><br><span class="line">    fix_committed = <span class="number">2</span></span><br><span class="line">    fix_released = <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    by_design = <span class="number">4</span></span><br><span class="line">    closed = <span class="number">1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> status <span class="keyword">in</span> BugStatus:</span><br><span class="line">    print(<span class="string">'&#123;:15&#125; = &#123;&#125;'</span>.format(status.name, status.value))</span><br><span class="line"></span><br><span class="line">print(<span class="string">'\nSame: by_design is wont_fix: '</span>,</span><br><span class="line">      BugStatus.by_design <span class="keyword">is</span> BugStatus.wont_fix)</span><br><span class="line">print(<span class="string">'Same: closed is fix_released: '</span>,</span><br><span class="line">      BugStatus.closed <span class="keyword">is</span> BugStatus.fix_released)</span><br></pre></td></tr></table></figure></p>
+<p>由于<em>by_design</em>和<em>closed</em>是其他成员的别名，在遍历 <strong>enum</strong> 的时候他们并不会输出。成员的规范名称是这个值得第一个名称。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ python3 enum_aliases.py</span><br><span class="line"></span><br><span class="line">new             = 7</span><br><span class="line">incomplete      = 6</span><br><span class="line">invalid         = 5</span><br><span class="line">wont_fix        = 4</span><br><span class="line">in_progress     = 3</span><br><span class="line">fix_committed   = 2</span><br><span class="line">fix_released    = 1</span><br><span class="line"></span><br><span class="line">Same: by_design is wont_fix:  True</span><br><span class="line">Same: closed is fix_released:  True</span><br></pre></td></tr></table></figure></p>
+<p>当需要每一个成员有唯一的值时，就需要在枚举中使用 <strong>@unique</strong> 装饰器来实现：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># enum_unique_enforce.py</span></span><br><span class="line"><span class="keyword">import</span> enum</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@enum.unique</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BugStatus</span><span class="params">(enum.Enum)</span>:</span></span><br><span class="line"></span><br><span class="line">    new = <span class="number">7</span></span><br><span class="line">    incomplete = <span class="number">6</span></span><br><span class="line">    invalid = <span class="number">5</span></span><br><span class="line">    wont_fix = <span class="number">4</span></span><br><span class="line">    in_progress = <span class="number">3</span></span><br><span class="line">    fix_committed = <span class="number">2</span></span><br><span class="line">    fix_released = <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># This will trigger an error with unique applied.</span></span><br><span class="line">    by_design = <span class="number">4</span></span><br><span class="line">    closed = <span class="number">1</span></span><br></pre></td></tr></table></figure></p>
+<p>当解释 <strong>Enum</strong> 类时具有重复值的成员将触发 <strong>ValueError</strong>异常:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ python3 enum_unique_enforce.py</span><br><span class="line"></span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;enum_unique_enforce.py&quot;, line 11, in &lt;module&gt;</span><br><span class="line">    class BugStatus(enum.Enum):</span><br><span class="line">  File &quot;.../lib/python3.6/enum.py&quot;, line 834, in unique</span><br><span class="line">    (enumeration, alias_details))</span><br><span class="line">ValueError: duplicate values found in &lt;enum &apos;BugStatus&apos;&gt;:</span><br><span class="line">by_design -&gt; wont_fix, closed -&gt; fix_released</span><br></pre></td></tr></table></figure></p>
+<h2 id="6、以编程方式创建枚举"><a href="#6、以编程方式创建枚举" class="headerlink" title="6、以编程方式创建枚举"></a>6、以编程方式创建枚举</h2><p>在某些情况下，以编程方式创建枚举相比于在类定义中硬编码它们更方便。<br>对于这些情况，Enum还支持将成员名称和值传递给类构造函数。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># enum_programmatic_create.py</span></span><br><span class="line"><span class="keyword">import</span> enum</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BugStatus = enum.Enum(</span><br><span class="line">    value=<span class="string">'BugStatus'</span>,</span><br><span class="line">    names=(<span class="string">'fix_released fix_committed in_progress '</span></span><br><span class="line">           <span class="string">'wont_fix invalid incomplete new'</span>),</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">print(<span class="string">'Member: &#123;&#125;'</span>.format(BugStatus.new))</span><br><span class="line"></span><br><span class="line">print(<span class="string">'\nAll members:'</span>)</span><br><span class="line"><span class="keyword">for</span> status <span class="keyword">in</span> BugStatus:</span><br><span class="line">    print(<span class="string">'&#123;:15&#125; = &#123;&#125;'</span>.format(status.name, status.value))</span><br></pre></td></tr></table></figure></p>
+<p><strong>value</strong> 参数是枚举定义的名称，在构建成员的时候使用。<strong>names</strong> 参数列出了枚举的成员。<br>当一个单独字符串参数被传递过来时，它会通过空格或逗号进行分割得到的成员的名称，这些成员的值自动分配，并从1开始。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ python3 enum_programmatic_create.py</span><br><span class="line"></span><br><span class="line">Member: BugStatus.new</span><br><span class="line"></span><br><span class="line">All members:</span><br><span class="line">fix_released    = 1</span><br><span class="line">fix_committed   = 2</span><br><span class="line">in_progress     = 3</span><br><span class="line">wont_fix        = 4</span><br><span class="line">invalid         = 5</span><br><span class="line">incomplete      = 6</span><br><span class="line">new             = 7</span><br></pre></td></tr></table></figure></p>
+<p>为了更好地控制与成员关联的值，可以用一个二元元组或一个字典映射名称和值。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># enum_programmatic_mapping.py</span></span><br><span class="line"><span class="keyword">import</span> enum</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BugStatus = enum.Enum(</span><br><span class="line">    value=<span class="string">'BugStatus'</span>,</span><br><span class="line">    names=[</span><br><span class="line">        (<span class="string">'new'</span>, <span class="number">7</span>),</span><br><span class="line">        (<span class="string">'incomplete'</span>, <span class="number">6</span>),</span><br><span class="line">        (<span class="string">'invalid'</span>, <span class="number">5</span>),</span><br><span class="line">        (<span class="string">'wont_fix'</span>, <span class="number">4</span>),</span><br><span class="line">        (<span class="string">'in_progress'</span>, <span class="number">3</span>),</span><br><span class="line">        (<span class="string">'fix_committed'</span>, <span class="number">2</span>),</span><br><span class="line">        (<span class="string">'fix_released'</span>, <span class="number">1</span>),</span><br><span class="line">    ],</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">print(<span class="string">'All members:'</span>)</span><br><span class="line"><span class="keyword">for</span> status <span class="keyword">in</span> BugStatus:</span><br><span class="line">    print(<span class="string">'&#123;:15&#125; = &#123;&#125;'</span>.format(status.name, status.value))</span><br></pre></td></tr></table></figure></p>
+<p>上面例子中二元元组的列表替代了只包含成员名称的单个字符串。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ python3 enum_programmatic_mapping.py</span><br><span class="line"></span><br><span class="line">All members:</span><br><span class="line">new             = 7</span><br><span class="line">incomplete      = 6</span><br><span class="line">invalid         = 5</span><br><span class="line">wont_fix        = 4</span><br><span class="line">in_progress     = 3</span><br><span class="line">fix_committed   = 2</span><br><span class="line">fix_released    = 1</span><br></pre></td></tr></table></figure></p>
+<h2 id="7、非整形成员值"><a href="#7、非整形成员值" class="headerlink" title="7、非整形成员值"></a>7、非整形成员值</h2><p><strong>Enum</strong> 成员值不限于整数，事实上任何类型的对象都可以与成员相关联。如果 <strong>value</strong> 是一个元组，则将成员值将作为独特的参数传递给 <strong>__init__()</strong>。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># enum_tuple_values.py</span></span><br><span class="line"><span class="keyword">import</span> enum</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BugStatus</span><span class="params">(enum.Enum)</span>:</span></span><br><span class="line"></span><br><span class="line">    new = (<span class="number">7</span>, [<span class="string">'incomplete'</span>,</span><br><span class="line">               <span class="string">'invalid'</span>,</span><br><span class="line">               <span class="string">'wont_fix'</span>,</span><br><span class="line">               <span class="string">'in_progress'</span>])</span><br><span class="line">    incomplete = (<span class="number">6</span>, [<span class="string">'new'</span>, <span class="string">'wont_fix'</span>])</span><br><span class="line">    invalid = (<span class="number">5</span>, [<span class="string">'new'</span>])</span><br><span class="line">    wont_fix = (<span class="number">4</span>, [<span class="string">'new'</span>])</span><br><span class="line">    in_progress = (<span class="number">3</span>, [<span class="string">'new'</span>, <span class="string">'fix_committed'</span>])</span><br><span class="line">    fix_committed = (<span class="number">2</span>, [<span class="string">'in_progress'</span>, <span class="string">'fix_released'</span>])</span><br><span class="line">    fix_released = (<span class="number">1</span>, [<span class="string">'new'</span>])</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, num, transitions)</span>:</span></span><br><span class="line">        self.num = num</span><br><span class="line">        self.transitions = transitions</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">can_transition</span><span class="params">(self, new_state)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> new_state.name <span class="keyword">in</span> self.transitions</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">print(<span class="string">'Name:'</span>, BugStatus.in_progress)</span><br><span class="line">print(<span class="string">'Value:'</span>, BugStatus.in_progress.value)</span><br><span class="line">print(<span class="string">'Custom attribute:'</span>, BugStatus.in_progress.transitions)</span><br><span class="line">print(<span class="string">'Using attribute:'</span>,</span><br><span class="line">      BugStatus.in_progress.can_transition(BugStatus.new))</span><br></pre></td></tr></table></figure></p>
+<p>上面例子每一个成员值都是一个元组，<strong>print(‘Custom attribute:’, BugStatus.in_progress.transitions)</strong> 这句 <strong>BugStatus.in_progress</strong> 的值分为两个参数传递到 <strong>__init__</strong> 方法。<br><strong>BugStatus.in_progress.can_transition(BugStatus.new))</strong> 中判断 <strong>new</strong> 成员的名称是否包含在 <strong>in_progress</strong> 的值得list里面。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ python3 enum_tuple_values.py</span><br><span class="line"></span><br><span class="line">Name: BugStatus.in_progress</span><br><span class="line">Value: (3, [&apos;new&apos;, &apos;fix_committed&apos;])</span><br><span class="line">Custom attribute: [&apos;new&apos;, &apos;fix_committed&apos;]</span><br><span class="line">Using attribute: True</span><br></pre></td></tr></table></figure></p>
+<p>对于更复杂的情况元组可能会得难以处理。<br>由于成员值可以是任何类型的对象，因此字典可以用来处理成员值包含很多单独属性的情况。这些复杂的值将作为除 <strong>self</strong> 外的其他参数传递给 <strong>__init__</strong> 方法。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># enum_complex_values.py</span></span><br><span class="line"><span class="keyword">import</span> enum</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BugStatus</span><span class="params">(enum.Enum)</span>:</span></span><br><span class="line"></span><br><span class="line">    new = &#123;</span><br><span class="line">        <span class="string">'num'</span>: <span class="number">7</span>,</span><br><span class="line">        <span class="string">'transitions'</span>: [</span><br><span class="line">            <span class="string">'incomplete'</span>,</span><br><span class="line">            <span class="string">'invalid'</span>,</span><br><span class="line">            <span class="string">'wont_fix'</span>,</span><br><span class="line">            <span class="string">'in_progress'</span>,</span><br><span class="line">        ],</span><br><span class="line">    &#125;</span><br><span class="line">    incomplete = &#123;</span><br><span class="line">        <span class="string">'num'</span>: <span class="number">6</span>,</span><br><span class="line">        <span class="string">'transitions'</span>: [<span class="string">'new'</span>, <span class="string">'wont_fix'</span>],</span><br><span class="line">    &#125;</span><br><span class="line">    invalid = &#123;</span><br><span class="line">        <span class="string">'num'</span>: <span class="number">5</span>,</span><br><span class="line">        <span class="string">'transitions'</span>: [<span class="string">'new'</span>],</span><br><span class="line">    &#125;</span><br><span class="line">    wont_fix = &#123;</span><br><span class="line">        <span class="string">'num'</span>: <span class="number">4</span>,</span><br><span class="line">        <span class="string">'transitions'</span>: [<span class="string">'new'</span>],</span><br><span class="line">    &#125;</span><br><span class="line">    in_progress = &#123;</span><br><span class="line">        <span class="string">'num'</span>: <span class="number">3</span>,</span><br><span class="line">        <span class="string">'transitions'</span>: [<span class="string">'new'</span>, <span class="string">'fix_committed'</span>],</span><br><span class="line">    &#125;</span><br><span class="line">    fix_committed = &#123;</span><br><span class="line">        <span class="string">'num'</span>: <span class="number">2</span>,</span><br><span class="line">        <span class="string">'transitions'</span>: [<span class="string">'in_progress'</span>, <span class="string">'fix_released'</span>],</span><br><span class="line">    &#125;</span><br><span class="line">    fix_released = &#123;</span><br><span class="line">        <span class="string">'num'</span>: <span class="number">1</span>,</span><br><span class="line">        <span class="string">'transitions'</span>: [<span class="string">'new'</span>],</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, vals)</span>:</span></span><br><span class="line">        self.num = vals[<span class="string">'num'</span>]</span><br><span class="line">        self.transitions = vals[<span class="string">'transitions'</span>]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">can_transition</span><span class="params">(self, new_state)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> new_state.name <span class="keyword">in</span> self.transitions</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">print(<span class="string">'Name:'</span>, BugStatus.in_progress)</span><br><span class="line">print(<span class="string">'Value:'</span>, BugStatus.in_progress.value)</span><br><span class="line">print(<span class="string">'Custom attribute:'</span>, BugStatus.in_progress.transitions)</span><br><span class="line">print(<span class="string">'Using attribute:'</span>,</span><br><span class="line">      BugStatus.in_progress.can_transition(BugStatus.new))</span><br></pre></td></tr></table></figure></p>
+<p>这个示例使用字典表示与前面示例相同的数据。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ python3 enum_complex_values.py</span><br><span class="line"></span><br><span class="line">Name: BugStatus.in_progress</span><br><span class="line">Value: &#123;&apos;num&apos;: 3, &apos;transitions&apos;: [&apos;new&apos;, &apos;fix_committed&apos;]&#125;</span><br><span class="line">Custom attribute: [&apos;new&apos;, &apos;fix_committed&apos;]</span><br><span class="line">Using attribute: True</span><br></pre></td></tr></table></figure></p>
+<p><span style="font-weight:bold;color:#000080">备注:<span><br><a href="https://docs.python.org/3.6/library/enum.html" target="_blank" rel="noopener">Standard library documentation for enum</a></span></span></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/enum/" rel="tag"># enum</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/12/Text-difflib/" rel="next" title="Text-difflib">
+                <i class="fa fa-chevron-left"></i> Text-difflib
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/06/14/DataStructures-collections-ChainMap/" rel="prev" title="DataStructures-collections-ChainMap">
+                DataStructures-collections-ChainMap <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1、创建枚举"><span class="nav-number">1.</span> <span class="nav-text">1、创建枚举</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2、迭代"><span class="nav-number">2.</span> <span class="nav-text">2、迭代</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3、对比枚举值"><span class="nav-number">3.</span> <span class="nav-text">3、对比枚举值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4、IntEnum"><span class="nav-number">4.</span> <span class="nav-text">4、IntEnum</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5、unique唯一枚举值"><span class="nav-number">5.</span> <span class="nav-text">5、unique唯一枚举值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6、以编程方式创建枚举"><span class="nav-number">6.</span> <span class="nav-text">6、以编程方式创建枚举</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7、非整形成员值"><span class="nav-number">7.</span> <span class="nav-text">7、非整形成员值</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

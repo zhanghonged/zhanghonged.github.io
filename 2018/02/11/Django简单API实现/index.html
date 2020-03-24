@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="python,Django,API,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="接口有很多种，其中一种就是Web接口，Web接口实际上就是一个Web请求，对请求人、请求范围都进行一定的约定。API就是通过web地址把请求的数据传过去进行操作。">
+<meta name="keywords" content="python,Django,API">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Django简单API实现">
+<meta property="og:url" content="http://zhanghonged.github.io/2018/02/11/Django简单API实现/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="接口有很多种，其中一种就是Web接口，Web接口实际上就是一个Web请求，对请求人、请求范围都进行一定的约定。API就是通过web地址把请求的数据传过去进行操作。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/api.png">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/JMeter-1.jpg">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/JMeter-2.jpg">
+<meta property="og:updated_time" content="2018-02-11T08:40:22.167Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Django简单API实现">
+<meta name="twitter:description" content="接口有很多种，其中一种就是Web接口，Web接口实际上就是一个Web请求，对请求人、请求范围都进行一定的约定。API就是通过web地址把请求的数据传过去进行操作。">
+<meta name="twitter:image" content="http://zhanghonged.github.io/uploads/api.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2018/02/11/Django简单API实现/">
+
+
+
+
+
+  <title>Django简单API实现 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2018/02/11/Django简单API实现/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Django简单API实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-11T15:33:09+08:00">
+                2018-02-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Django/" itemprop="url" rel="index">
+                    <span itemprop="name">Django</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>接口有很多种，其中一种就是Web接口，Web接口实际上就是一个Web请求，对请求人、请求范围都进行一定的约定。<br><strong>API</strong>就是通过web地址把请求的数据传过去进行操作。<br><a id="more"></a></p>
+<h2 id="一、介绍"><a href="#一、介绍" class="headerlink" title="一、介绍"></a>一、介绍</h2><p>在 <strong>Django</strong> 下一般使用 <strong>django-rest-framework</strong> 提供 <strong>RESTful</strong> 的 <strong>API</strong>，炒鸡好用。<br>如果只几个有限的接口想使用 <strong>JSON</strong> 格式(content-type: application/json)和前端交互，那么使用 <strong>JsonResponse</strong> 就可以完成需求。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.http <span class="keyword">import</span> JsonResponse</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_api</span><span class="params">(request)</span>:</span></span><br><span class="line">    rt = &#123;<span class="string">'RetCode'</span>: <span class="number">1</span>&#125;</span><br><span class="line">    <span class="keyword">return</span> JsonResponse(rt)</span><br></pre></td></tr></table></figure></p>
+<p>本节内容就是基于 <strong>JsonResponse</strong> 来简单介绍下注册登录的API接口定义及访问，RESTful API以后再慢慢介绍。<br>这里没有涉及 <strong>session、token</strong> 的使用，只是一个基本api实现的介绍。</p>
+<h2 id="二、API规范"><a href="#二、API规范" class="headerlink" title="二、API规范"></a>二、API规范</h2><p>要事先约定规范，才能按照既定的规范去使用API。<br>Web API包括 <strong>request</strong> 和 <strong>response</strong> 两部分。<br>下面是我们定义好的API规范：<br><strong>注册:</strong><br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//request:</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"type"</span>:<span class="string">"register"</span>,</span><br><span class="line">  <span class="attr">"data"</span>:&#123;</span><br><span class="line">      <span class="attr">"username"</span>:<span class="string">"aaa"</span>,</span><br><span class="line">      <span class="attr">"password"</span>:<span class="string">"ppp"</span>,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//response:</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"type"</span>:<span class="string">"error"</span>,</span><br><span class="line">  <span class="attr">"data"</span>:&#123;</span><br><span class="line">      <span class="attr">"code"</span>:<span class="number">500</span>,</span><br><span class="line">      <span class="attr">"data"</span>:<span class="string">"zidingyi"</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>登录:</strong><br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//request:</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"type"</span>:<span class="string">"login"</span>,</span><br><span class="line">  <span class="attr">"data"</span>:&#123;</span><br><span class="line">      <span class="attr">"username"</span>:<span class="string">"xxx"</span>,</span><br><span class="line">      <span class="attr">"password"</span>:<span class="string">"xxx"</span></span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//response:</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"type"</span>:<span class="string">"error"</span>:</span><br><span class="line">  <span class="string">"data"</span>:&#123;</span><br><span class="line">      <span class="attr">"code"</span>:<span class="number">500</span>,</span><br><span class="line">      <span class="attr">"data"</span>:<span class="string">"zidingyi"</span></span><br><span class="line">      <span class="string">"token"</span>:<span class="string">"sfssf23232l3"</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="三、API访问流程"><a href="#三、API访问流程" class="headerlink" title="三、API访问流程"></a>三、API访问流程</h2><p><img src="/uploads/api.png" alt></p>
+<ul>
+<li>客户端访问 <strong>url</strong>，根据url规则分发到 <strong>views函数</strong> 去处理。</li>
+<li><strong>views函数</strong> 调用 <strong>api_url</strong> 去匹配具体的请求类型，注册还是登录等。</li>
+<li><strong>views函数</strong> 根据请求类型分发到 <strong>api_views</strong> 里面去处理详细逻辑，<strong>api_views</strong> 将结果返回到 <strong>views函数</strong>。</li>
+<li><strong>views函数</strong> 将 <strong>json</strong> 格式的结果返回给客户端。</li>
+</ul>
+<h2 id="四、代码实现"><a href="#四、代码实现" class="headerlink" title="四、代码实现"></a>四、代码实现</h2><h3 id="服务端Django实现"><a href="#服务端Django实现" class="headerlink" title="服务端Django实现"></a>服务端Django实现</h3><p><strong>models.py</strong><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">User</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    username = models.CharField(max_length=<span class="number">32</span>)</span><br><span class="line">    password = models.CharField(max_length=<span class="number">32</span>)</span><br></pre></td></tr></table></figure></p>
+<p><strong>urls.py</strong><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">urlpatterns = [</span><br><span class="line">    url(<span class="string">r'^a/'</span>,views.API,name=<span class="string">"API"</span>),</span><br><span class="line">]</span><br></pre></td></tr></table></figure></p>
+<p><strong>views.py</strong><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.http <span class="keyword">import</span> JsonResponse</span><br><span class="line"><span class="keyword">from</span> api_urls <span class="keyword">import</span> apipatterns</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">API</span><span class="params">(request)</span>:</span></span><br><span class="line">    result = &#123;<span class="string">'type'</span>:<span class="string">'error'</span>,<span class="string">'data'</span>:&#123;&#125;&#125;</span><br><span class="line">    <span class="keyword">if</span> request.method == <span class="string">'POST'</span>:</span><br><span class="line">        <span class="keyword">print</span> request.POST</span><br><span class="line">        type = request.POST[<span class="string">'type'</span>]</span><br><span class="line">        data = json.loads(request.POST[<span class="string">'data'</span>])</span><br><span class="line">        <span class="keyword">if</span> type <span class="keyword">and</span> data:</span><br><span class="line">            <span class="comment">##注释的是通过循环来匹配请求类型进行处理</span></span><br><span class="line">            <span class="comment"># for key,fun in apipatterns:</span></span><br><span class="line">            <span class="comment">#     result['type'] = 'success'</span></span><br><span class="line">            <span class="comment">#     result['data'] = fun(data)</span></span><br><span class="line">            <span class="comment">#     break</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">##下面是通过字典取值处理请求类型</span></span><br><span class="line">            dicts = dict(apipatterns)</span><br><span class="line">            <span class="keyword">if</span> type <span class="keyword">in</span> dicts.keys():</span><br><span class="line">                result[<span class="string">'type'</span>] = <span class="string">'success'</span></span><br><span class="line">                result[<span class="string">'data'</span>] = dicts[type](data)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                result[<span class="string">'data'</span>] = <span class="string">'no type %s'</span>%type</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            result[<span class="string">'data'</span>] = <span class="string">'type or data not be null'</span></span><br><span class="line">    <span class="keyword">elif</span> request.method == <span class="string">'GET'</span>:</span><br><span class="line">        result[<span class="string">'data'</span>] = <span class="string">'The request must be post'</span></span><br><span class="line">    <span class="keyword">return</span> JsonResponse(result)</span><br></pre></td></tr></table></figure></p>
+<p><strong>api_urls.py</strong><br>这个模块是用来匹配请求类型<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> api_views <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">apipatterns = [</span><br><span class="line">    (<span class="string">'register'</span>,register),</span><br><span class="line">    (<span class="string">'login'</span>,login),</span><br><span class="line">    (<span class="string">'logout'</span>,logout),</span><br><span class="line">]</span><br></pre></td></tr></table></figure></p>
+<p><strong>api_views.py</strong><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> models <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">register</span><span class="params">(data)</span>:</span></span><br><span class="line">    result = &#123;<span class="string">'code'</span>:<span class="number">0</span>,<span class="string">'data'</span>:<span class="string">''</span>&#125;</span><br><span class="line">    username = data[<span class="string">'username'</span>]</span><br><span class="line">    password = data[<span class="string">'password'</span>]</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        u = User.objects.get(username = username)</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        User.objects.create(username=username,password=password)</span><br><span class="line">        result[<span class="string">'code'</span>] = <span class="number">1</span></span><br><span class="line">        result[<span class="string">'data'</span>] = <span class="string">'Registered successfully'</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        result[<span class="string">'data'</span>] = <span class="string">'The user already exists'</span></span><br><span class="line">    <span class="keyword">finally</span>:</span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">login</span><span class="params">(data)</span>:</span></span><br><span class="line">    result = &#123;<span class="string">'data'</span>:<span class="string">''</span>, <span class="string">'token'</span>:<span class="string">''</span>,<span class="string">'code'</span>:<span class="number">0</span>&#125;</span><br><span class="line">    user = data[<span class="string">'username'</span>]</span><br><span class="line">    pawd = str(data[<span class="string">'password'</span>])</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        u = User.objects.get(username=user)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        result[<span class="string">'data'</span>] = str(e)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        password = u.password</span><br><span class="line">        <span class="keyword">if</span> password == pawd:</span><br><span class="line">            result[<span class="string">'code'</span>] = <span class="number">1</span></span><br><span class="line">            result[<span class="string">'data'</span>] = <span class="string">'Login Successfully'</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            result[<span class="string">'data'</span>] = <span class="string">'password error'</span></span><br><span class="line">    <span class="keyword">finally</span>:</span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">logout</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">pass</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="客户端模拟api请求"><a href="#客户端模拟api请求" class="headerlink" title="客户端模拟api请求"></a>客户端模拟api请求</h3><h4 id="1、python脚本模拟请求"><a href="#1、python脚本模拟请求" class="headerlink" title="1、python脚本模拟请求"></a>1、python脚本模拟请求</h4><p>这里是一个登陆请求的例子:<br><strong>client.py</strong><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> urllib,urllib2</span><br><span class="line"></span><br><span class="line">url = <span class="string">'http://localhost:8000/api/a/'</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#这种嵌套json的格式需要把嵌套部分先json.dumps一下，服务器才能正确解析数据</span></span><br><span class="line">login_data = &#123;</span><br><span class="line">    <span class="string">'username'</span>:<span class="string">'test1'</span>,</span><br><span class="line">    <span class="string">'password'</span>:<span class="string">'111111'</span></span><br><span class="line">&#125;</span><br><span class="line">test_data = &#123;</span><br><span class="line">    <span class="string">'type'</span>:<span class="string">'login'</span>,</span><br><span class="line">    <span class="string">'data'</span>:json.dumps(login_data)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">data = urllib.urlencode(test_data)</span><br><span class="line">req = urllib2.Request(url,data)</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">  response = urllib2.urlopen(req)</span><br><span class="line"><span class="keyword">except</span> urllib2.HTTPError,e:</span><br><span class="line">  <span class="keyword">print</span> e.code</span><br><span class="line">  <span class="keyword">print</span> e.reason</span><br><span class="line">  <span class="keyword">print</span> e.geturl()</span><br><span class="line">  </span><br><span class="line">content = response.read()</span><br><span class="line">result = json.loads(content)</span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> result</span><br></pre></td></tr></table></figure></p>
+<p>执行返回结果:<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;u'type': u'success', u'data': &#123;u'token': u'', u'code': 1, u'data': u'Login Successfully'&#125;&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="2、使用工具模拟请求"><a href="#2、使用工具模拟请求" class="headerlink" title="2、使用工具模拟请求"></a>2、使用工具模拟请求</h4><p>有很多模拟http请求api的工具，浏览器插件等，这里使用Apache JMeter进行测试。<br><img src="/uploads/JMeter-1.jpg" alt><br>查看结果:<br><img src="/uploads/JMeter-2.jpg" alt></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/Django/" rel="tag"># Django</a>
+          
+            <a href="/tags/API/" rel="tag"># API</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/09/Django之Ajax/" rel="next" title="Django之Ajax">
+                <i class="fa fa-chevron-left"></i> Django之Ajax
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/01/Saltstack常用模块及API/" rel="prev" title="Saltstack常用模块及API">
+                Saltstack常用模块及API <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、介绍"><span class="nav-number">1.</span> <span class="nav-text">一、介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、API规范"><span class="nav-number">2.</span> <span class="nav-text">二、API规范</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、API访问流程"><span class="nav-number">3.</span> <span class="nav-text">三、API访问流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、代码实现"><span class="nav-number">4.</span> <span class="nav-text">四、代码实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#服务端Django实现"><span class="nav-number">4.1.</span> <span class="nav-text">服务端Django实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#客户端模拟api请求"><span class="nav-number">4.2.</span> <span class="nav-text">客户端模拟api请求</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、python脚本模拟请求"><span class="nav-number">4.2.1.</span> <span class="nav-text">1、python脚本模拟请求</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、使用工具模拟请求"><span class="nav-number">4.2.2.</span> <span class="nav-text">2、使用工具模拟请求</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

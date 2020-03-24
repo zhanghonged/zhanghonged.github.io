@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="openvpn,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="Openvpn服务端有针对认证和加密的配置下，下面来介绍下。">
+<meta name="keywords" content="openvpn">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Openvpn加密认证配置">
+<meta property="og:url" content="http://zhanghonged.github.io/2019/07/30/Openvpn加密认证配置/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="Openvpn服务端有针对认证和加密的配置下，下面来介绍下。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-07-30T07:20:18.601Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Openvpn加密认证配置">
+<meta name="twitter:description" content="Openvpn服务端有针对认证和加密的配置下，下面来介绍下。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2019/07/30/Openvpn加密认证配置/">
+
+
+
+
+
+  <title>Openvpn加密认证配置 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2019/07/30/Openvpn加密认证配置/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Openvpn加密认证配置</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-30T11:28:17+08:00">
+                2019-07-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/日常运维/" itemprop="url" rel="index">
+                    <span itemprop="name">日常运维</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Openvpn服务端有针对认证和加密的配置下，下面来介绍下。<br><a id="more"></a></p>
+<h2 id="一、auth-认证"><a href="#一、auth-认证" class="headerlink" title="一、auth 认证"></a>一、auth 认证</h2><p>使用消息摘要算法，认证数据通道包，默认值是SHA1。<br>可配置值:</p>
+<ul>
+<li>SHA256</li>
+<li>SHA384</li>
+<li>SHA512</li>
+<li>RSA-SHA512</li>
+</ul>
+<p><strong>auth none</strong> 禁用认证校验</p>
+<h2 id="二、cipher-加密"><a href="#二、cipher-加密" class="headerlink" title="二、cipher 加密"></a>二、cipher 加密</h2><p>使用密码加密算法，加密数据通道包，默认值是BF-CBC。<br>可配置值:</p>
+<ul>
+<li>AES-128-GCM</li>
+<li>AES-192-GCM </li>
+<li>AES-256-GCM</li>
+<li>AES-128-CBC</li>
+<li>AES-192-CBC</li>
+<li>AES-256-CBC</li>
+</ul>
+<p><strong>cipher none</strong> 禁用加密</p>
+<h2 id="三、tls-auth"><a href="#三、tls-auth" class="headerlink" title="三、tls-auth"></a>三、tls-auth</h2><p>这是一个额外的安全配置项。<br>在TLS控制通道之上添加额外的HMAC身份验证层，可以缓解Dos攻击和对TLS堆栈的攻击，通过使用HMAC签名对每个TLS控制信道数据包进行签名来完成此操作。<br><strong>tls-auth</strong> 在OpenVPN的TCP/UDP端口上启用了一种 <strong>HMAC防火墙</strong>，其中带有错误HMAC签名的TLS控制通道数据包可以立即丢弃而无需响应。<br><span style="color:red;font-weight:bolder;">注意:</span><br>1、<strong>--tls-auth</strong> 必须和 <strong>--auth</strong> 功能一起使用，<strong>auth</strong> 配置为 <strong>none</strong> 时，就不能使用 <strong>tls-auth</strong> 功能。<br>2、Client配置文件把key文件写入ovpn文件中时，要求设置 <strong>--key-direction</strong> 参数。</p>
+<p>我自己的vps服务器在国外，已启用 <strong>--tls-auth</strong> 配置，此时openvpn服务器不配置此功能 <span style="color:red;">tcp方式无法连接，udp方式正常</span>，内网测试时配置与否不影响连接。怀疑是GFW从中有限制，但无从考量。<br><span style="font-weight:bolder">服务器配置方法:</span><br>生成 <strong>tls-auth key</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openvpn --genkey --secret /etc/openvpn/tls-auth.key</span><br></pre></td></tr></table></figure></p>
+<p><strong>server.conf</strong>配置文件:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tls-auth ta.key 0</span><br></pre></td></tr></table></figure></p>
+<h2 id="四、tls-crypt"><a href="#四、tls-crypt" class="headerlink" title="四、tls-crypt"></a>四、tls-crypt</h2><p>这也是一个额外的安全配置项。<br>使用密钥文件中的密钥加密和验证所有控制通道数据包。<br><strong>--tls-crypt</strong> 是OpenVPN 2.4的新功能，除了身份验证之外还提供加密 (与 <strong>tls-auth</strong> 不同)。<br>使用后有以下好处:</p>
+<ul>
+<li>1、隐藏用于TLS连接的证书，提供更深层隐私</li>
+<li>2、使得识别OpenVPN流量变得更加困难</li>
+</ul>
+<p>客户端 <strong>client.ovpn</strong> 配置与 <strong>--tls-auth</strong> 相反，<strong>--tls-crypt</strong> 不要求用户设置 <strong>--key-direction</strong> 参数。<br><span style="font-weight:bolder">服务器配置方法:</span><br>生成 <strong>tls-crypth key</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openvpn --genkey --secret /etc/openvpn/tls-crypt.key</span><br></pre></td></tr></table></figure></p>
+<p><strong>server.conf</strong>配置文件:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tls-crypt tls-crypt.key 0</span><br></pre></td></tr></table></figure></p>
+<p><strong>tls-auth</strong> 和 <strong>tls-crypt</strong> 都提供了额外的安全层并减轻DoS攻击。<span style="font-weight:bold;color:blue;">同一个openvpn服务器两者只能启用一个，而且OpenVPN默认不使用它们。</span></p>
+<h2 id="四、客户端配置"><a href="#四、客户端配置" class="headerlink" title="四、客户端配置"></a>四、客户端配置</h2><h3 id="1、tls-auth"><a href="#1、tls-auth" class="headerlink" title="1、tls-auth"></a>1、tls-auth</h3><p>client.ovpn<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;tls-auth&gt;</span><br><span class="line">-----BEGIN OpenVPN Static key V1-----</span><br><span class="line">....</span><br><span class="line">....</span><br><span class="line">....</span><br><span class="line">-----END OpenVPN Static key V1-----</span><br><span class="line">&lt;/tls-auth&gt;</span><br><span class="line"># auth-key文件写入ovpn文件中时，要求必须设置key-direction参数</span><br><span class="line">key-direction 1</span><br></pre></td></tr></table></figure></p>
+<h3 id="2、tls-crypt"><a href="#2、tls-crypt" class="headerlink" title="2、tls-crypt"></a>2、tls-crypt</h3><p>client.ovpn<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;tls-crypt&gt;</span><br><span class="line">-----BEGIN OpenVPN Static key V1-----</span><br><span class="line">....</span><br><span class="line">....</span><br><span class="line">....</span><br><span class="line">-----END OpenVPN Static key V1-----</span><br><span class="line">&lt;/tls-crypt&gt;</span><br></pre></td></tr></table></figure></p>
+<p>官网地址:<a href="https://community.openvpn.net/openvpn/wiki/Openvpn24ManPage" target="_blank" rel="noopener">https://community.openvpn.net/openvpn/wiki/Openvpn24ManPage</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/openvpn/" rel="tag"># openvpn</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/30/Centos7部署openvpn/" rel="next" title="Centos7部署openvpn">
+                <i class="fa fa-chevron-left"></i> Centos7部署openvpn
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/30/Django使用Celery实现定时任务/" rel="prev" title="Django使用Celery实现定时任务">
+                Django使用Celery实现定时任务 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、auth-认证"><span class="nav-number">1.</span> <span class="nav-text">一、auth 认证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、cipher-加密"><span class="nav-number">2.</span> <span class="nav-text">二、cipher 加密</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、tls-auth"><span class="nav-number">3.</span> <span class="nav-text">三、tls-auth</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、tls-crypt"><span class="nav-number">4.</span> <span class="nav-text">四、tls-crypt</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、客户端配置"><span class="nav-number">5.</span> <span class="nav-text">四、客户端配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、tls-auth"><span class="nav-number">5.1.</span> <span class="nav-text">1、tls-auth</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、tls-crypt"><span class="nav-number">5.2.</span> <span class="nav-text">2、tls-crypt</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

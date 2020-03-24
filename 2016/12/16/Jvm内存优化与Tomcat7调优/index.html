@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="java,tomcat,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="Tomcat跑在JVM之上的，它的启动其实也只是一个java命令行，因此我们需要对这个JAVA的启动命令行进行调优。">
+<meta name="keywords" content="java,tomcat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Jvm内存优化与Tomcat7调优">
+<meta property="og:url" content="http://zhanghonged.github.io/2016/12/16/Jvm内存优化与Tomcat7调优/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="Tomcat跑在JVM之上的，它的启动其实也只是一个java命令行，因此我们需要对这个JAVA的启动命令行进行调优。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-02-08T09:30:57.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Jvm内存优化与Tomcat7调优">
+<meta name="twitter:description" content="Tomcat跑在JVM之上的，它的启动其实也只是一个java命令行，因此我们需要对这个JAVA的启动命令行进行调优。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2016/12/16/Jvm内存优化与Tomcat7调优/">
+
+
+
+
+
+  <title>Jvm内存优化与Tomcat7调优 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2016/12/16/Jvm内存优化与Tomcat7调优/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Jvm内存优化与Tomcat7调优</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-16T16:13:17+08:00">
+                2016-12-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/日常运维/" itemprop="url" rel="index">
+                    <span itemprop="name">日常运维</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Tomcat跑在JVM之上的，它的启动其实也只是一个java命令行，因此我们需要对这个JAVA的启动命令行进行调优。</p>
+<a id="more"></a>
+<h2 id="Jvm内存分析"><a href="#Jvm内存分析" class="headerlink" title="Jvm内存分析"></a>Jvm内存分析</h2><p>我们首先了解一下JVM内存管理的机制，然后再解释每个参数代表的含义。</p>
+<h3 id="堆-Heap-和非堆-Non-heap-内存"><a href="#堆-Heap-和非堆-Non-heap-内存" class="headerlink" title="堆(Heap)和非堆(Non-heap)内存"></a>堆(Heap)和非堆(Non-heap)内存</h3><p>按照官方的说法：“Java 虚拟机具有一个堆，堆是运行时数据区域，所有类实例和数组的内存均从此处分配。堆是在 Java 虚拟机启动时创建的。” “在JVM中堆之外的内存称为非堆内存(Non-heap memory)”。<br>可以看出JVM主要管理两种类型的内存：堆和非堆。简单来说堆就是Java代码可及的内存，是留给开发人员使用的；非堆就是JVM留给自己用的，所以方法区、JVM内部处理或优化所需的内存(如JIT编译后的代码缓存)、每个类结构(如运行时常数池、字段和方法数据)以及方法和构造方法的代码都在非堆内存中。 </p>
+<h4 id="堆内存分配"><a href="#堆内存分配" class="headerlink" title="堆内存分配"></a>堆内存分配</h4><p>JVM初始分配的堆内存由-Xms指定，默认是物理内存的1/64；JVM最大分配的堆内存由-Xmx指定，默认是物理内存的1/4。默认空余堆内存小于40%时，JVM就会增大堆直到-Xmx的最大限制；<br>空余堆内存大于70%时，JVM会减少堆直到-Xms的最小限制。因此服务器一般设置-Xms、-Xmx 相等以避免在每次GC后调整堆的大小。<br>参数列表:<br>— Xms   为jvm启动时分配的内存，比如-Xms200m，表示分配200M<br>— Xmx   为jvm运行过程中分配的最大内存，比如-Xms500m，表示jvm进程最多只能够占用500M内存<br>— Xss   为jvm启动的每个线程分配的内存大小</p>
+<p>一般jvm出现Cannt’ allocate memory的错误就是机器的内存不够，导致系统无法为jvm分配给定的内存，这个在启动时犹未突出，所以会在启动参数中设置-Xms来指定；<br>而OutOfMemoryError错误则一般会在系统运行一段情况后出现，绝大部分也是机器内存不够或是JVM本身的内存空间已被用尽，这时就要根据情况进行调整了，如果是JVM本身的内存空间用尽，则需要调整-Xmx参数来分类jvm的可用内存，如果是机器内存不够则要增加内存或是调优程序了。</p>
+<h4 id="非堆内存分配"><a href="#非堆内存分配" class="headerlink" title="非堆内存分配"></a>非堆内存分配</h4><p>JVM使用-XX:PermSize设置非堆内存初始值，默认是物理内存的1/64；由XX:MaxPermSize设置最大非堆内存的大小，默认是物理内存的1/4。（还有一说：MaxPermSize缺省值和-server -client选项相关。-server选项下默认MaxPermSize为64m，-client选项下默认MaxPermSize为32m。这个我没有实验。）<br>错误信息中的PermGen space的全称是Permanent Generation space，是指内存的永久保存区域。XX:MaxPermSize设置过小会导致java.lang.OutOfMemoryError: PermGen space 就是内存益出。</p>
+<p>说说为什么会内存益出：<br>1.这一部分内存用于存放Class和Meta的信息，Class在被 Load的时候被放入PermGen space区域，它和存放Instance的Heap区域不同。<br>2.GC(Garbage Collection)不会在主程序运行期对PermGen space进行清理，所以如果你的APP会LOAD很多CLASS的话,就很可能出现PermGen space错误。</p>
+<h3 id="JVM内存限制-最大值"><a href="#JVM内存限制-最大值" class="headerlink" title="JVM内存限制(最大值)"></a>JVM内存限制(最大值)</h3><p>1.首先JVM内存限制于实际的最大物理内存，假设物理内存无限大的话，JVM内存的最大值跟操作系统有很大的关系。简单的说就32位处理器虽然可控内存空间有4GB,但是具体的操作系统会给一个限制，这个限制一般是2GB-3GB（一般来说Windows系统下为1.5G-2G，Linux系统下为2G-3G），而64bit以上的处理器就不会有限制了。</p>
+<ol start="2">
+<li>为什么有的机器将-Xmx和-XX:MaxPermSize都设置为512M之后无法启动？<br>通过上面对JVM内存管理的介绍我们已经了解到JVM内存包含两种：堆内存和非堆内存，另外JVM最大内存首先取决于实际的物理内存和操作系统。所以说设置VM参数导致程序无法启动主要有以下几种原因：</li>
+</ol>
+<ul>
+<li>参数中-Xms的值大于-Xmx，或者-XX:PermSize的值大于-XX:MaxPermSize；<br>— Xmx的值和-XX:MaxPermSize的总和超过了JVM内存的最大限制，比如当前操作系统最大内存限制，或者实际的物理内存等等。<br>说到实际物理内存这里需要说明一点的是，如果你的内存是1024MB，但实际系统中用到的并不可能是1024MB，因为有一部分被硬件占用了。</li>
+</ul>
+<h3 id="元空间（Metaspace）"><a href="#元空间（Metaspace）" class="headerlink" title="元空间（Metaspace）"></a>元空间（Metaspace）</h3><p>JDK8中完全移除永久代（Permanent Generation (PermGen)），替代者是元空间（Metaspace）。<br>JVM参数<strong>PermSize</strong>和<strong>MaxPermSize</strong>会被忽略，如果还有这些配置项，在启动时会有警告信息。</p>
+<h4 id="元空间的容量"><a href="#元空间的容量" class="headerlink" title="元空间的容量"></a>元空间的容量</h4><p>默认情况下，类元数据分配受到可用的本机内存容量的限制（容量依然取决于你使用32位JVM还是64位操作系统的虚拟内存的可用性）。<br>一个新的参数 (MaxMetaspaceSize)可以使用。允许你来限制用于类元数据的本地内存。如果没有特别指定，元空间将会根据应用程序在运行时的需求动态设置大小。 </p>
+<h4 id="元空间的垃圾回收"><a href="#元空间的垃圾回收" class="headerlink" title="元空间的垃圾回收"></a>元空间的垃圾回收</h4><p>如果类元数据的空间占用达到参数“MaxMetaspaceSize”设置的值，将会触发对死亡对象和类加载器的垃圾回收。<br>为了限制垃圾回收的频率和延迟，适当的监控和调优元空间是非常有必要的。元空间过多的进行垃圾收集可能表示类，类加载器内存泄漏或对你的应用程序来说空间太小了。</p>
+<h2 id="针对Tomcat进行调优"><a href="#针对Tomcat进行调优" class="headerlink" title="针对Tomcat进行调优"></a>针对Tomcat进行调优</h2><p>1.在bin/catalina.sh文件中加入下面参数，对JVM进行优化：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">set JAVA_OPTS=</span><br><span class="line">-server </span><br><span class="line">	-Xms1000M</span><br><span class="line">	-Xmx1000M   #-Xms与-Xmx设成一样的值，避免JVM因为频繁的GC导致性能大起大落</span><br><span class="line">	-Xss512k</span><br><span class="line">	-XX:+AggressiveOpts</span><br><span class="line">	-XX:+UseBiasedLocking</span><br><span class="line">	-XX:PermSize=64M</span><br><span class="line">	-XX:MaxPermSize=300M #Jdk8配置-XX:MaxMetaspaceSize=300m</span><br><span class="line">	-XX:+DisableExplicitGC</span><br><span class="line">	-XX:MaxTenuringThreshold=31</span><br><span class="line">	-XX:+UseConcMarkSweepGC</span><br><span class="line">	-XX:+UseParNewGC </span><br><span class="line">	-XX:+CMSParallelRemarkEnabled</span><br><span class="line">	-XX:+UseCMSCompactAtFullCollection</span><br><span class="line">	-XX:LargePageSizeInBytes=128m</span><br><span class="line">	-XX:+UseFastAccessorMethods</span><br><span class="line">	-XX:+UseCMSInitiatingOccupancyOnl</span><br><span class="line">	-Djava.awt.headless=true</span><br></pre></td></tr></table></figure></p>
+<p><strong>当然配置的具体值根据具体环境而定。</strong><br>上述这样的配置，基本上可以达到：</p>
+<ul>
+<li>系统响应时间增快</li>
+<li>JVM回收速度增快同时又不影响系统的响应率</li>
+<li>JVM内存最大化利用</li>
+<li>线程阻塞情况最小化</li>
+</ul>
+<p>2.Tomcat连接参数的优化，主要是针对吞吐量做优化：<br>修改conf/server.xml文件，把原来<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;Connector port=&quot;8080&quot; protocol=&quot;HTTP/1.1&quot; /&gt;</span><br></pre></td></tr></table></figure></p>
+<p>修改为:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">&lt;Connector port=&quot;8080&quot; protocol=&quot;HTTP/1.1&quot;</span><br><span class="line">    URIEncoding=&quot;UTF-8&quot;  </span><br><span class="line">    #Tomcat初始化时创建的socket线程数</span><br><span class="line">    minSpareThreads=&quot;25&quot; </span><br><span class="line">    #Tomcat连接器的最大空闲 socket 线程数</span><br><span class="line">    maxSpareThreads=&quot;75&quot;</span><br><span class="line">    #是否反查域名</span><br><span class="line">    enableLookups=&quot;false&quot; </span><br><span class="line">    #上传时是否使用超时机制</span><br><span class="line">    disableUploadTimeout=&quot;true&quot; </span><br><span class="line">    connectionTimeout=&quot;20000&quot;</span><br><span class="line">    #指定当所有可以使用的处理请求的线程数都被使用时，可传入连接请求的最大队列长度，超过这个数的请求将不予处理,默认100个</span><br><span class="line">    acceptCount=&quot;300&quot;   </span><br><span class="line">    #可创建的最大的线程数</span><br><span class="line">    maxThreads=&quot;300&quot; </span><br><span class="line">    #最大连接线程数，即：并发处理的最大请求数，默认值为 75</span><br><span class="line">    maxProcessors=&quot;1000&quot; </span><br><span class="line">    #最小空闲连接线程数，用于提高系统处理性能，默认值为 10</span><br><span class="line">    minProcessors=&quot;5&quot;</span><br><span class="line">    useURIValidationHack=&quot;false&quot;</span><br><span class="line">    #是否对响应的数据进行 GZIP 压缩</span><br><span class="line">    compression=&quot;on&quot; </span><br><span class="line">    #压缩响应的最小值</span><br><span class="line">    compressionMinSize=&quot;2048&quot;</span><br><span class="line">    #压缩类型</span><br><span class="line">    compressableMimeType=&quot;text/html,text/xml,text/javascript,text/css,text/plain&quot;</span><br><span class="line">    redirectPort=&quot;8443&quot;/&gt;</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/tomcat/" rel="tag"># tomcat</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/16/python标准库模块filecmp使用/" rel="next" title="python标准库模块filecmp使用">
+                <i class="fa fa-chevron-left"></i> python标准库模块filecmp使用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/12/28/python操作excel模块xlsxwriter/" rel="prev" title="python操作excel模块xlsxwriter">
+                python操作excel模块xlsxwriter <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Jvm内存分析"><span class="nav-number">1.</span> <span class="nav-text">Jvm内存分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#堆-Heap-和非堆-Non-heap-内存"><span class="nav-number">1.1.</span> <span class="nav-text">堆(Heap)和非堆(Non-heap)内存</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#堆内存分配"><span class="nav-number">1.1.1.</span> <span class="nav-text">堆内存分配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#非堆内存分配"><span class="nav-number">1.1.2.</span> <span class="nav-text">非堆内存分配</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JVM内存限制-最大值"><span class="nav-number">1.2.</span> <span class="nav-text">JVM内存限制(最大值)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#元空间（Metaspace）"><span class="nav-number">1.3.</span> <span class="nav-text">元空间（Metaspace）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#元空间的容量"><span class="nav-number">1.3.1.</span> <span class="nav-text">元空间的容量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#元空间的垃圾回收"><span class="nav-number">1.3.2.</span> <span class="nav-text">元空间的垃圾回收</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#针对Tomcat进行调优"><span class="nav-number">2.</span> <span class="nav-text">针对Tomcat进行调优</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="zabbix,监控,lnmp,安装,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="Zabbix 是一款能够监控各种网络参数以及服务器健康性和完整性的软件。它使用灵活的通知机制，允许用户为几乎任何事件配置基于多种方式的告警。Zabbix 支持主动轮询和被动捕获。Zabbix 所有的报告、统计信息和配置参数都可以通过基于Web的前端页面进行访问。">
+<meta name="keywords" content="zabbix,监控,lnmp,安装">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zabbix-安装">
+<meta property="og:url" content="http://zhanghonged.github.io/2018/06/26/Zabbix-安装/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="Zabbix 是一款能够监控各种网络参数以及服务器健康性和完整性的软件。它使用灵活的通知机制，允许用户为几乎任何事件配置基于多种方式的告警。Zabbix 支持主动轮询和被动捕获。Zabbix 所有的报告、统计信息和配置参数都可以通过基于Web的前端页面进行访问。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-06-27T03:03:03.797Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Zabbix-安装">
+<meta name="twitter:description" content="Zabbix 是一款能够监控各种网络参数以及服务器健康性和完整性的软件。它使用灵活的通知机制，允许用户为几乎任何事件配置基于多种方式的告警。Zabbix 支持主动轮询和被动捕获。Zabbix 所有的报告、统计信息和配置参数都可以通过基于Web的前端页面进行访问。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2018/06/26/Zabbix-安装/">
+
+
+
+
+
+  <title>Zabbix-安装 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2018/06/26/Zabbix-安装/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Zabbix-安装</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-26T11:21:34+08:00">
+                2018-06-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Zabbix/" itemprop="url" rel="index">
+                    <span itemprop="name">Zabbix</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><strong>Zabbix</strong> 是一款能够监控各种网络参数以及服务器健康性和完整性的软件。它使用灵活的通知机制，允许用户为几乎任何事件配置基于多种方式的告警。<br><strong>Zabbix</strong> 支持主动轮询和被动捕获。<strong>Zabbix</strong> 所有的报告、统计信息和配置参数都可以通过基于Web的前端页面进行访问。<br><a id="more"></a></p>
+<h2 id="一、zabbix介绍"><a href="#一、zabbix介绍" class="headerlink" title="一、zabbix介绍"></a>一、zabbix介绍</h2><p><span style="font-weight:bold;">主要组件</span><br><span style="font-weight:bold;color:#1FC5A8;">server:</span><br>Zabbix server 是agent程序报告系统可用性、系统完整性和统计数据的核心组件，是所有配置信息、统计信息和操作数据的核心存储器。<br><span style="font-weight:bold;color:#1FC5A8;">数据库存储:</span><br>所有配置信息和Zabbix收集到的数据都被存储在数据库中。<br><span style="font-weight:bold;color:#1FC5A8;">Web界面:</span><br>为了从任何地方和任何平台都可以轻松的访问Zabbix, 我们提供基于Web的Zabbix界面。该界面是Zabbix Server的一部分，通常(但不一定)跟Zabbix Server运行在同一台物理机器上。<br><span style="font-weight:bold;color:#1FC5A8;">Proxy代理服务器:</span><br>Zabbix proxy 可以替Zabbix Server收集性能和可用性数据。Proxy代理服务器是Zabbix软件可选择部署的一部分；当然，Proxy代理服务器可以帮助单台Zabbix Server分担负载压力。<br><span style="font-weight:bold;color:#1FC5A8;">Agent监控代理:</span><br>Zabbix agents监控代理 部署在监控目标上，能够主动监控本地资源和应用程序，并将收集到的数据报告给Zabbix Server。</p>
+<p><span style="font-weight:bold;">数据流</span><br>监控方面： 为了创建一个监控项 <strong>(item)</strong> 用于采集数据，必须先创建一个主机 <strong>(host)</strong>。<br>告警方面： 在监控项里创建触发器 <strong>(trigger)</strong>，通过触发器 <strong>(trigger)</strong> 来触发告警动作 <strong>(action)</strong>。<br>因此，如果你想收到Server XCPU负载过高的告警，你必须:<br>1.为Server X创建一个 <strong>host</strong> 并关联一个用于对CPU进行监控的监控项 <strong>(Item)</strong>。<br>2.创建一个 <strong>trigger</strong>，设置成当CPU负载过高时会触发。<br>3.<strong>Trigger</strong> 被触发，发送告警邮件。</p>
+<h2 id="二、LNMP环境源码安装"><a href="#二、LNMP环境源码安装" class="headerlink" title="二、LNMP环境源码安装"></a>二、LNMP环境源码安装</h2><p>我们这里采用比较流行的 <strong>LNMP</strong> 环境进行介绍。</p>
+<table>
+<thead>
+<tr>
+<th>软件</th>
+<th>版本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>zabbix</td>
+<td>3.4.10</td>
+</tr>
+<tr>
+<td>OS</td>
+<td>Centos7.4</td>
+</tr>
+<tr>
+<td>nginx</td>
+<td>1.14.0</td>
+</tr>
+<tr>
+<td>mysql</td>
+<td>5.6.37</td>
+</tr>
+<tr>
+<td>php</td>
+<td>7.2.6</td>
+</tr>
+</tbody>
+</table>
+<p><span style="color:red;">注：zabbix3.4目前不支持mysql8数据库，4.0版本有可能支持。</span></p>
+<h3 id="1、mysql"><a href="#1、mysql" class="headerlink" title="1、mysql"></a>1、mysql</h3><p>创建mysql用户<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">useradd -s /sbin/nologin mysql</span><br></pre></td></tr></table></figure></p>
+<p>如果有删除之前的配置文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -f /etc/my.cnf</span><br></pre></td></tr></table></figure></p>
+<p>yum安装基础包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install wget  cmake gcc gcc-c++ ncurses  ncurses-devel  libaio-devel  openssl openssl-devel zlib-devel pcre-devel</span><br></pre></td></tr></table></figure></p>
+<p>开始编译安装<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">tar xvf mysql-5.6.37.tar.gz</span><br><span class="line">cd mysql-5.6.37</span><br><span class="line">cmake   -DCMAKE_INSTALL_PREFIX=/usr/local/mysql5 \</span><br><span class="line">        -DSYSCONFDIR=/usr/local/mysql5 \</span><br><span class="line">        -DMYSQL_DATADIR=/usr/local/mysql5/data \</span><br><span class="line">        -DEXTRA_CHARSETS=all \</span><br><span class="line">        -DMYSQL_DATADIR=/var/lib/mysql/mysql.sock \</span><br><span class="line">        -DDEFAULT_CHARSET=utf8 \</span><br><span class="line">        -DDEFAULT_COLLATION=utf8_general_ci</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure></p>
+<p>初始化mysql<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/mysql5</span><br><span class="line">scripts/mysql_install_db --user=mysql --basedir=/usr/local/mysql5 --datadir=/usr/local/mysql5/data/</span><br></pre></td></tr></table></figure></p>
+<p>自定义my.cnf配置文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">ln -s /usr/local/mysql5/my.cnf /etc/my.cnf</span><br><span class="line"># my.cnf内容</span><br><span class="line">[mysqld]</span><br><span class="line">datadir=/usr/local/mysql5/data</span><br><span class="line">socket=/var/lib/mysql/mysql.sock</span><br><span class="line">open_files_limit = 10240</span><br><span class="line">max_connections = 3000</span><br><span class="line">max_allowed_packet = 32M</span><br><span class="line">innodb_buffer_pool_size = 4096M</span><br><span class="line"></span><br><span class="line">[mysql]</span><br><span class="line">socket=/var/lib/mysql/mysql.sock</span><br><span class="line"></span><br><span class="line">[mysqldump]</span><br><span class="line">socket=/var/lib/mysql/mysql.sock</span><br></pre></td></tr></table></figure></p>
+<p>配置服务启动<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/mysql5</span><br><span class="line">cp ./support-files/mysql.server /etc/rc.d/init.d/mysqld</span><br><span class="line">chmod 755 /etc/rc.d/init.d/mysqld</span><br><span class="line">service mysqld start</span><br></pre></td></tr></table></figure></p>
+<p>添加环境变量<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/profile</span><br><span class="line"># 添加内容</span><br><span class="line">export MYSQL_HOME=/usr/local/mysql5</span><br><span class="line">export PATH=.:$PATH:$MYSQL_HOME/bin</span><br><span class="line"># 使生效</span><br><span class="line">source /etc/profile</span><br></pre></td></tr></table></figure></p>
+<p>初始化mysql用户权限<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot mysql  --execute &quot;delete from user where host=&apos;`hostname`&apos;&quot; # hostname是机器名</span><br><span class="line">mysql -uroot mysql  --execute &quot;delete from user where host=&apos;127.0.0.1&apos;&quot;</span><br><span class="line">mysql -uroot mysql  --execute &quot;delete from user where host=&apos;::1&apos;&quot;</span><br><span class="line">mysql -uroot mysql  --execute &quot;delete from user where user=&apos;&apos;&quot;</span><br><span class="line">mysql -uroot mysql  --execute &quot;update user set password=password(&apos;mypasswd&apos;) where user=&apos;root&apos;&quot;</span><br><span class="line">mysql -uroot mysql  --execute &quot;update user set host=&apos;%&apos; where user=&apos;root&apos;&quot;</span><br><span class="line">mysql -uroot mysql  --execute &quot;flush privileges&quot;</span><br></pre></td></tr></table></figure></p>
+<p>创建zabbix数据库<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -pmypasswd mysql --execute &quot;create database zabbix default charset utf8 COLLATE utf8_general_ci&quot;</span><br></pre></td></tr></table></figure></p>
+<p>导入初始化数据，初始化基本在安装目录 <strong>zabbix-3.4.10/database/mysql</strong> 下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -pmypasswd --default-character-set=utf8 zabbix &lt; zabbix-3.4.10/database/mysql/schema.sql</span><br><span class="line">mysql -uroot -pmypasswd --default-character-set=utf8 zabbix &lt; zabbix-3.4.10/database/mysql/images.sql</span><br><span class="line">mysql -uroot -pmypasswd --default-character-set=utf8 zabbix &lt; zabbix-3.4.10/database/mysql/data.sql</span><br></pre></td></tr></table></figure></p>
+<h3 id="2、nginx"><a href="#2、nginx" class="headerlink" title="2、nginx"></a>2、nginx</h3><p>创建nginx启动用户<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">useradd -M -s /sbin/nologin nginx</span><br></pre></td></tr></table></figure></p>
+<p>编译安装<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">tar xvf nginx-1.14.0.tar.gz</span><br><span class="line">cd nginx-1.14.0.tar.gz</span><br><span class="line">./configure --user=nginx \</span><br><span class="line">	--group=nginx \</span><br><span class="line">	--prefix=/etc/nginx/ \</span><br><span class="line">	--sbin-path=/usr/sbin/nginx \</span><br><span class="line">	--conf-path=/etc/nginx/nginx.conf \</span><br><span class="line">	--error-log-path=/var/log/nginx/error.log \</span><br><span class="line">	--http-log-path=/var/log/nginx/access.log \</span><br><span class="line">	--pid-path=/var/run/nginx.pid \</span><br><span class="line">	--http-client-body-temp-path=/var/cache/nginx/client_temp \</span><br><span class="line">	--http-proxy-temp-path=/var/cache/nginx/proxy_temp \</span><br><span class="line">	--with-http_ssl_module \</span><br><span class="line">	--with-http_gzip_static_module \</span><br><span class="line">	--with-http_stub_status_module \</span><br><span class="line">	--with-pcre</span><br><span class="line"></span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure></p>
+<p>启动nginx<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx</span><br></pre></td></tr></table></figure></p>
+<h3 id="3、php"><a href="#3、php" class="headerlink" title="3、php"></a>3、php</h3><p>php源码安装比较麻烦，需要首先安装一些依赖包。</p>
+<h4 id="依赖包安装"><a href="#依赖包安装" class="headerlink" title="依赖包安装"></a>依赖包安装</h4><p>1、jpeg源码安装<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">tar xvf jpegsrc.v9c.tar.gz</span><br><span class="line">cd jpeg-9c</span><br><span class="line">./configure --prefix=/usr/local/mylibs --enable-shared --enable-static</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure></p>
+<p>2、libpng源码安装<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">tar xvf libpng-1.6.34.tar.xz</span><br><span class="line">cd libpng-1.6.34</span><br><span class="line">./configure --prefix=/usr/local/mylibs</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure></p>
+<p>3、freetype源码安装<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">tar xvf freetype-2.4.12.tar.gz</span><br><span class="line">cd freetype-2.4.12/</span><br><span class="line">./configure --prefix=/usr/local/mylibs</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure></p>
+<p>4、libmcrypt源码安装<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">tar xvf libmcrypt-2.5.8.tar.gz</span><br><span class="line">cd libmcrypt-2.5.8</span><br><span class="line">./configure --prefix=/usr/local/mylibs</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure></p>
+<p>5、mhash源码安装<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">tar xvf mhash-0.9.9.9.tar.gz</span><br><span class="line">cd mhash-0.9.9.9/</span><br><span class="line">./configure --prefix=/usr/local/mylibs</span><br><span class="line">make &amp;&amp; make install</span><br><span class="line">111</span><br></pre></td></tr></table></figure></p>
+<p>6、libiconv源码安装<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">tar xvf libiconv-1.15.tar.gz</span><br><span class="line">cd libiconv-1.15</span><br><span class="line">./configure --prefix=/usr/local/mylibs</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure></p>
+<p>在编译安装mcrypt前需要有一个动作:<br><span style="font-weight:bold;color:blue;">让上面安装的包加载到动态库</span></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/ld.so.conf</span><br><span class="line">#添加一行</span><br><span class="line">/usr/local/mylibs/lib</span><br><span class="line">#生效</span><br><span class="line">ldconfig</span><br></pre></td></tr></table></figure>
+<p>7、mcrypt源码安装<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">tar xvf mcrypt-2.6.8.tar.gz</span><br><span class="line">cd mcrypt-2.6.8/</span><br><span class="line">export LDFLAGS=&quot;-L/usr/local/mylibs/lib -L/usr/lib&quot;</span><br><span class="line">export CFLAGS=&quot;-I/usr/local/mylibs/include -I/usr/include&quot;</span><br><span class="line">touch malloc.h</span><br><span class="line">./configure --prefix=/usr/local/mylibs --with-libmcrypt-prefix=/usr/local/mylibs</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure></p>
+<h4 id="php开始源码安装"><a href="#php开始源码安装" class="headerlink" title="php开始源码安装"></a>php开始源码安装</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">tar xvf php-7.2.6.tar.bz2</span><br><span class="line">cd php-7.2.6</span><br><span class="line">./configure --prefix=/usr/local/php7 \</span><br><span class="line">	--with-config-file-path=/usr/local/php7/etc \</span><br><span class="line">	--with-mysqli \</span><br><span class="line">	--with-iconv=/usr/local/mylibs \</span><br><span class="line">	--with-freetype-dir=/usr/local/mylibs \</span><br><span class="line">	--with-jpeg-dir=/usr/local/mylibs \</span><br><span class="line">	--with-png-dir=/usr/local/mylibs \</span><br><span class="line">	--with-zlib \</span><br><span class="line">	--with-mcrypt=/usr/local/mylibs \</span><br><span class="line">	--with-libxml-dir=/usr \</span><br><span class="line">	--enable-xml \</span><br><span class="line">	--disable-rpath \</span><br><span class="line">	--enable-bcmath \</span><br><span class="line">	--enable-shmop \</span><br><span class="line">	--enable-sysvsem \</span><br><span class="line">	--enable-inline-optimization \</span><br><span class="line">	--with-curl \</span><br><span class="line">	--enable-mbregex \</span><br><span class="line">	--enable-fpm \</span><br><span class="line">	--enable-mbstring \</span><br><span class="line">	--with-gd \</span><br><span class="line">	--enable-gd-native-ttf \</span><br><span class="line">	--with-openssl \</span><br><span class="line">	--with-mhash \</span><br><span class="line">	--enable-pcntl \</span><br><span class="line">	--enable-sockets \</span><br><span class="line">	--with-xmlrpc \</span><br><span class="line">	--enable-zip \</span><br><span class="line">	--with-bz2 \</span><br><span class="line">	--enable-soap \</span><br><span class="line">	--enable-opcache \</span><br><span class="line">	--with-pdo-mysql \</span><br><span class="line">	--enable-maintainer-zts \</span><br><span class="line">	--enable-pcntl \</span><br><span class="line">	--enable-shmop \</span><br><span class="line">	--enable-sysvmsg \</span><br><span class="line">	--enable-sysvsem \</span><br><span class="line">	--enable-sysvshm \</span><br><span class="line">	--without-pear \</span><br><span class="line">	--with-gettext \</span><br><span class="line">	--enable-opcache=no</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+<p>配置文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/src/php-7.2.6</span><br><span class="line"></span><br><span class="line">cp php.ini-development /usr/local/php7/etc/php.ini</span><br><span class="line">cp ./sapi/fpm/php-fpm.conf /usr/local/php7/etc/php-fpm.conf</span><br><span class="line">cp /usr/local/php7/etc/php-fpm.d/www.conf.default /usr/local/php7/etc/php-fpm.d/www.conf</span><br></pre></td></tr></table></figure></p>
+<p>php.ini主要修改项:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">max_execution_time=30    # 允许脚本最大执行时间，超过这个时间就会报错</span><br><span class="line">memory_limit=50M         # 设置脚本可以分配的最大内存量</span><br><span class="line">upload_max_filesize=20M	 # 允许上传文件的最大大小，此指令必须小于post_max_size</span><br><span class="line">post_max_size=30M        # 允许post方式可以接受最大大小</span><br></pre></td></tr></table></figure></p>
+<p>php-fpm方式启动php<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/src/php-7.2.6</span><br><span class="line">cp ./sapi/fpm/init.d.php-fpm /etc/init.d/php-fpm</span><br><span class="line">chmod +x etc/init.d/php-fpm</span><br><span class="line">/etc/init.d/php-fpm start</span><br></pre></td></tr></table></figure></p>
+<h3 id="LNMP环境测试"><a href="#LNMP环境测试" class="headerlink" title="LNMP环境测试"></a>LNMP环境测试</h3><p>建立nginx配置文件:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">server  &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    root /opt/nginx/zabbix;</span><br><span class="line">    index index.php;</span><br><span class="line">    location ~ \.php$ &#123;</span><br><span class="line">    root /opt/nginx/zabbix;</span><br><span class="line">    fastcgi_pass   127.0.0.1:9000;</span><br><span class="line">    fastcgi_index  index.php;</span><br><span class="line">    fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;</span><br><span class="line">    include        fastcgi_params;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在文件系统/opt/nginx/zabbix下建立php测试页面<br>test.php<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php phpinfo(); ?&gt;</span><br></pre></td></tr></table></figure></p>
+<p>浏览器访问检查是否安装成功。</p>
+<h2 id="三、源码安装zabbix"><a href="#三、源码安装zabbix" class="headerlink" title="三、源码安装zabbix"></a>三、源码安装zabbix</h2><p>1、安装基础软件包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y net-snmp-devel libevent libevent-devel</span><br></pre></td></tr></table></figure></p>
+<p>2、创建zabbix用户账户<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">useradd zabbix</span><br></pre></td></tr></table></figure></p>
+<p>2、编译安装<br>由于zabbix-server所在机器也需要监控，安装的时候顺便安装zabbix-agent。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">tar xvf zabbix-3.4.10.tar.gz</span><br><span class="line">cd zabbix-3.4.10</span><br><span class="line">./configure --prefix=/usr/local/zabbix </span><br><span class="line">	--enable-server \</span><br><span class="line">	--enable-agent \</span><br><span class="line">	--with-mysql \</span><br><span class="line">	--with-net-snmp \</span><br><span class="line">	--with-libcurl \</span><br><span class="line">	--with-libxml2</span><br><span class="line">make install</span><br></pre></td></tr></table></figure></p>
+<p>自Zabbix 3.0.0版本起，SMTP认证需要 <strong>–with-libcurl</strong> 配置选项，同时要求cURL 7.20.0或者更改版本。<br>自Zabbix 2.2.0版本起，虚拟机监控需 <strong>–with-libcurl</strong> 和 <strong>–with-libxml2</strong> 配置选项。<br>3、修改server端配置文件<br>/usr/local/zabbix/etc/zabbix_server.conf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 主要是数据库连接信息</span><br><span class="line">DBHost=localhost</span><br><span class="line">DBName=zabbix</span><br><span class="line">DBUser=zabbix</span><br><span class="line">DBPassword=zabbix</span><br></pre></td></tr></table></figure></p>
+<p>4、修改agentd端配置文件<br>/usr/local/zabbix/etc/zabbix_server.conf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 指定Server端的IP地址</span><br><span class="line">Server=127.0.0.1</span><br></pre></td></tr></table></figure></p>
+<p>5、启动守护进程<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/zabbix/sbin/zabbix_server</span><br><span class="line">/usr/local/zabbix/sbin/zabbix_agentd</span><br></pre></td></tr></table></figure></p>
+<p>6、安装Zabbix web界面<br>只需要简单的从源码包 <strong>frontends/php</strong> 路径下复制PHP文件到Web服务器的HTML文件目录，就可以完成安装。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd abbix-3.4.10</span><br><span class="line">cp -rf frontends/php/ /opt/nginx/zabbix/</span><br></pre></td></tr></table></figure></p>
+<p>在浏览器中打开Zabbix URL就可以看到前端安装向导的第一个页面。<br>根据向导一步一步设置即可完成 <strong>Zabbix web</strong> 界面的安装。<br>默认账号：<strong>admin</strong>—-<strong>zabbix</strong></p>
+<p>7、zabbix修改中文支持不友好<br>在Web中如果修改字体为中文，默认的中文支持并不友好，很多都无法显示。<br>在此我们替换字体文件进行修改。<br>第一步上传字体文件：<br>进入web前端的 <strong>fonts</strong> 目录，上传字体文件 <strong>simhei.ttf</strong>。<br><a href="https://github.com/zhanghonged/scripts/blob/master/zabbix/simhei.ttf" target="_blank" rel="noopener"><strong>simhei.ttf下载地址</strong></a><br>第二部在配置文件中修改字体名字：<br>54行修改为<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">define(<span class="string">'ZBX_GRAPH_FONT_NAME'</span>,           <span class="string">'simhei'</span>); <span class="comment">// font file name</span></span><br></pre></td></tr></table></figure></p>
+<p>103行修改为<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">define(<span class="string">'ZBX_FONT_NAME'</span>, <span class="string">'simhei'</span>);</span><br></pre></td></tr></table></figure></p>
+<p>就可以支持完美中文了。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/zabbix/" rel="tag"># zabbix</a>
+          
+            <a href="/tags/监控/" rel="tag"># 监控</a>
+          
+            <a href="/tags/lnmp/" rel="tag"># lnmp</a>
+          
+            <a href="/tags/安装/" rel="tag"># 安装</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/16/DataStructures-collections-defaultdict/" rel="next" title="DataStructures-collections-defaultdict">
+                <i class="fa fa-chevron-left"></i> DataStructures-collections-defaultdict
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/06/27/Zabbix-外部检查/" rel="prev" title="Zabbix-外部检查">
+                Zabbix-外部检查 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、zabbix介绍"><span class="nav-number">1.</span> <span class="nav-text">一、zabbix介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、LNMP环境源码安装"><span class="nav-number">2.</span> <span class="nav-text">二、LNMP环境源码安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、mysql"><span class="nav-number">2.1.</span> <span class="nav-text">1、mysql</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、nginx"><span class="nav-number">2.2.</span> <span class="nav-text">2、nginx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、php"><span class="nav-number">2.3.</span> <span class="nav-text">3、php</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#依赖包安装"><span class="nav-number">2.3.1.</span> <span class="nav-text">依赖包安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#php开始源码安装"><span class="nav-number">2.3.2.</span> <span class="nav-text">php开始源码安装</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LNMP环境测试"><span class="nav-number">2.4.</span> <span class="nav-text">LNMP环境测试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、源码安装zabbix"><span class="nav-number">3.</span> <span class="nav-text">三、源码安装zabbix</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

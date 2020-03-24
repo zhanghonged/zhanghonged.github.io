@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="zabbix,监控,告警,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="为了能够更时效的发布告警到指定用户，可通过发短信的方式来通知指定用户。短信告警 也是通过 脚本 类型的报警媒介来实现。">
+<meta name="keywords" content="zabbix,监控,告警">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zabbix-短信告警">
+<meta property="og:url" content="http://zhanghonged.github.io/2018/06/27/Zabbix-短信告警/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="为了能够更时效的发布告警到指定用户，可通过发短信的方式来通知指定用户。短信告警 也是通过 脚本 类型的报警媒介来实现。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-06-27T07:59:15.897Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Zabbix-短信告警">
+<meta name="twitter:description" content="为了能够更时效的发布告警到指定用户，可通过发短信的方式来通知指定用户。短信告警 也是通过 脚本 类型的报警媒介来实现。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2018/06/27/Zabbix-短信告警/">
+
+
+
+
+
+  <title>Zabbix-短信告警 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2018/06/27/Zabbix-短信告警/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Zabbix-短信告警</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-27T10:27:19+08:00">
+                2018-06-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Zabbix/" itemprop="url" rel="index">
+                    <span itemprop="name">Zabbix</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>为了能够更时效的发布告警到指定用户，可通过发短信的方式来通知指定用户。<br><strong>短信告警</strong> 也是通过 <strong>脚本</strong> 类型的报警媒介来实现。<br><a id="more"></a></p>
+<p>配置方面与 <strong>邮件告警</strong> 相比有以下不同：<br>1、短信告警需要用到短信平台，是收费的，短信模板需要提交平台审核。<br>2、短信告警内容没有标题，只有内容。<br>下面我们详细介绍配置方法。</p>
+<h2 id="一、短信平台配置"><a href="#一、短信平台配置" class="headerlink" title="一、短信平台配置"></a>一、短信平台配置</h2><p>首选选择一款短信平台，亿互无线、云片网等，我这里介绍用的是亿互无线。<br>1、建立签名<br>2、配置模板<br>我这里配置的模板是：<br><em>故障【变量】 ,主机:【变量】,发送故障:【变量】,时间:【变量】.</em><br><em>故障【变量】,确认人:【变量】,确认时间:【变量】,消息:【变量】.主机:【变量】,故障:【变量】.</em><br>3、获取接口地址及参数<br><strong>API地址</strong><br><a href="http://106.ihuyi.com/webservice/sms.php?method=Submit" target="_blank" rel="noopener">http://106.ihuyi.com/webservice/sms.php?method=Submit</a><br><strong>account</strong><br>xxxxxxxxxxxxxxxxxxxxx<br><strong>password</strong><br>xxxxxxxxxxxxxxxxxxxxx</p>
+<h2 id="二、配置脚本"><a href="#二、配置脚本" class="headerlink" title="二、配置脚本"></a>二、配置脚本</h2><p>1、脚本路径默认为zabbix安装目录 <em>zabbix/share/zabbix/alertscripts</em> ，可以在配置文件中自定义目录位置。<br>2、脚本编写 <em>mobile.py</em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment">#coding:utf-8</span></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">亿互无线的短信平台</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line">host  = <span class="string">"http://106.ihuyi.com/webservice/sms.php?method=Submit"</span></span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">account  = <span class="string">"xxx"</span></span><br><span class="line">password = <span class="string">"xxxxxxxxxxxxxxxxxxxxxxxxxxxx"</span></span><br><span class="line"> </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">send_sms</span><span class="params">(text, mobile)</span>:</span></span><br><span class="line">    headers = &#123;<span class="string">"Content-type"</span>: <span class="string">"application/x-www-form-urlencoded"</span>, <span class="string">"Accept"</span>: <span class="string">"text/plain"</span>&#125;</span><br><span class="line">    params = &#123;</span><br><span class="line">        <span class="string">'account'</span>: account,</span><br><span class="line">        <span class="string">'password'</span> : password,</span><br><span class="line">        <span class="string">'content'</span>: text,</span><br><span class="line">        <span class="string">'mobile'</span>:mobile,</span><br><span class="line">        <span class="string">'format'</span>:<span class="string">'json'</span></span><br><span class="line">        &#125;</span><br><span class="line">    req = requests.post(url=host, headers=headers, params=params)</span><br><span class="line">    content = req.content</span><br><span class="line">    <span class="keyword">return</span> content</span><br><span class="line"> </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    mobile = sys.argv[<span class="number">1</span>]</span><br><span class="line">    textList = sys.argv[<span class="number">2</span>].split(<span class="string">'+'</span>)</span><br><span class="line">    <span class="keyword">if</span> len(textList) == <span class="number">5</span>:</span><br><span class="line">        action = textList[<span class="number">0</span>]</span><br><span class="line">        machine = textList[<span class="number">1</span>]</span><br><span class="line">        problem = textList[<span class="number">2</span>]</span><br><span class="line">        problem_date = <span class="string">"-"</span>.join(textList[<span class="number">3</span>:<span class="number">5</span>])</span><br><span class="line">        text = <span class="string">"故障%s ,主机:%s,发生故障:%s,时间:%s."</span> %(action,machine,problem,problem_date)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        action = textList[<span class="number">0</span>]</span><br><span class="line">        confirm_user = textList[<span class="number">1</span>]</span><br><span class="line">        confirm_date = <span class="string">"-"</span>.join(textList[<span class="number">2</span>:<span class="number">4</span>])</span><br><span class="line">        confirm_msg = textList[<span class="number">4</span>]</span><br><span class="line">        machine = textList[<span class="number">5</span>]</span><br><span class="line">        problem = textList[<span class="number">6</span>]</span><br><span class="line">        text = <span class="string">"故障%s,确认人:%s,确认时间:%s,消息:%s.主机:%s,故障:%s."</span> %(action,confirm_user,confirm_date,confirm_msg,machine,problem)</span><br><span class="line">    print(send_sms(text, mobile))</span><br></pre></td></tr></table></figure></p>
+<h2 id="三、zabbix-web端配置"><a href="#三、zabbix-web端配置" class="headerlink" title="三、zabbix web端配置"></a>三、zabbix web端配置</h2><h3 id="1、增加报警媒介类型"><a href="#1、增加报警媒介类型" class="headerlink" title="1、增加报警媒介类型"></a>1、增加报警媒介类型</h3><ul>
+<li>进入 <em>管理</em> -&gt; 媒介类型</li>
+<li>点击 <em>创建媒介类型</em></li>
+</ul>
+<p><strong>类型：</strong> 选择脚本<br><strong>脚本名称：</strong> 填写上一步创建的脚本 <em>mobile.py</em><br><strong>脚本参数：</strong> 向脚本添加命令行参数，是zabbix的 <strong>宏</strong> 变量</p>
+<blockquote>
+<p>{ALERT.SENDTO} 收件手机号<br>{ALERT.MESSAGE} 内容</p>
+</blockquote>
+<h3 id="2、为用户分配报警提示"><a href="#2、为用户分配报警提示" class="headerlink" title="2、为用户分配报警提示"></a>2、为用户分配报警提示</h3><ul>
+<li>进入 <em>管理</em> -&gt; <em>用户</em></li>
+<li>打开用户属性窗体</li>
+<li>在 <em>报警媒介</em> 选项卡 点击 <em>添加</em></li>
+</ul>
+<p><strong>类型：</strong> 选择上一步创建的媒介类型 <em>短信报警</em><br><strong>收件人：</strong> 填写收件人手机号码<br><strong>如果存在严重性则使用</strong> 标记要激活警示标记的触发严重性的复选框</p>
+<h3 id="3、配置报警动作"><a href="#3、配置报警动作" class="headerlink" title="3、配置报警动作"></a>3、配置报警动作</h3><ul>
+<li>进入 <em>配置</em> -&gt; <em>动作</em></li>
+<li>右上角的 <em>事件源</em> 下拉框选择 <em>触发器</em></li>
+<li>点击 <em>创建动作</em></li>
+</ul>
+<p><span style="color:red;font-weight:bold;">注意：这里和配置邮件报警的不同，邮件报警可以把&nbsp;&nbsp;<u>标题</u>&nbsp;&nbsp;和&nbsp;&nbsp;<u>内容</u>&nbsp;&nbsp;直接给 <em>SMTP</em> 服务器去发送，但短信报警不同，必须去匹配平台的短信模板。</span></p>
+<p><strong>计算式：</strong> 多个条件的表达式，默认AND与不同的条件类型和OR具有相同的条件类型<br><strong>条件：</strong> 动作触发的条件</p>
+<p><span style="color:red;font-weight:bold;">操作</span>是故障发生时的配置，通过zabbix <strong>宏</strong> 来构建下面内容<br><strong>消息内容：</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">发生+&#123;HOST.NAME&#125;+&#123;TRIGGER.NAME&#125;+&#123;EVENT.DATE&#125;+&#123;EVENT.TIME&#125;</span><br></pre></td></tr></table></figure></p>
+<p>消息内容会通过脚本的第二个参数传递给脚本，脚本里获取参数并通过 <strong>+</strong>(加号) 去分隔，然后生成报警内容字符串发送到短信平台。</p>
+<p><em>操作</em> 选项 点击 <em>新的</em> 添加新的步骤<br><strong>发送到用户</strong> 选择上面建立的需要发送的用户<br><strong>仅送到</strong> 选择之前建立的 <strong>短信报警</strong> 报警媒介*</p>
+<p><span style="color:red;font-weight:bold;">恢复操作</span> 与 <span style="color:red;font-weight:bold;">确认操作</span> 和 <span style="color:red;font-weight:bold;">操作</span> 的配置方法类型，下面只贴出消息内容。<br><strong>恢复操作</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">解除+&#123;HOST.NAME&#125;+&#123;TRIGGER.NAME&#125;+&#123;EVENT.DATE&#125;+&#123;EVENT.TIME&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>确认操作</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">确认+&#123;USER.FULLNAME&#125;+&#123;ACK.DATE&#125;+&#123;ACK.TIME&#125;+&#123;ACK.MESSAGE&#125;+&#123;HOST.NAME&#125;+&#123;TRIGGER.NAME&#125;</span><br></pre></td></tr></table></figure></p>
+<p>短信告警配置完成。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/zabbix/" rel="tag"># zabbix</a>
+          
+            <a href="/tags/监控/" rel="tag"># 监控</a>
+          
+            <a href="/tags/告警/" rel="tag"># 告警</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/27/Zabbix-邮件告警/" rel="next" title="Zabbix-邮件告警">
+                <i class="fa fa-chevron-left"></i> Zabbix-邮件告警
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/06/27/Zabbix-企业微信告警/" rel="prev" title="Zabbix-企业微信告警">
+                Zabbix-企业微信告警 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、短信平台配置"><span class="nav-number">1.</span> <span class="nav-text">一、短信平台配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、配置脚本"><span class="nav-number">2.</span> <span class="nav-text">二、配置脚本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、zabbix-web端配置"><span class="nav-number">3.</span> <span class="nav-text">三、zabbix web端配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、增加报警媒介类型"><span class="nav-number">3.1.</span> <span class="nav-text">1、增加报警媒介类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、为用户分配报警提示"><span class="nav-number">3.2.</span> <span class="nav-text">2、为用户分配报警提示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、配置报警动作"><span class="nav-number">3.3.</span> <span class="nav-text">3、配置报警动作</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

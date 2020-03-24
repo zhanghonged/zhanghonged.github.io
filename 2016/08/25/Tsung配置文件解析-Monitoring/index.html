@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="Tsung,测试,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="Tsung可监控多个远程服务器，每个远程服务器都是由多个用远程agent与后台交互，在&amp;lt;monitor&amp;gt;标签中配置。可统计的数据有：cpu使用情况、系统负载和内存使用情况。请注意，您可以从作业调度器得到监视节点，例如：1&amp;lt;monitor batch=&amp;quot;true&amp;quot; host=&amp;quot;torque&amp;quot; type=&amp;quot;erlang&amp;quot;&amp;g">
+<meta name="keywords" content="Tsung,测试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tsung配置文件解析-Monitoring">
+<meta property="og:url" content="http://zhanghonged.github.io/2016/08/25/Tsung配置文件解析-Monitoring/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="Tsung可监控多个远程服务器，每个远程服务器都是由多个用远程agent与后台交互，在&amp;lt;monitor&amp;gt;标签中配置。可统计的数据有：cpu使用情况、系统负载和内存使用情况。请注意，您可以从作业调度器得到监视节点，例如：1&amp;lt;monitor batch=&amp;quot;true&amp;quot; host=&amp;quot;torque&amp;quot; type=&amp;quot;erlang&amp;quot;&amp;g">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2016-08-25T06:39:43.560Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Tsung配置文件解析-Monitoring">
+<meta name="twitter:description" content="Tsung可监控多个远程服务器，每个远程服务器都是由多个用远程agent与后台交互，在&amp;lt;monitor&amp;gt;标签中配置。可统计的数据有：cpu使用情况、系统负载和内存使用情况。请注意，您可以从作业调度器得到监视节点，例如：1&amp;lt;monitor batch=&amp;quot;true&amp;quot; host=&amp;quot;torque&amp;quot; type=&amp;quot;erlang&amp;quot;&amp;g">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2016/08/25/Tsung配置文件解析-Monitoring/">
+
+
+
+
+
+  <title>Tsung配置文件解析-Monitoring | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2016/08/25/Tsung配置文件解析-Monitoring/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Tsung配置文件解析-Monitoring</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-08-25T14:25:38+08:00">
+                2016-08-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/测试相关/" itemprop="url" rel="index">
+                    <span itemprop="name">测试相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Tsung可监控多个远程服务器，每个远程服务器都是由多个用远程agent与后台交互，在&lt;monitor&gt;标签中配置。可统计的数据有：cpu使用情况、系统负载和内存使用情况。<br>请注意，您可以从作业调度器得到监视节点，例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;monitor batch=&quot;true&quot; host=&quot;torque&quot; type=&quot;erlang&quot;&gt;&lt;/monitor&gt;</span><br></pre></td></tr></table></figure></p>
+<p>支持多种类型的远程代理(默认是erlang)。</p>
+<a id="more"></a>
+<h2 id="一、erlang"><a href="#一、erlang" class="headerlink" title="一、erlang"></a>一、erlang</h2><p>erlang是默认值，使用它要保证监控的机器和server可以互相访问，并且装有erlang。<br>由Tsung启动远程代理，在server上使用erlang communications获取统计数据。<br>例如下面是一个使用erlang代理的监控cluster定义，cluster内有6台机器：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;monitoring&gt;</span><br><span class="line">  &lt;monitor host=&quot;geronimo&quot; type=&quot;erlang&quot;&gt;&lt;/monitor&gt;</span><br><span class="line">  &lt;monitor host=&quot;bigfoot-1&quot; type=&quot;erlang&quot;&gt;&lt;/monitor&gt;</span><br><span class="line">  &lt;monitor host=&quot;bigfoot-2&quot; type=&quot;erlang&quot;&gt;&lt;/monitor&gt;</span><br><span class="line">  &lt;monitor host=&quot;f14-1&quot; type=&quot;erlang&quot;&gt;&lt;/monitor&gt;</span><br><span class="line">  &lt;monitor host=&quot;f14-2&quot; type=&quot;erlang&quot;&gt;&lt;/monitor&gt;</span><br><span class="line">  &lt;monitor host=&quot;db&quot; type=&quot;erlang&quot;&gt;&lt;/monitor&gt;</span><br><span class="line">&lt;/monitoring&gt;</span><br></pre></td></tr></table></figure></p>
+<p>注意：被监控机必须在网络上可访问，并且erlang communications必须通过ssh无密码可访问。在节点上必须使用相同版本的 Erlang/OTP，否则可能出问题。</p>
+<p>如果远程server上不能安装erlang，就需要考虑使用其他可用代理。<br>erlang监控还支持用mysqladmin监控mysql数据库的配置选项，使用方法如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;monitor host=&quot;db&quot; type=&quot;erlang&quot;&gt;&lt;/monitor&gt;</span><br><span class="line"> &lt;mysqladmin port=&quot;3306&quot; username=&quot;root&quot; password=&quot;sesame&quot; /&gt;</span><br><span class="line">&lt;/monitor&gt;</span><br></pre></td></tr></table></figure></p>
+<p>可监控项：mysql客户端连接数、Questions(查询数)</p>
+<h2 id="二、SNMP"><a href="#二、SNMP" class="headerlink" title="二、SNMP"></a>二、SNMP</h2><p>如果使用SNMP监控，type值用<em>snmp</em>代替<em>erlang</em>，也可以混合使用。<br>可以自定义SNMP版本、团体名和端口，它使用的管理信息库（MIB）在net-snmp提供。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;monitoring&gt;</span><br><span class="line">  &lt;monitor host=&quot;geronimo&quot; type=&quot;snmp&quot;/&gt;</span><br><span class="line">  &lt;monitor host=&quot;f14-2&quot; type=&quot;erlang&quot;&gt;&lt;/monitor&gt;</span><br><span class="line">  &lt;monitor host=&quot;db&quot; type=&quot;snmp&quot;&gt;</span><br><span class="line">    &lt;snmp version=&quot;v2&quot; community=&quot;mycommunity&quot; port=&quot;11161&quot;/&gt;</span><br><span class="line">  &lt;/monitor&gt;</span><br><span class="line">&lt;/monitoring&gt;</span><br></pre></td></tr></table></figure></p>
+<p>默认版本是v1，默认团体名是public，默认端口为161。<br>在1.4.2版本以后，你也可以自定义object identifiers (OID)从服务器获取数据，可以使用一个或多个oid标签：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;monitor host=&quot;127.0.0.1&quot; type=&quot;snmp&quot;&gt;</span><br><span class="line">  &lt;snmp version=&quot;v2&quot;&gt;</span><br><span class="line">    &lt;oid value=&quot;1.3.6.1.4.1.42.2.145.3.163.1.1.2.11.0&quot;</span><br><span class="line">         name=&quot;heapused&quot; type=&quot;sample&quot; eval=&quot;fun(X)-&gt; X/100 end.&quot;/&gt;</span><br><span class="line">  &lt;/snmp&gt;</span><br><span class="line">&lt;/monitor&gt;</span><br></pre></td></tr></table></figure></p>
+<p>类型可以是sample, counter 或 sum,你可以定义一个函数（Erlang语法）被应用到value（属性eval）。</p>
+<h2 id="三、-Munin"><a href="#三、-Munin" class="headerlink" title="三、 Munin"></a>三、 Munin</h2><p>Tsung可以从munin代理节点获取数据。type字段必须设置为<em>munin</em>，例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;monitoring&gt;</span><br><span class="line">  &lt;monitor host=&quot;geronimo&quot; type=&quot;munin&quot;/&gt;</span><br><span class="line">  &lt;monitor host=&quot;f14-2&quot; type=&quot;erlang&quot;&gt;&lt;/monitor&gt;</span><br><span class="line">&lt;/monitoring&gt;</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Tsung/" rel="tag"># Tsung</a>
+          
+            <a href="/tags/测试/" rel="tag"># 测试</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/08/25/Tsung配置文件解析-Clients和Server/" rel="next" title="Tsung配置文件解析-Clients和Server">
+                <i class="fa fa-chevron-left"></i> Tsung配置文件解析-Clients和Server
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/08/25/Tsung配置文件解析-Load/" rel="prev" title="Tsung配置文件解析-Load">
+                Tsung配置文件解析-Load <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、erlang"><span class="nav-number">1.</span> <span class="nav-text">一、erlang</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、SNMP"><span class="nav-number">2.</span> <span class="nav-text">二、SNMP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、-Munin"><span class="nav-number">3.</span> <span class="nav-text">三、 Munin</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="python,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="读写文件是最常见的IO操作，python内置了读写文件的函数，用法和C是兼容的。读写文件就是请求操作系统打开一个文件对象（通常称为文件描述符），然后，通过操作系统提供的接口从这个文件对象中读取数据（读文件），或者把数据写入这个文件对象（写文件）。">
+<meta name="keywords" content="python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python基础-文件操作">
+<meta property="og:url" content="http://zhanghonged.github.io/2017/11/05/Python基础-文件操作/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="读写文件是最常见的IO操作，python内置了读写文件的函数，用法和C是兼容的。读写文件就是请求操作系统打开一个文件对象（通常称为文件描述符），然后，通过操作系统提供的接口从这个文件对象中读取数据（读文件），或者把数据写入这个文件对象（写文件）。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/zhizhen.png">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/file.png">
+<meta property="og:updated_time" content="2017-11-05T09:31:27.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python基础-文件操作">
+<meta name="twitter:description" content="读写文件是最常见的IO操作，python内置了读写文件的函数，用法和C是兼容的。读写文件就是请求操作系统打开一个文件对象（通常称为文件描述符），然后，通过操作系统提供的接口从这个文件对象中读取数据（读文件），或者把数据写入这个文件对象（写文件）。">
+<meta name="twitter:image" content="http://zhanghonged.github.io/uploads/zhizhen.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2017/11/05/Python基础-文件操作/">
+
+
+
+
+
+  <title>Python基础-文件操作 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2017/11/05/Python基础-文件操作/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Python基础-文件操作</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-05T15:21:31+08:00">
+                2017-11-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python/" itemprop="url" rel="index">
+                    <span itemprop="name">python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>读写文件是最常见的IO操作，python内置了读写文件的函数，用法和C是兼容的。<br>读写文件就是请求操作系统打开一个文件对象（通常称为文件描述符），然后，通过操作系统提供的接口从这个文件对象中读取数据（读文件），或者把数据写入这个文件对象（写文件）。</p>
+<a id="more"></a>
+<h2 id="文件对象定义"><a href="#文件对象定义" class="headerlink" title="文件对象定义"></a>文件对象定义</h2><ul>
+<li>文本文件：  普通文件。</li>
+<li>超文本文件： 图片、视频、超链接等。</li>
+</ul>
+<h2 id="创建文件对象"><a href="#创建文件对象" class="headerlink" title="创建文件对象"></a>创建文件对象</h2><p>语法:<br><strong>file = open(path,mode,[buffering])</strong></p>
+<ul>
+<li>path: 文件路径(绝对路径或相对路径)，也可以有os模块中os.sep辅助完成。</li>
+<li><p>mode:<br>　读<br>　　r　以只读方式打开一个文件(默认模式)<br>　　rb　打开一个文件以二进制格式读取<br>　　r+　打开用于读取和写入的文件，不创建文件。<br>　　rb+　打开用于读取和写入二进制格式的文件<br>　写<br>　　w　打开一个文件为只写(如果文件存则覆盖，不存在则创建)<br>　　wb　打开一个文件以二进制格式写入<br>　　w+　打开用于读取和写入的文件<br>　　wb+　打开用于读取和写入二进制格式的文件<br>　　a　追加写<br>　　ab　以二进制格式追加写<br>　　a+　打开用于追加写和读取的文件<br>　　ab+　打开用于读追加写和读取的二进制格式的文件</p>
+</li>
+<li><p>buffering:  是否启用缓存<br>　-1　全缓存(默认)<br>　0　不启用<br>　1　启用行缓存</p>
+</li>
+</ul>
+<p><strong>注：</strong>如果读取一个不存在的文件会报错，但写一个不存在的文件会自动创建。</p>
+<h3 id="深入探讨"><a href="#深入探讨" class="headerlink" title="深入探讨"></a>深入探讨</h3><p><span style="color: #ff0000;"><strong>r</strong>和<strong>r+</strong>区别:</span></p>
+<ul>
+<li><strong>r</strong> 只读方式</li>
+<li><strong>r+</strong> 读写方式，但写入时文件不存在不会创建并报错。</li>
+</ul>
+<p><span style="color: #ff0000;"><strong>w</strong>和<strong>w+</strong>区别:</span></p>
+<ul>
+<li><strong>w</strong> 新建只写方式</li>
+<li><strong>w+</strong> 新建读写方式，二者都会将文件内容清零。<br>(以<strong>w</strong>方式打开，不能读取。<strong>w+</strong>可读写)</li>
+</ul>
+<p><span style="color: #ff0000;"><strong>w+</strong>与<strong>r+</strong>区别:</span></p>
+<ul>
+<li><strong>r+</strong> 可读可写，若文件不存在，报错。</li>
+<li><strong>w+</strong> 可读可写，若文件不存在，创建。</li>
+</ul>
+<p><span style="color: #ff0000;"><strong>r+</strong>与<strong>a+</strong>区别</span><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">fd = open(&quot;1.txt&quot;,&apos;w+&apos;)</span><br><span class="line">fd.write(&apos;123&apos;)</span><br><span class="line">fd = open(&quot;1.txt&quot;,&apos;r+&apos;)</span><br><span class="line">fd.write(&apos;456&apos;)</span><br><span class="line">fd = open(&quot;1.txt&quot;,&apos;a+&apos;)</span><br><span class="line">fd.write(&apos;789&apos;)</span><br></pre></td></tr></table></figure></p>
+<p>结果:456789<br>说明<strong>r+</strong> 进行了覆盖写，<strong>a+</strong> 进行追加写。</p>
+<p><span style="color: #ff0000;">不可读的打开方式：<strong>w</strong>和<strong>a</strong>。</span><br><span style="color: #ff0000;">若不存在会创建新文件的打开方式：<strong>a</strong>，<strong>a+</strong>，<strong>w</strong>，<strong>w+</strong>。</span></p>
+<h2 id="文件对象属性"><a href="#文件对象属性" class="headerlink" title="文件对象属性"></a>文件对象属性</h2><p>file.closed   如果文件关闭，返回True，否则返回False<br>file.mode  返回文件的访问权限<br>file.name  返回文件名称<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">f=open(&apos;file.txt&apos;,&apos;r&apos;)</span><br><span class="line">print &apos;文件访问权限:&#123;&#125;&apos;.format(f.mode)</span><br><span class="line">print &apos;文件名:&#123;&#125;&apos;.format(f.name)</span><br><span class="line">f.close()</span><br><span class="line">print &apos;文件是否关闭:&#123;&#125;&apos;.format(f.closed)</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">文件访问权限:r</span><br><span class="line">文件名:file.txt</span><br><span class="line">文件是否关闭:True</span><br></pre></td></tr></table></figure></p>
+<h2 id="文件的操作"><a href="#文件的操作" class="headerlink" title="文件的操作"></a>文件的操作</h2><p><em>运维中接触的文件操作 rwx(读写执行)。</em></p>
+<h3 id="读"><a href="#读" class="headerlink" title="读"></a>读</h3><p>文件本身是可迭代的<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">f=open(&apos;file.txt&apos;,&apos;r&apos;)</span><br><span class="line">for i in f:</span><br><span class="line">	print i,</span><br><span class="line"></span><br><span class="line">## result</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td></tr></table></figure></p>
+<h4 id="read"><a href="#read" class="headerlink" title="read()"></a>read()</h4><p>当文件特别大的时候，为了防止程序卡死，我们可以指定读取的大小。使用<strong>read(size)</strong>，每次最多读取size字节。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">f=open(&apos;file.txt&apos;,&apos;r&apos;)</span><br><span class="line">print f.read(3)</span><br><span class="line">print f.read(3)  #接着上次读取的指针位置继续读取</span><br><span class="line">f.close()</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line"></span><br><span class="line">3</span><br></pre></td></tr></table></figure></p>
+<h4 id="readline"><a href="#readline" class="headerlink" title="readline()"></a>readline()</h4><p>每次读取一行。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">f=open(&apos;file.txt&apos;,&apos;r&apos;)</span><br><span class="line">print f.readline()</span><br><span class="line">print f.readline()</span><br><span class="line">f.close()</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">1</span><br><span class="line"></span><br><span class="line">2</span><br></pre></td></tr></table></figure></p>
+<h4 id="readlines"><a href="#readlines" class="headerlink" title="readlines()"></a>readlines()</h4><p>一次性以行的形式读取文件的所有内容并返回一个list，需要遍历读出来。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">f=open(&apos;file.txt&apos;,&apos;r&apos;)</span><br><span class="line">for l in f.readlines():</span><br><span class="line">	print l,</span><br><span class="line">f.close()</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td></tr></table></figure></p>
+<h3 id="写"><a href="#写" class="headerlink" title="写"></a>写</h3><h4 id="write"><a href="#write" class="headerlink" title="write"></a>write</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">f=open(&apos;file.txt&apos;,&apos;w+&apos;)</span><br><span class="line">f.write(&apos;This is write file.&apos;)</span><br><span class="line">f.close()</span><br></pre></td></tr></table></figure>
+<h4 id="writelines"><a href="#writelines" class="headerlink" title="writelines"></a>writelines</h4><p>每行依次写入0-9的数字<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">f=open(&apos;file.txt&apos;,&apos;w+&apos;)</span><br><span class="line">f.writelines([str(i) + &apos;\n&apos; for i in range(10)])</span><br><span class="line">f.close()</span><br></pre></td></tr></table></figure></p>
+<h3 id="close-方法"><a href="#close-方法" class="headerlink" title="close()方法"></a>close()方法</h3><p>一个文件对象的close()方法，刷新未写入的的信息。如果关闭了文件，后面的数据将不再写入。<br>我们操作完文件，一定要记得去关闭。<br>如果文件读写出错，后面的close()方法将不会执行，也就是说文件就不会关闭，就将一直占用内存地址。<br><strong>解决办法：with</strong><br>Python引入了with语句来自动帮我们调用close()方法。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">with open(&apos;file.txt&apos;,&apos;r&apos;) as f:</span><br><span class="line">	print f.read()</span><br><span class="line">print f.closed</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">True</span><br></pre></td></tr></table></figure></p>
+<h3 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h3><h4 id="tell"><a href="#tell" class="headerlink" title="tell()"></a>tell()</h4><p>获取文件中当前指针的所在位置。<br>当我们对文件操作时，文件内部会有一个文件指针来定位当前位置，如图：<br><img src="/uploads/zhizhen.png" alt><br>当open时文件指针是在初始位置1，当读取4个字节内容时文件指针位置就在4，再write时，文件指针从4移到8。<br>file.txt文件内容为：<br><img src="/uploads/file.png" alt><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">with open(&apos;file.txt&apos;,&apos;r&apos;) as f:</span><br><span class="line">	print f.readline()</span><br><span class="line">	print f.tell()</span><br><span class="line">	print &apos;--------&apos;</span><br><span class="line">	print f.readline()</span><br><span class="line">	print f.tell() </span><br><span class="line">	</span><br><span class="line">##result  数字占用一个字节，回车占2个字节，所有第一个指针位置为3</span><br><span class="line">1</span><br><span class="line"></span><br><span class="line">3</span><br><span class="line">--------</span><br><span class="line">2</span><br><span class="line"></span><br><span class="line">6</span><br></pre></td></tr></table></figure></p>
+<p>Utf8编码中，一个汉字占3个字节，中文空格占2个字节，英文空格占2个字节，字符占一个字节，回车占2个字节。<br>Gbk编码中，一个汉字占2个字节，中文空格占2个字节，英文空格占2个字节，字符占一个字节，回车占2个字节。</p>
+<h3 id="seek"><a href="#seek" class="headerlink" title="seek()"></a>seek()</h3><p>移动指针。<br>offset：移动的长度(字节)，可为负数。<br>whence：相对位置。</p>
+<ul>
+<li>0 从文件开头（默认）</li>
+<li>1 从当前</li>
+<li>2 从末尾</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">with open(&apos;file.txt&apos;,&apos;r&apos;) as f:</span><br><span class="line">	f.seek(0,0)</span><br><span class="line">	print f.tell()  #当前指针位置在文件开头</span><br><span class="line">	print &apos;---------&apos;</span><br><span class="line">	f.seek(6,0)     #从开头位置移动6个字节</span><br><span class="line">	print f.tell()</span><br><span class="line">	print &apos;---------&apos;</span><br><span class="line">	f.seek(2,1)     #从当前位置开始，移动2个字节</span><br><span class="line">	print f.tell()</span><br><span class="line">	print &apos;---------&apos;</span><br><span class="line">	f.seek(0,2)     #当前指针位置在文件末尾</span><br><span class="line">	print f.tell()</span><br><span class="line">	</span><br><span class="line">##result</span><br><span class="line">0</span><br><span class="line">---------</span><br><span class="line">6</span><br><span class="line">---------</span><br><span class="line">8</span><br><span class="line">---------</span><br><span class="line">13</span><br></pre></td></tr></table></figure>
+<h3 id="深入探讨-1"><a href="#深入探讨-1" class="headerlink" title="深入探讨"></a>深入探讨</h3><p><strong>flush()</strong> 方法是用来刷新缓冲区的，即将缓冲区中的数据立刻写入文件，同时清空缓冲区，不需要是被动的等待输出缓冲区写入。<br>一般情况下，文件关闭后会自动刷新缓冲区，但有时你需要在关闭前刷新它，这时就可以使用 flush() 方法。</p>
+<p>一、文件里有内容，却读出空字符<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">with open(&apos;file.txt&apos;,&apos;w+&apos;) as f:</span><br><span class="line">	f.write(&apos;456&apos;)</span><br><span class="line">	f.flush()</span><br><span class="line">	print f.read()</span><br></pre></td></tr></table></figure></p>
+<p>结果读出内容为空。<br>原因：指针问题，写入后指针指向末尾[EOF]，因此读出空。<br>解决办法：<br>1、调用close后重新打开，指针位于开头。(r,r+,a+都可以，注意不要用w，w+，a打开)<br>2、调用seek指向开头<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">with open(&apos;file.txt&apos;,&apos;w+&apos;) as f:</span><br><span class="line">	f.write(&apos;456&apos;)</span><br><span class="line">	f.seek(0)</span><br><span class="line">	print f.read()</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">456</span><br></pre></td></tr></table></figure></p>
+<h2 id="案列"><a href="#案列" class="headerlink" title="案列"></a>案列</h2><p>下面是一个读取文件内容的小案列:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">import time</span><br><span class="line">def reader(path,line = 2,auto = False):</span><br><span class="line">	&apos;&apos;&apos;</span><br><span class="line">	path 文件路径</span><br><span class="line">	line 读取行数</span><br><span class="line">	auto True为自动读取内容，默认为False，手动翻页读取</span><br><span class="line">	&apos;&apos;&apos;</span><br><span class="line">	with open(path,&apos;rb&apos;) as f:</span><br><span class="line">		f.seek(0,2) #将指针移动到文件末尾</span><br><span class="line">		EOF = f.tell() #获取文件的指针</span><br><span class="line">		f.seek(0,0) #将指针移动到文件开头</span><br><span class="line">		if auto == True:</span><br><span class="line">			while True:</span><br><span class="line">				for i in range(line): #循环三次，也就是读取三行</span><br><span class="line">					print f.readline(),</span><br><span class="line">				time.sleep(3)</span><br><span class="line">				if f.tell() == EOF: #判断如果文件指针在末尾位置，说明读取内容完毕</span><br><span class="line">					break</span><br><span class="line">		else:</span><br><span class="line">			while True:</span><br><span class="line">				user_input = raw_input(&apos;&gt;&gt;&gt;&apos;)</span><br><span class="line">				user_input = user_input.strip()</span><br><span class="line">				if user_input == &apos;n&apos; or user_input == &apos;N&apos;: #判断是不是输入的指定字符</span><br><span class="line">					for i in range(line): #循环三次，也就是读取三行</span><br><span class="line">						print f.readline(), #逗号为不换行打印</span><br><span class="line">				else:</span><br><span class="line">					print &apos;输入有误&apos;</span><br><span class="line">					continue</span><br><span class="line">				if f.tell() == EOF: #判断如果文件指针在末尾位置，说明读取内容完毕</span><br><span class="line">					print &apos;\n文件内容已经读取完毕&apos;</span><br><span class="line">					break</span><br><span class="line"></span><br><span class="line">reader(&apos;file.txt&apos;)</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/02/Python基础-函数编程/" rel="next" title="Python基础-函数编程">
+                <i class="fa fa-chevron-left"></i> Python基础-函数编程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/06/Python基础-模块导入和os、random模块/" rel="prev" title="Python基础-模块导入和os、random模块">
+                Python基础-模块导入和os、random模块 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#文件对象定义"><span class="nav-number">1.</span> <span class="nav-text">文件对象定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建文件对象"><span class="nav-number">2.</span> <span class="nav-text">创建文件对象</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#深入探讨"><span class="nav-number">2.1.</span> <span class="nav-text">深入探讨</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件对象属性"><span class="nav-number">3.</span> <span class="nav-text">文件对象属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件的操作"><span class="nav-number">4.</span> <span class="nav-text">文件的操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#读"><span class="nav-number">4.1.</span> <span class="nav-text">读</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#read"><span class="nav-number">4.1.1.</span> <span class="nav-text">read()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#readline"><span class="nav-number">4.1.2.</span> <span class="nav-text">readline()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#readlines"><span class="nav-number">4.1.3.</span> <span class="nav-text">readlines()</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#写"><span class="nav-number">4.2.</span> <span class="nav-text">写</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#write"><span class="nav-number">4.2.1.</span> <span class="nav-text">write</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#writelines"><span class="nav-number">4.2.2.</span> <span class="nav-text">writelines</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#close-方法"><span class="nav-number">4.3.</span> <span class="nav-text">close()方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#指针"><span class="nav-number">4.4.</span> <span class="nav-text">指针</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#tell"><span class="nav-number">4.4.1.</span> <span class="nav-text">tell()</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#seek"><span class="nav-number">4.5.</span> <span class="nav-text">seek()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#深入探讨-1"><span class="nav-number">4.6.</span> <span class="nav-text">深入探讨</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#案列"><span class="nav-number">5.</span> <span class="nav-text">案列</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

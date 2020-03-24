@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="python,xpath,lxml,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="在进行网页抓取的时候，分析定位html节点是获取抓取信息的关键，XPath 是一门在 XML 文档中查找信息的语言。XPath 可用来在 XML 文档中对元素和属性进行遍历。由于XPath属于 lxml 库模块，利用其 lxml.etree 的 xpath 对html进行分析，获取抓取信息，所以首先要安装 lxml 库。">
+<meta name="keywords" content="python,xpath,lxml">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python基础-Xpath用法">
+<meta property="og:url" content="http://zhanghonged.github.io/2017/12/07/Python基础-Xpath用法/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="在进行网页抓取的时候，分析定位html节点是获取抓取信息的关键，XPath 是一门在 XML 文档中查找信息的语言。XPath 可用来在 XML 文档中对元素和属性进行遍历。由于XPath属于 lxml 库模块，利用其 lxml.etree 的 xpath 对html进行分析，获取抓取信息，所以首先要安装 lxml 库。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-12-08T08:09:01.073Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python基础-Xpath用法">
+<meta name="twitter:description" content="在进行网页抓取的时候，分析定位html节点是获取抓取信息的关键，XPath 是一门在 XML 文档中查找信息的语言。XPath 可用来在 XML 文档中对元素和属性进行遍历。由于XPath属于 lxml 库模块，利用其 lxml.etree 的 xpath 对html进行分析，获取抓取信息，所以首先要安装 lxml 库。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2017/12/07/Python基础-Xpath用法/">
+
+
+
+
+
+  <title>Python基础-Xpath用法 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2017/12/07/Python基础-Xpath用法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Python基础-Xpath用法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-07T15:42:21+08:00">
+                2017-12-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python/" itemprop="url" rel="index">
+                    <span itemprop="name">python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在进行网页抓取的时候，分析定位html节点是获取抓取信息的关键，<strong>XPath</strong> 是一门在 <strong>XML</strong> 文档中查找信息的语言。<strong>XPath</strong> 可用来在 <strong>XML</strong> 文档中对元素和属性进行遍历。<br>由于XPath属于 <strong>lxml</strong> 库模块，利用其 <strong>lxml.etree</strong> 的 <strong>xpath</strong> 对html进行分析，获取抓取信息，所以首先要安装 <strong>lxml</strong> 库。<br><a id="more"></a></p>
+<h2 id="lxml用法"><a href="#lxml用法" class="headerlink" title="lxml用法"></a>lxml用法</h2><p><strong>解析HTML</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">from lxml import etree</span><br><span class="line">text = &apos;&apos;&apos;</span><br><span class="line">&lt;div&gt;</span><br><span class="line">    &lt;ul&gt;</span><br><span class="line">         &lt;li class=&quot;item-0&quot;&gt;&lt;a href=&quot;link1.html&quot;&gt;first item&lt;/a&gt;&lt;/li&gt;</span><br><span class="line">         &lt;li class=&quot;item-1&quot;&gt;&lt;a href=&quot;link2.html&quot;&gt;second item&lt;/a&gt;&lt;/li&gt;</span><br><span class="line">         &lt;li class=&quot;item-inactive&quot;&gt;&lt;a href=&quot;link3.html&quot;&gt;third item&lt;/a&gt;&lt;/li&gt;</span><br><span class="line">         &lt;li class=&quot;item-1&quot;&gt;&lt;a href=&quot;link4.html&quot;&gt;fourth item&lt;/a&gt;&lt;/li&gt;</span><br><span class="line">         &lt;li class=&quot;item-0&quot;&gt;&lt;a href=&quot;link5.html&quot;&gt;fifth item&lt;/a&gt;</span><br><span class="line">     &lt;/ul&gt;</span><br><span class="line"> &lt;/div&gt;</span><br><span class="line">&apos;&apos;&apos;</span><br><span class="line">html = etree.HTML(text) #格式化源码，具有自动修正 HTML 代码的功能</span><br><span class="line">print type(html) </span><br><span class="line">result = etree.tostring(html) #序列化</span><br><span class="line">print html</span><br></pre></td></tr></table></figure></p>
+<p>首先调用 <strong>lxml</strong> 的 <strong>etree</strong> 库，然后利用 <strong>etree.HTML</strong> 进行初始化，再通过 <strong>etree.tostring</strong> 方法序列化为字符串，然后我们将其打印出来。<br>这里体现了 <strong>lxml</strong> 的一个非常实用的功能就是自动修正 <strong>HTML</strong> 代码，大家应该注意到了，最后一个 <strong>li</strong> 标签，其实我把尾标签删掉了，是不闭合的。可以看出它具有自动修正 <strong>HTML</strong> 代码的功能。</p>
+<p><strong>文件读取</strong><br>除了直接读取字符串，还支持从文件读取内容。比如我们新建一个文件叫做 1.html。<br>利用parse方法来读取文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">from lxml import etree</span><br><span class="line">html = etree.parse(&apos;1.html&apos;)</span><br><span class="line">result = etree.tostring(html,)</span><br><span class="line">print result</span><br></pre></td></tr></table></figure></p>
+<hr>
+<h2 id="xpath用法"><a href="#xpath用法" class="headerlink" title="xpath用法"></a>xpath用法</h2><p>使用上面解析html的text，获取所有的li标签<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">from lxml import etree</span><br><span class="line">text=&quot;&quot;&quot;...&quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">html = etree.HTML(text)</span><br><span class="line">result = html.xpath(&apos;//li&apos;)</span><br><span class="line">print result</span><br><span class="line">print type(result)</span><br><span class="line">print result[0]</span><br><span class="line">print type(result[0])</span><br><span class="line"></span><br><span class="line">##result</span><br><span class="line">[&lt;Element li at 0x343c288&gt;, &lt;Element li at 0x343c238&gt;, &lt;Element li at 0x343c120&gt;, &lt;Element li at 0x340e6c0&gt;, &lt;Element li at 0x340e698&gt;]</span><br><span class="line">&lt;type &apos;list&apos;&gt;</span><br><span class="line">&lt;Element li at 0x343c288&gt;</span><br><span class="line">&lt;type &apos;lxml.etree._Element&apos;&gt;</span><br></pre></td></tr></table></figure></p>
+<p>通过调用 xpath 以后，得到了一个列表，包含了 5 个 <strong>li</strong> 元素，每个元素都是 Element 类型。</p>
+<h2 id="xpath语法"><a href="#xpath语法" class="headerlink" title="xpath语法"></a>xpath语法</h2><h3 id="选取节点"><a href="#选取节点" class="headerlink" title="选取节点"></a>选取节点</h3><p>XPath使用路径表达式在 <strong>XML</strong> 或 <strong>html</strong> 文档中选取节点。节点是通过沿着路径或者 <strong>step</strong> 来选取的。<br><b>常用的路径表达式</b></p>
+<table>
+<thead>
+<tr>
+<th>表达式</th>
+<th>描述</th>
+<th>实例</th>
+<th>实例说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>nodename</td>
+<td>选取nodename节点的所有子节点</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>/</td>
+<td>从根节点选取</td>
+<td>xpath(‘/div’)</td>
+<td>从根节点上选取div节点</td>
+</tr>
+<tr>
+<td>//</td>
+<td>选取所有的当前节点，不考虑他们的位置</td>
+<td>xpath(‘//div’)</td>
+<td>选取所有的div节点</td>
+</tr>
+<tr>
+<td>.</td>
+<td>选取当前节点</td>
+<td>xpath(‘./div’)</td>
+<td>选取当前节点下的div节点</td>
+</tr>
+<tr>
+<td>..</td>
+<td>选取当前节点的父节点</td>
+<td>xpath(‘..’)</td>
+<td>回到上一个节点</td>
+</tr>
+<tr>
+<td>@</td>
+<td>选取属性</td>
+<td>xpath（’//@calss’）</td>
+<td>选取所有的class属性</td>
+</tr>
+</tbody>
+</table>
+<h3 id="谓语"><a href="#谓语" class="headerlink" title="谓语"></a>谓语</h3><p>谓语被嵌在方括号内，用来查找某个特定的节点或某个特定的值得节点。<br>实例：</p>
+<table>
+<thead>
+<tr>
+<th>表达式</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>xpath(‘/body/div[1]’)</td>
+<td>选取body下的第一个div节点</td>
+</tr>
+<tr>
+<td>xpath(‘/body/div[last()]’)</td>
+<td>选取body下的最后一个div节点</td>
+</tr>
+<tr>
+<td>xpath(‘/body/div[last()-1]’)</td>
+<td>选取body下的倒数第二个div节点</td>
+</tr>
+<tr>
+<td>xpath(‘/body/div[positon()&lt;3]’)</td>
+<td>选取body下的前两个div节点</td>
+</tr>
+<tr>
+<td>xpath(‘/body/div[@class]’)</td>
+<td>选取body下带有class属性的div节点</td>
+</tr>
+<tr>
+<td>xpath(‘/body/div[@class=”main”]’)</td>
+<td>选取body下class属性是main的div节点</td>
+</tr>
+<tr>
+<td>xpath(‘/body/div[price&gt;35.00]’)</td>
+<td>选取body下price元素大于35的div节点</td>
+</tr>
+</tbody>
+</table>
+<h3 id="通配符"><a href="#通配符" class="headerlink" title="通配符"></a>通配符</h3><p>Xpath通过通配符来选取未知的XML元素</p>
+<table>
+<thead>
+<tr>
+<th>通配符</th>
+<th>描述</th>
+<th>实例</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>*</td>
+<td>匹配任何元素节点</td>
+<td>xpath（’/div/*’）</td>
+<td>选取div下的所有子节点</td>
+</tr>
+<tr>
+<td>@*</td>
+<td>匹配任何属性节点</td>
+<td>xpath(‘/div[@*]’)</td>
+<td>选取所有带属性的div节点</td>
+</tr>
+</tbody>
+</table>
+<h3 id="取多个路径"><a href="#取多个路径" class="headerlink" title="取多个路径"></a>取多个路径</h3><p>使用 <strong>|</strong> 运算符可以选取多个路径</p>
+<table>
+<thead>
+<tr>
+<th>表达式</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>xpath(‘//div丨//table’)</td>
+<td>选取所有div和table节点</td>
+</tr>
+<tr>
+<td>//book/title丨//book/price</td>
+<td>选取 book 元素的所有 title 和 price 元素</td>
+</tr>
+<tr>
+<td>/bookstore/book/title丨//price</td>
+<td>选取属于 bookstore 元素的 book 元素的所有 title 元素，以及文档中所有的 price 元素</td>
+</tr>
+</tbody>
+</table>
+<h3 id="功能函数"><a href="#功能函数" class="headerlink" title="功能函数"></a>功能函数</h3><p>使用功能函数能够更好的进行模糊搜索。</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>用法</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>starts-with</td>
+<td>xpath(‘//div[starts-with(@id,”ma”)]‘)</td>
+<td>选取id值以ma开头的div节点</td>
+</tr>
+<tr>
+<td>contains</td>
+<td>xpath(‘//div[contains(@id,”ma”)]‘)</td>
+<td>选取id值包含ma的div节点</td>
+</tr>
+<tr>
+<td>and</td>
+<td>xpath(‘//div[contains(@id,”ma”) and contains(@id,”in”)]‘)</td>
+<td>选取id值包含ma和in的div节点</td>
+</tr>
+<tr>
+<td>text()</td>
+<td>xpath(‘//div[contains(text(),”ma”)]‘)</td>
+<td>选取节点文本包含ma的div节点</td>
+</tr>
+</tbody>
+</table>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/xpath/" rel="tag"># xpath</a>
+          
+            <a href="/tags/lxml/" rel="tag"># lxml</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/01/Python基础-正则表达式/" rel="next" title="Python基础-正则表达式">
+                <i class="fa fa-chevron-left"></i> Python基础-正则表达式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/12/11/CSS层叠样式表/" rel="prev" title="CSS层叠样式表">
+                CSS层叠样式表 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#lxml用法"><span class="nav-number">1.</span> <span class="nav-text">lxml用法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xpath用法"><span class="nav-number">2.</span> <span class="nav-text">xpath用法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xpath语法"><span class="nav-number">3.</span> <span class="nav-text">xpath语法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#选取节点"><span class="nav-number">3.1.</span> <span class="nav-text">选取节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#谓语"><span class="nav-number">3.2.</span> <span class="nav-text">谓语</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通配符"><span class="nav-number">3.3.</span> <span class="nav-text">通配符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#取多个路径"><span class="nav-number">3.4.</span> <span class="nav-text">取多个路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#功能函数"><span class="nav-number">3.5.</span> <span class="nav-text">功能函数</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

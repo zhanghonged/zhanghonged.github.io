@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="Tsung,测试,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="Clients and server 一、基本设置对于非分布式负载，可以使用一个简单配置:1234567&amp;lt;clients&amp;gt;  &amp;lt;client host=&amp;quot;localhost&amp;quot; use_controller_vm=&amp;quot;true&amp;quot;/&amp;gt;&amp;lt;/clients&amp;gt;&amp;lt;servers&amp;gt;  &amp;lt;server host=&amp;quot">
+<meta name="keywords" content="Tsung,测试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tsung配置文件解析-Clients和Server">
+<meta property="og:url" content="http://zhanghonged.github.io/2016/08/25/Tsung配置文件解析-Clients和Server/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="Clients and server 一、基本设置对于非分布式负载，可以使用一个简单配置:1234567&amp;lt;clients&amp;gt;  &amp;lt;client host=&amp;quot;localhost&amp;quot; use_controller_vm=&amp;quot;true&amp;quot;/&amp;gt;&amp;lt;/clients&amp;gt;&amp;lt;servers&amp;gt;  &amp;lt;server host=&amp;quot">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2016-08-25T06:10:46.595Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Tsung配置文件解析-Clients和Server">
+<meta name="twitter:description" content="Clients and server 一、基本设置对于非分布式负载，可以使用一个简单配置:1234567&amp;lt;clients&amp;gt;  &amp;lt;client host=&amp;quot;localhost&amp;quot; use_controller_vm=&amp;quot;true&amp;quot;/&amp;gt;&amp;lt;/clients&amp;gt;&amp;lt;servers&amp;gt;  &amp;lt;server host=&amp;quot">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2016/08/25/Tsung配置文件解析-Clients和Server/">
+
+
+
+
+
+  <title>Tsung配置文件解析-Clients和Server | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2016/08/25/Tsung配置文件解析-Clients和Server/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Tsung配置文件解析-Clients和Server</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-08-25T10:55:51+08:00">
+                2016-08-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/测试相关/" itemprop="url" rel="index">
+                    <span itemprop="name">测试相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><strong>Clients and server</strong></p>
+<h2 id="一、基本设置"><a href="#一、基本设置" class="headerlink" title="一、基本设置"></a>一、基本设置</h2><p>对于非分布式负载，可以使用一个简单配置:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;clients&gt;</span><br><span class="line">  &lt;client host=&quot;localhost&quot; use_controller_vm=&quot;true&quot;/&gt;</span><br><span class="line">&lt;/clients&gt;</span><br><span class="line"></span><br><span class="line">&lt;servers&gt;</span><br><span class="line">  &lt;server host=&quot;192.168.1.1&quot; port=&quot;80&quot; type=&quot;tcp&quot;&gt;&lt;/server&gt;</span><br><span class="line">&lt;/servers&gt;</span><br></pre></td></tr></table></figure></p>
+<p>注：最基本的设置，在同一机器上。</p>
+<a id="more"></a>
+<p>server是进入集群的入口点，可以添加多个servers。<br>默认每个server将有一个为1的weight，并且每个会话都会根据weight随机选择一个server。您可以为每台server设置一个weight(weight可以是一个整数或一个浮点数):<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;servers&gt;</span><br><span class="line">  &lt;server host=&quot;server1&quot; port=&quot;80&quot; type=&quot;tcp&quot; weight=&quot;4&quot;&gt;&lt;/server&gt;</span><br><span class="line">  &lt;server host=&quot;server2&quot; port=&quot;80&quot; type=&quot;tcp&quot; weight=&quot;1&quot;&gt;&lt;/server&gt;</span><br><span class="line">&lt;/servers&gt;</span><br></pre></td></tr></table></figure></p>
+<p>type可以是tcp、udp、ssl或者websocket<br>这里有一个特殊类型的type：BOSH，bosh是非加密的BOSH，bosh_ssl是加密连接。</p>
+<h2 id="二、高级设置"><a href="#二、高级设置" class="headerlink" title="二、高级设置"></a>二、高级设置</h2><p>下个例子是更复杂的，使用先进的分布式测试的几个功能：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;clients&gt;</span><br><span class="line">  &lt;client host=&quot;louxor&quot; weight=&quot;1&quot; maxusers=&quot;800&quot;&gt;</span><br><span class="line">    &lt;ip value=&quot;10.9.195.12&quot;&gt;&lt;/ip&gt;</span><br><span class="line">    &lt;ip value=&quot;10.9.195.13&quot;&gt;&lt;/ip&gt;</span><br><span class="line">  &lt;/client&gt;</span><br><span class="line">  &lt;client host=&quot;memphis&quot; weight=&quot;3&quot; maxusers=&quot;600&quot; cpu=&quot;2&quot;/&gt;</span><br><span class="line">&lt;/clients&gt;</span><br><span class="line"></span><br><span class="line">&lt;servers&gt;</span><br><span class="line">  &lt;server host=&quot;10.9.195.1&quot; port=&quot;8080&quot; type=&quot;tcp&quot;&gt;&lt;/server&gt;</span><br><span class="line">&lt;/servers&gt;</span><br></pre></td></tr></table></figure></p>
+<p>可以用多个虚拟IP来模拟出更多的机器，在负载均衡中使用客户端IP把流量分配到服务端集群中时，这点十分有用。<br>IP不是强制性的，如果没有设置将会使用默认IP。<br>可以设置&lt;ip scan=”true” value=”eth0”/&gt;来扫描给指定网络接口上的所有IP(比如eth0)。<br>在这个例子中，第二个client机器在tsung集群中，它被设定更高的权重(weight)和2个cpu。它用两个erlang虚拟机来充分利用cpu数量。</p>
+<p>注意：即使现在erlang vm能处理多个cpu(erlang SMP)，测试显示，对一个tsung客户端来说，一个cpu用一个vm更高效。因此你的cpu数最好和你的节点数相等。如果你还坚持用erlang SMP，在启动tsung加上-s选项，并且不要在配置文件中设定cpu个数。<br>默认情况下，负载被统一的分配到所有的cpu上(默认一个客户端一个cpu)。参数的权重(weight)可以用来衡量客户端机器的处理速度。<br>例如，有两台真实机器，一台比重为1，另一台为2，那么第二台机器会比第一台机器多启动一倍的用户(比重是1/3,2/3)。<br>在上面的例子中，第二台机器有2个cpu权重(weight)是3，这就相当于每个cpu的比重是1.5。</p>
+<h3 id="2-1、maxusers"><a href="#2-1、maxusers" class="headerlink" title="2.1、maxusers"></a>2.1、maxusers</h3><p><em>maxusers</em>参数被用来忽略单个进程对套接字打开数的限制(默认是1024)。当用户数高于这个限制后，就会启动一个新的vm来处理新的用户。<br>参数<em>maxusers</em>的默认值是800。现在的机器开启kernel poll功能后，你就可以对<em>maxusers</em>设定一个最高的值(如30000)而没有性能损失(但注意不要忘记用ulimit -n提高os的限制)。<br>注意：如果使用主从架构的tsung，master将分配session给slave。如果一个session包含多个请求，slave将按顺序执行每一个。</p>
+<h3 id="2-2、error-connect-emfile错误"><a href="#2-2、error-connect-emfile错误" class="headerlink" title="2.2、error_connect_emfile错误"></a>2.2、error_connect_emfile错误</h3><p>这通常是由于你设置的maxuser值太大(在&lt;client&gt;)，默认值是800。<br>这个错误意味着你当前运行的数量超过了file descriptors，必须检查maxusers保证小于操作系统设定的每个进程可打开的最大文件数(ulimit -m 查看)。<br>你可以提高操作系统的限制(Linux下/etc/security/limits.conf)或者减少tsung的maxusers，在同一个机器行启动多个虚拟机来均衡maxusers限制。<br>如果你想运行大量用户测试，一个好的方法是对操作系统配置进行修改：<br>增加打开文件的最大数量和自定义TCP设置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/sysctl.conf</span><br><span class="line">net.ipv4.tcp_tw_reuse = 1</span><br><span class="line">net.ipv4.tcp_tw_recycle = 1</span><br><span class="line">net.ipv4.ip_local_port_range = 1024 65000</span><br><span class="line">fs.file-max = 65000</span><br></pre></td></tr></table></figure></p>
+<h3 id="2-4、运行一个带有作业调度器的tsung"><a href="#2-4、运行一个带有作业调度器的tsung" class="headerlink" title="2.4、运行一个带有作业调度器的tsung"></a>2.4、运行一个带有作业调度器的tsung</h3><p><strong><span style="color: #ff0000;">(不理解)</span></strong><br>Tsung可以从一个batch/job 调度器获取客户端节点列表，目前处理PBS/torque, LSF 和 OAR。为此，设置<em>type</em>属性为<em>batch</em>，如:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;client type=&quot;batch&quot; batch=&quot;torque&quot; maxusers=&quot;30000&quot;&gt;</span><br></pre></td></tr></table></figure></p>
+<p>如果你需要在batch调度器指定的节点上扫描IP别名，使用<em>scan_intf</em>，例如:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;client type=&quot;batch&quot; batch=&quot;torque&quot; scan_intf=&apos;eth0&apos; maxusers=&quot;30000&quot;&gt;</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Tsung/" rel="tag"># Tsung</a>
+          
+            <a href="/tags/测试/" rel="tag"># 测试</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/08/25/Tsung配置文件解析-文件结构/" rel="next" title="Tsung配置文件解析-文件结构">
+                <i class="fa fa-chevron-left"></i> Tsung配置文件解析-文件结构
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/08/25/Tsung配置文件解析-Monitoring/" rel="prev" title="Tsung配置文件解析-Monitoring">
+                Tsung配置文件解析-Monitoring <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、基本设置"><span class="nav-number">1.</span> <span class="nav-text">一、基本设置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、高级设置"><span class="nav-number">2.</span> <span class="nav-text">二、高级设置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1、maxusers"><span class="nav-number">2.1.</span> <span class="nav-text">2.1、maxusers</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2、error-connect-emfile错误"><span class="nav-number">2.2.</span> <span class="nav-text">2.2、error_connect_emfile错误</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4、运行一个带有作业调度器的tsung"><span class="nav-number">2.3.</span> <span class="nav-text">2.4、运行一个带有作业调度器的tsung</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

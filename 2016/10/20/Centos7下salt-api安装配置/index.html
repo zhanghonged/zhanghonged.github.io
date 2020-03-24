@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="saltstack,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="官网文档External Authentication System 环境说明 操作系统为Centos7，已配置epel源 Master节点IP为192.168.1.26 本文操作全在master节点上，并salt-master服务已开启">
+<meta name="keywords" content="saltstack">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Centos7下salt-api安装配置">
+<meta property="og:url" content="http://zhanghonged.github.io/2016/10/20/Centos7下salt-api安装配置/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="官网文档External Authentication System 环境说明 操作系统为Centos7，已配置epel源 Master节点IP为192.168.1.26 本文操作全在master节点上，并salt-master服务已开启">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-01-30T07:44:34.846Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Centos7下salt-api安装配置">
+<meta name="twitter:description" content="官网文档External Authentication System 环境说明 操作系统为Centos7，已配置epel源 Master节点IP为192.168.1.26 本文操作全在master节点上，并salt-master服务已开启">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2016/10/20/Centos7下salt-api安装配置/">
+
+
+
+
+
+  <title>Centos7下salt-api安装配置 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2016/10/20/Centos7下salt-api安装配置/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Centos7下salt-api安装配置</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-10-20T10:14:38+08:00">
+                2016-10-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Saltstack/" itemprop="url" rel="index">
+                    <span itemprop="name">Saltstack</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="官网文档"><a href="#官网文档" class="headerlink" title="官网文档"></a>官网文档</h2><p><a href="https://docs.saltstack.com/en/latest/topics/eauth/index.html" target="_blank" rel="noopener">External Authentication System</a></p>
+<h2 id="环境说明"><a href="#环境说明" class="headerlink" title="环境说明"></a>环境说明</h2><ul>
+<li>操作系统为Centos7，已配置epel源</li>
+<li>Master节点IP为192.168.1.26</li>
+<li>本文操作全在master节点上，并salt-master服务已开启</li>
+</ul>
+<a id="more"></a>
+<h2 id="安装过程"><a href="#安装过程" class="headerlink" title="安装过程"></a>安装过程</h2><h3 id="一、安装salt-api包"><a href="#一、安装salt-api包" class="headerlink" title="一、安装salt-api包"></a>一、安装salt-api包</h3><h4 id="1、yum方式安装"><a href="#1、yum方式安装" class="headerlink" title="1、yum方式安装"></a>1、yum方式安装</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y salt-api</span><br></pre></td></tr></table></figure>
+<h4 id="2、pip方式安装"><a href="#2、pip方式安装" class="headerlink" title="2、pip方式安装"></a>2、pip方式安装</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install salt-api</span><br></pre></td></tr></table></figure>
+<p>如果之前安装salt-master的时候通过此命令<em>pip install salt</em>完成，则salt-api包含在里面，无需再次安装。<br><strong>注意</strong>,pip方式安装不会生成配置文件和启动脚本，需要手动创建。</p>
+<h3 id="二、生成自签名证书"><a href="#二、生成自签名证书" class="headerlink" title="二、生成自签名证书"></a>二、生成自签名证书</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">cd  /etc/pki/tls/certs</span><br><span class="line"># 生成自签名证书, 过程中需要输入key密码及RDNs</span><br><span class="line">make testcert</span><br><span class="line">cd /etc/pki/tls/private/</span><br><span class="line"># 解密key文件，生成无密码的key文件, 过程中需要输入key密码，该密码为之前生成证书时设置的密码</span><br><span class="line">openssl rsa -in localhost.key -out localhost_nopass.key</span><br></pre></td></tr></table></figure>
+<h3 id="三、salt-api配置"><a href="#三、salt-api配置" class="headerlink" title="三、salt-api配置"></a>三、salt-api配置</h3><h4 id="1、创建用于salt-api的用户"><a href="#1、创建用于salt-api的用户" class="headerlink" title="1、创建用于salt-api的用户"></a>1、创建用于salt-api的用户</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">useradd -M -s /sbin/nologin saltapi</span><br><span class="line">echo &quot;saltapi_pass&quot; | passwd saltapi --stdin</span><br></pre></td></tr></table></figure>
+<h4 id="2、配置earth"><a href="#2、配置earth" class="headerlink" title="2、配置earth"></a>2、配置earth</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/salt/master.d/eauth.conf</span><br><span class="line">external_auth:</span><br><span class="line">  pam:</span><br><span class="line">    saltapi:</span><br><span class="line">      - .*</span><br><span class="line">      - &apos;@wheel&apos;</span><br><span class="line">      - &apos;@runner&apos;</span><br></pre></td></tr></table></figure>
+<h4 id="3、配置salt-api"><a href="#3、配置salt-api" class="headerlink" title="3、配置salt-api"></a>3、配置salt-api</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/salt/master.d/api.conf</span><br><span class="line">rest_cherrypy:</span><br><span class="line">  port: 8888</span><br><span class="line">  ssl_crt: /etc/pki/tls/certs/localhost.crt</span><br><span class="line">  ssl_key: /etc/pki/tls/private/localhost_nopass.key</span><br></pre></td></tr></table></figure>
+<h3 id="四、启动salt-api"><a href="#四、启动salt-api" class="headerlink" title="四、启动salt-api"></a>四、启动salt-api</h3><p>yum安装的直接启动即可：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable salt-api</span><br><span class="line">systemctl start salt-api</span><br></pre></td></tr></table></figure></p>
+<p>pip方式安装的首先创建启动脚本<br>创建脚本文件：/usr/lib/systemd/system/salt-api.service<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description=The Salt API</span><br><span class="line">After=syslog.target network.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">Type=simple</span><br><span class="line">ExecStart=/usr/bin/salt-api</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br></pre></td></tr></table></figure></p>
+<p>启动salt-api服务<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable salt-api</span><br><span class="line">systemctl start salt-api</span><br></pre></td></tr></table></figure></p>
+<h2 id="使用介绍"><a href="#使用介绍" class="headerlink" title="使用介绍"></a>使用介绍</h2><h3 id="1、登陆获取token"><a href="#1、登陆获取token" class="headerlink" title="1、登陆获取token"></a>1、登陆获取token</h3><p><strong>Request</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">curl -k https://192.168.1.26:8888/login -H &quot;Accept: application/x-yaml&quot; \</span><br><span class="line">-d username=‘saltapi’ \</span><br><span class="line">-d password=‘saltapi_pass’ \</span><br><span class="line">-d eauth=‘pam’</span><br></pre></td></tr></table></figure></p>
+<p><strong>Response</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">return:</span><br><span class="line">- eauth: pam</span><br><span class="line">  expire: 1476976862.149532</span><br><span class="line">  perms:</span><br><span class="line">  - .*</span><br><span class="line">  - &apos;@wheel&apos;</span><br><span class="line">  - &apos;@runner&apos;</span><br><span class="line">  start: 1476933662.149532</span><br><span class="line">  token: 3a9a4d085e92f5096dbfa78e80e192e961f57206</span><br><span class="line">  user: saltapi</span><br></pre></td></tr></table></figure></p>
+<p>其中 token 后边的串为认证成功后获取的token串，之后可以不用再次输入密码，直接使用本Token即可</p>
+<h3 id="2、测试minion节点test-ping"><a href="#2、测试minion节点test-ping" class="headerlink" title="2、测试minion节点test.ping"></a>2、测试minion节点test.ping</h3><p><strong>Request</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">curl -k https://192.168.1.26:8881/ -H &quot;Accept: application/x-yaml&quot; \</span><br><span class="line">-H &quot;X-Auth-Token: b3e14ed5c6606a982b96f9c39b0a021a79ede0e5&quot; \</span><br><span class="line">-d client=&apos;local&apos; \</span><br><span class="line">-d tgt=&apos;*&apos; \</span><br><span class="line">-d fun=&apos;test.ping&apos;</span><br></pre></td></tr></table></figure></p>
+<p>上面命令相当于在salt-master本地执行salt * test.ping<br><strong>Response</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">return:</span><br><span class="line">- 192.168.1.26: true</span><br></pre></td></tr></table></figure></p>
+<h3 id="3、运行wheel"><a href="#3、运行wheel" class="headerlink" title="3、运行wheel"></a>3、运行wheel</h3><p><strong>Request</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">curl -k https://192.168.1.26:8881/ -H &quot;Accept: application/x-yaml&quot; \</span><br><span class="line">-H &quot;X-Auth-Token: b3e14ed5c6606a982b96f9c39b0a021a79ede0e5&quot; \</span><br><span class="line">-d client=&apos;wheel&apos; \</span><br><span class="line">-d fun=&apos;key.list_all&apos;</span><br></pre></td></tr></table></figure></p>
+<p><strong>Response</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">return:</span><br><span class="line">- data:</span><br><span class="line">    _stamp: &apos;2016-10-20T03:36:40.399503&apos;</span><br><span class="line">    fun: wheel.key.list_all</span><br><span class="line">    jid: &apos;20161020113639697635&apos;</span><br><span class="line">    return:</span><br><span class="line">      local:</span><br><span class="line">      - master.pem</span><br><span class="line">      - master.pub</span><br><span class="line">      minions:</span><br><span class="line">      - 192.168.1.26</span><br><span class="line">      minions_denied: []</span><br><span class="line">      minions_pre: []</span><br><span class="line">      minions_rejected: []</span><br><span class="line">    success: true</span><br><span class="line">    tag: salt/wheel/20161020113639697635</span><br><span class="line">    user: saltapi</span><br><span class="line">  tag: salt/wheel/20161020113639697635</span><br></pre></td></tr></table></figure></p>
+<p>下面是一个salt-api的类,可以参考:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/env python</span><br><span class="line">#coding=utf-8</span><br><span class="line"> </span><br><span class="line">import urllib2, urllib, json, re</span><br><span class="line"> </span><br><span class="line">class saltAPI:</span><br><span class="line">    def __init__(self):</span><br><span class="line">        self.__url = &apos;https://192.168.186.134:8888&apos;       #salt-api监控的地址和端口如:&apos;https://192.168.1.26:8888&apos;</span><br><span class="line">        self.__user =  &apos;saltapi&apos;             #salt-api用户名</span><br><span class="line">        self.__password = &apos;password&apos;          #salt-api用户密码</span><br><span class="line">        self.__token_id = self.salt_login()</span><br><span class="line"> </span><br><span class="line">    def salt_login(self):</span><br><span class="line">        params = &#123;&apos;eauth&apos;: &apos;pam&apos;, &apos;username&apos;: self.__user, &apos;password&apos;: self.__password&#125;</span><br><span class="line">        encode = urllib.urlencode(params)</span><br><span class="line">        obj = urllib.unquote(encode)</span><br><span class="line">        headers = &#123;&apos;X-Auth-Token&apos;:&apos;&apos;&#125;</span><br><span class="line">        url = self.__url + &apos;/login&apos;</span><br><span class="line">        req = urllib2.Request(url, obj, headers)</span><br><span class="line">        opener = urllib2.urlopen(req)</span><br><span class="line">        content = json.loads(opener.read())</span><br><span class="line">        try:</span><br><span class="line">            token = content[&apos;return&apos;][0][&apos;token&apos;]</span><br><span class="line">            return token</span><br><span class="line">        except KeyError:</span><br><span class="line">            raise KeyError</span><br><span class="line"> </span><br><span class="line">    def postRequest(self, obj, prefix=&apos;/&apos;):</span><br><span class="line">        url = self.__url + prefix</span><br><span class="line">        headers = &#123;&apos;X-Auth-Token&apos;   : self.__token_id&#125;</span><br><span class="line">        req = urllib2.Request(url, obj, headers)</span><br><span class="line">        opener = urllib2.urlopen(req)</span><br><span class="line">        content = json.loads(opener.read())</span><br><span class="line">        return content[&apos;return&apos;]</span><br><span class="line"> </span><br><span class="line">    def saltCmd(self, params):</span><br><span class="line">        obj = urllib.urlencode(params)</span><br><span class="line">        obj, number = re.subn(&quot;arg\d&quot;, &apos;arg&apos;, obj)</span><br><span class="line">        res = self.postRequest(obj)</span><br><span class="line">        return res</span><br><span class="line"> </span><br><span class="line">def main():</span><br><span class="line">    #以下是用来测试saltAPI类的部分</span><br><span class="line">    sapi = saltAPI()</span><br><span class="line">    params = &#123;&apos;client&apos;:&apos;local&apos;, &apos;fun&apos;:&apos;test.ping&apos;, &apos;tgt&apos;:&apos;*&apos;&#125;</span><br><span class="line">    #params = &#123;&apos;client&apos;:&apos;local&apos;, &apos;fun&apos;:&apos;test.ping&apos;, &apos;tgt&apos;:&apos;某台服务器的key&apos;&#125;</span><br><span class="line">    #params = &#123;&apos;client&apos;:&apos;local&apos;, &apos;fun&apos;:&apos;test.echo&apos;, &apos;tgt&apos;:&apos;某台服务器的key&apos;, &apos;arg1&apos;:&apos;hello&apos;&#125;</span><br><span class="line">    #params = &#123;&apos;client&apos;:&apos;local&apos;, &apos;fun&apos;:&apos;test.ping&apos;, &apos;tgt&apos;:&apos;某组服务器的组名&apos;, &apos;expr_form&apos;:&apos;nodegroup&apos;&#125;</span><br><span class="line">    test = sapi.saltCmd(params)</span><br><span class="line">    print test</span><br><span class="line"> </span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Salt API几乎涵盖了所有的salt操作，功能强劲，尤其是需要salt和第三方系统集成的场景，值得拥有。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/saltstack/" rel="tag"># saltstack</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/19/Centos7安装Saltstack/" rel="next" title="Centos7安装Saltstack">
+                <i class="fa fa-chevron-left"></i> Centos7安装Saltstack
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/11/02/Centos7部署cobbler/" rel="prev" title="Centos7部署cobbler">
+                Centos7部署cobbler <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#官网文档"><span class="nav-number">1.</span> <span class="nav-text">官网文档</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#环境说明"><span class="nav-number">2.</span> <span class="nav-text">环境说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装过程"><span class="nav-number">3.</span> <span class="nav-text">安装过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、安装salt-api包"><span class="nav-number">3.1.</span> <span class="nav-text">一、安装salt-api包</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、yum方式安装"><span class="nav-number">3.1.1.</span> <span class="nav-text">1、yum方式安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、pip方式安装"><span class="nav-number">3.1.2.</span> <span class="nav-text">2、pip方式安装</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、生成自签名证书"><span class="nav-number">3.2.</span> <span class="nav-text">二、生成自签名证书</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、salt-api配置"><span class="nav-number">3.3.</span> <span class="nav-text">三、salt-api配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、创建用于salt-api的用户"><span class="nav-number">3.3.1.</span> <span class="nav-text">1、创建用于salt-api的用户</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、配置earth"><span class="nav-number">3.3.2.</span> <span class="nav-text">2、配置earth</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3、配置salt-api"><span class="nav-number">3.3.3.</span> <span class="nav-text">3、配置salt-api</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#四、启动salt-api"><span class="nav-number">3.4.</span> <span class="nav-text">四、启动salt-api</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用介绍"><span class="nav-number">4.</span> <span class="nav-text">使用介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、登陆获取token"><span class="nav-number">4.1.</span> <span class="nav-text">1、登陆获取token</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、测试minion节点test-ping"><span class="nav-number">4.2.</span> <span class="nav-text">2、测试minion节点test.ping</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、运行wheel"><span class="nav-number">4.3.</span> <span class="nav-text">3、运行wheel</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

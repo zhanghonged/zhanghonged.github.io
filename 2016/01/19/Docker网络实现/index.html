@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="docker,网络,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="基本原理首先，要实现网络通信，机器需要至少一个网络接口（物理接口或虚拟接口）来收发数据包；此外，如果不同子网之间要进行通信，需要路由机制。Docker中的网络接口默认都是虚拟的接口。虚拟接口的优势之一是转发效率较高。 Linux通过在内核中进行数据复制来实现虚拟接口之间的数据转发，发送接口的发送缓存中的数据包被直接复制到接收接口的接收缓存中。对于本地系统和容器内系统看来就像是一个正常的以太网卡，只">
+<meta name="keywords" content="docker,网络">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker网络实现">
+<meta property="og:url" content="http://zhanghonged.github.io/2016/01/19/Docker网络实现/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="基本原理首先，要实现网络通信，机器需要至少一个网络接口（物理接口或虚拟接口）来收发数据包；此外，如果不同子网之间要进行通信，需要路由机制。Docker中的网络接口默认都是虚拟的接口。虚拟接口的优势之一是转发效率较高。 Linux通过在内核中进行数据复制来实现虚拟接口之间的数据转发，发送接口的发送缓存中的数据包被直接复制到接收接口的接收缓存中。对于本地系统和容器内系统看来就像是一个正常的以太网卡，只">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2016-08-09T05:56:43.238Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Docker网络实现">
+<meta name="twitter:description" content="基本原理首先，要实现网络通信，机器需要至少一个网络接口（物理接口或虚拟接口）来收发数据包；此外，如果不同子网之间要进行通信，需要路由机制。Docker中的网络接口默认都是虚拟的接口。虚拟接口的优势之一是转发效率较高。 Linux通过在内核中进行数据复制来实现虚拟接口之间的数据转发，发送接口的发送缓存中的数据包被直接复制到接收接口的接收缓存中。对于本地系统和容器内系统看来就像是一个正常的以太网卡，只">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2016/01/19/Docker网络实现/">
+
+
+
+
+
+  <title>Docker网络实现 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2016/01/19/Docker网络实现/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Docker网络实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-19T16:44:20+08:00">
+                2016-01-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/docker学习/" itemprop="url" rel="index">
+                    <span itemprop="name">docker学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><p>首先，要实现网络通信，机器需要至少一个网络接口（物理接口或虚拟接口）来收发数据包；此外，如果不同子网之间要进行通信，需要路由机制。<br>Docker中的网络接口默认都是虚拟的接口。虚拟接口的优势之一是转发效率较高。 Linux通过在内核中进行数据复制来实现虚拟接口之间的数据转发，发送接口的发送缓存中的数据包被直接复制到接收接口的接收缓存中。对于本地系统和容器内系统看来就像是一个正常的以太网卡，只是它不需要真正同外部网络设备通信，速度要快很多。<br>Docker 容器网络就利用了这项技术。它在本地主机和容器内分别创建一个虚拟接口，并让它们彼此连通（这样的一对接口叫做 veth pair）。</p>
+<a id="more"></a>
+<h2 id="网络参数"><a href="#网络参数" class="headerlink" title="网络参数"></a>网络参数</h2><p>Docker 创建一个容器的时候，会执行如下操作：</p>
+<p>1、创建一对虚拟接口，分别放到本地主机和新容器中；<br>2、本地主机一端桥接到默认的docker0或指定网桥上，并具有一个唯一的名字，如veth65f9；<br>3、容器一端放到新容器中，并修改名字作为 eth0，这个接口只在容器的名字空间可见；<br>4、从网桥可用地址段中获取一个空闲地址分配给容器的eth0，并配置默认路由到桥接网卡veth65f9。</p>
+<p>完成这些之后，容器就可以使用eth0虚拟网卡来连接其他容器和其他网络。<br>可以在 docker run 的时候通过 –net 参数来指定容器的网络配置，有4个可选值：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">--net=bridge 这个是默认值，连接到默认的网桥。</span><br><span class="line"></span><br><span class="line">--net=host </span><br><span class="line">#告诉Docker不要将容器网络放到隔离的名字空间中，即不要容器化容器内的网络。</span><br><span class="line">此时容器使用本地主机的网络，它拥有完全的本地主机接口访问权限。</span><br><span class="line">容器进程可以跟主机其它root 进程一样可以打开低范围的端口，可以访问本地网络服务比如D-bus，</span><br><span class="line">还可以让容器做一些影响整个主机系统的事情，比如重启主机。因此使用这个选项的时候要非常小心。</span><br><span class="line">如果进一步的使用 --privileged=true，容器会被允许直接配置主机的网络堆栈。</span><br><span class="line"></span><br><span class="line">--net=container:NAME_or_ID </span><br><span class="line">#让Docker将新建容器的进程放到一个已存在容器的网络栈中，新容器进程有自己的文件系统、进程列表和资源限制，</span><br><span class="line">但会和已存在的容器共享IP地址和端口等网络资源，两者进程可以直接通过lo环回接口通信。</span><br><span class="line"></span><br><span class="line">--net=none</span><br><span class="line">#让Docker将新容器放到隔离的网络栈中，但是不进行网络配置。之后，用户可以自己进行配置。</span><br></pre></td></tr></table></figure></p>
+<h2 id="自定义桥接网络-可以设置自己想要的网段"><a href="#自定义桥接网络-可以设置自己想要的网段" class="headerlink" title="自定义桥接网络,可以设置自己想要的网段"></a>自定义桥接网络,可以设置自己想要的网段</h2><h3 id="删除掉默认的docker0"><a href="#删除掉默认的docker0" class="headerlink" title="删除掉默认的docker0"></a>删除掉默认的docker0</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop docker.service</span><br><span class="line">ip link set dev docker0 down   #或  ifconfig docker0 down</span><br><span class="line">brctl delbr docker0</span><br></pre></td></tr></table></figure>
+<p>删除完成后可用brctl show命令查看删除结果</p>
+<h3 id="新建桥接网络br0"><a href="#新建桥接网络br0" class="headerlink" title="新建桥接网络br0"></a>新建桥接网络br0</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">brctl addbr br0</span><br><span class="line">ip addr add 10.0.0.1/24 dev br0</span><br><span class="line">ip link set dev br0 up  #或 ifconfig br0 up</span><br></pre></td></tr></table></figure>
+<h3 id="修改docker网络配置文件"><a href="#修改docker网络配置文件" class="headerlink" title="修改docker网络配置文件"></a>修改docker网络配置文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/sysconfig/docker-network</span><br><span class="line">#添加：</span><br><span class="line">DOCKER_NETWORK_OPTIONS=&quot;-b=br0&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="启动docker服务，运行container时默认分配的就是自定义的网络地址"><a href="#启动docker服务，运行container时默认分配的就是自定义的网络地址" class="headerlink" title="启动docker服务，运行container时默认分配的就是自定义的网络地址"></a>启动docker服务，运行container时默认分配的就是自定义的网络地址</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start docker.service</span><br></pre></td></tr></table></figure>
+<h2 id="container分配固定IP"><a href="#container分配固定IP" class="headerlink" title="container分配固定IP"></a>container分配固定IP</h2><h3 id="启动容器时使用命令docker-run-–net-none-确保没有默认分配的网络地址"><a href="#启动容器时使用命令docker-run-–net-none-确保没有默认分配的网络地址" class="headerlink" title="启动容器时使用命令docker run –net=none,确保没有默认分配的网络地址"></a>启动容器时使用命令docker run –net=none,确保没有默认分配的网络地址</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run –i –t –net=none –name xiaozhang xxx:xxx /bin/bash</span><br></pre></td></tr></table></figure>
+<h3 id="获取容器的进程PID号"><a href="#获取容器的进程PID号" class="headerlink" title="获取容器的进程PID号"></a>获取容器的进程PID号</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#查找Container ID</span><br><span class="line">docker ps –a</span><br><span class="line">docker inspect -f &apos;&#123;&#123;.State.Pid&#125;&#125;&apos; 3d7822b189f9</span><br><span class="line">9599</span><br></pre></td></tr></table></figure>
+<h3 id="为容器创建net命名空间，建立点对点连接（容器命名空间网卡和宿主上生成的网卡点对点）"><a href="#为容器创建net命名空间，建立点对点连接（容器命名空间网卡和宿主上生成的网卡点对点）" class="headerlink" title="为容器创建net命名空间，建立点对点连接（容器命名空间网卡和宿主上生成的网卡点对点）"></a>为容器创建net命名空间，建立点对点连接（容器命名空间网卡和宿主上生成的网卡点对点）</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#确保存放net命名空间的目录/var/run/netns存在</span><br><span class="line">mkdir -p /var/run/netns</span><br><span class="line">#删除该目录的失效链接</span><br><span class="line">find -L /var/run/netns -type l –delete</span><br><span class="line">#将容器的net命名空间文件软链接到/var/run/netns，以便执行ip netns能够读取</span><br><span class="line">ln -s /proc/9599/ns/net /var/run/netns/9599</span><br></pre></td></tr></table></figure>
+<h3 id="在宿主上创建2张直连网卡（A与B直连），将B作为容器里的网卡，A作为宿主机的网卡"><a href="#在宿主上创建2张直连网卡（A与B直连），将B作为容器里的网卡，A作为宿主机的网卡" class="headerlink" title="在宿主上创建2张直连网卡（A与B直连），将B作为容器里的网卡，A作为宿主机的网卡"></a>在宿主上创建2张直连网卡（A与B直连），将B作为容器里的网卡，A作为宿主机的网卡</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ip link add A type veth peer name B</span><br><span class="line">#将A网卡桥接到br0上，并启用A网卡</span><br><span class="line">brctl addif br0 A</span><br><span class="line">ip like set A up</span><br></pre></td></tr></table></figure>
+<h3 id="将网卡B加入到相应的容器net命名空间，当网卡B加入到容器的net命名空间后，宿主机将无法查看到该网卡信息（执行ip-netns时默认读取的目录是-var-run-netns）"><a href="#将网卡B加入到相应的容器net命名空间，当网卡B加入到容器的net命名空间后，宿主机将无法查看到该网卡信息（执行ip-netns时默认读取的目录是-var-run-netns）" class="headerlink" title="将网卡B加入到相应的容器net命名空间，当网卡B加入到容器的net命名空间后，宿主机将无法查看到该网卡信息（执行ip netns时默认读取的目录是/var/run/netns）"></a>将网卡B加入到相应的容器net命名空间，当网卡B加入到容器的net命名空间后，宿主机将无法查看到该网卡信息（执行ip netns时默认读取的目录是/var/run/netns）</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ip link set B netns 9599</span><br><span class="line">#使用ip netns exec进入容器的net命名空间,配置其网络参数</span><br><span class="line">ip netns exec 9599 ip link set dev B name eth0</span><br><span class="line">ip netns exec 9599 ip link set eth0 up</span><br><span class="line">ip netns exec 9599 ip addr add 10.0.0.2/24 dev eth0</span><br><span class="line">ip netns exec 9599 ip route add default via 10.0.0.1</span><br></pre></td></tr></table></figure>
+<p>当容器结束后，Docker 会清空容器，容器内的 eth0 会随网络命名空间一起被清除，A 接口也被自动从docker0 卸载。<br>最好把以上步骤写成脚本，每次启动contianer时手动设置IP。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/docker/" rel="tag"># docker</a>
+          
+            <a href="/tags/网络/" rel="tag"># 网络</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/01/18/Docker手动修改Iptables添加端口映射/" rel="next" title="Docker手动修改Iptables添加端口映射">
+                <i class="fa fa-chevron-left"></i> Docker手动修改Iptables添加端口映射
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/01/19/docker run 命令参数/" rel="prev" title="docker run 命令参数">
+                docker run 命令参数 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本原理"><span class="nav-number">1.</span> <span class="nav-text">基本原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络参数"><span class="nav-number">2.</span> <span class="nav-text">网络参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义桥接网络-可以设置自己想要的网段"><span class="nav-number">3.</span> <span class="nav-text">自定义桥接网络,可以设置自己想要的网段</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#删除掉默认的docker0"><span class="nav-number">3.1.</span> <span class="nav-text">删除掉默认的docker0</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#新建桥接网络br0"><span class="nav-number">3.2.</span> <span class="nav-text">新建桥接网络br0</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修改docker网络配置文件"><span class="nav-number">3.3.</span> <span class="nav-text">修改docker网络配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动docker服务，运行container时默认分配的就是自定义的网络地址"><span class="nav-number">3.4.</span> <span class="nav-text">启动docker服务，运行container时默认分配的就是自定义的网络地址</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#container分配固定IP"><span class="nav-number">4.</span> <span class="nav-text">container分配固定IP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#启动容器时使用命令docker-run-–net-none-确保没有默认分配的网络地址"><span class="nav-number">4.1.</span> <span class="nav-text">启动容器时使用命令docker run –net=none,确保没有默认分配的网络地址</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取容器的进程PID号"><span class="nav-number">4.2.</span> <span class="nav-text">获取容器的进程PID号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为容器创建net命名空间，建立点对点连接（容器命名空间网卡和宿主上生成的网卡点对点）"><span class="nav-number">4.3.</span> <span class="nav-text">为容器创建net命名空间，建立点对点连接（容器命名空间网卡和宿主上生成的网卡点对点）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在宿主上创建2张直连网卡（A与B直连），将B作为容器里的网卡，A作为宿主机的网卡"><span class="nav-number">4.4.</span> <span class="nav-text">在宿主上创建2张直连网卡（A与B直连），将B作为容器里的网卡，A作为宿主机的网卡</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#将网卡B加入到相应的容器net命名空间，当网卡B加入到容器的net命名空间后，宿主机将无法查看到该网卡信息（执行ip-netns时默认读取的目录是-var-run-netns）"><span class="nav-number">4.5.</span> <span class="nav-text">将网卡B加入到相应的容器net命名空间，当网卡B加入到容器的net命名空间后，宿主机将无法查看到该网卡信息（执行ip netns时默认读取的目录是/var/run/netns）</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

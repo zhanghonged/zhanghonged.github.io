@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="nexus,仓库,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="nexus3介绍nexus3 官网下载地址：http://www.sonatype.com/download-oss-sonatype官方文档地址：https://books.sonatype.com/nexus-book/3.0/reference/index.html">
+<meta name="keywords" content="nexus,仓库">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nexus oss 3.0 构建docker仓库">
+<meta property="og:url" content="http://zhanghonged.github.io/2016/05/23/Nexus oss 3.0 构建docker仓库/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="nexus3介绍nexus3 官网下载地址：http://www.sonatype.com/download-oss-sonatype官方文档地址：https://books.sonatype.com/nexus-book/3.0/reference/index.html">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/nexus-1.png">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/nexus-2.png">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/nexus-3.png">
+<meta property="og:updated_time" content="2016-08-09T09:14:01.173Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Nexus oss 3.0 构建docker仓库">
+<meta name="twitter:description" content="nexus3介绍nexus3 官网下载地址：http://www.sonatype.com/download-oss-sonatype官方文档地址：https://books.sonatype.com/nexus-book/3.0/reference/index.html">
+<meta name="twitter:image" content="http://zhanghonged.github.io/uploads/nexus-1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2016/05/23/Nexus oss 3.0 构建docker仓库/">
+
+
+
+
+
+  <title>Nexus oss 3.0 构建docker仓库 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2016/05/23/Nexus oss 3.0 构建docker仓库/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Nexus oss 3.0 构建docker仓库</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-23T17:57:28+08:00">
+                2016-05-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/docker学习/" itemprop="url" rel="index">
+                    <span itemprop="name">docker学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="nexus3介绍"><a href="#nexus3介绍" class="headerlink" title="nexus3介绍"></a>nexus3介绍</h2><p>nexus3 官网下载地址：<a href="http://www.sonatype.com/download-oss-sonatype" target="_blank" rel="noopener">http://www.sonatype.com/download-oss-sonatype</a><br>官方文档地址：<a href="https://books.sonatype.com/nexus-book/3.0/reference/index.html" target="_blank" rel="noopener">https://books.sonatype.com/nexus-book/3.0/reference/index.html</a></p>
+<a id="more"></a>
+<p>nexus3.0需要jdk1.8及以上支持，首先必须配置jdk<br>安装完以后浏览器访问：<a href="http://x.x.x.x:8081" target="_blank" rel="noopener">http://x.x.x.x:8081</a><br>默认账号： admin—-admin123</p>
+<p>Nexus 3.0 可以创建三种docker仓库：</p>
+<ul>
+<li>docker (proxy) 代理和缓存远程仓库 ，只能pull</li>
+<li>docker (hosted) 托管仓库 ，私有仓库，可以push和pull</li>
+<li>docker (group) 将多个proxy和hosted仓库添加到一个组，只访问一个组地址即可，只能pull</li>
+</ul>
+<h2 id="配置nexus"><a href="#配置nexus" class="headerlink" title="配置nexus"></a>配置nexus</h2><p>根据官网描述，nexus配置docker仓库必须以https方式连接，这里由于自己使用，就使用自签名的证书。</p>
+<h3 id="1、配置nexus支持https"><a href="#1、配置nexus支持https" class="headerlink" title="1、配置nexus支持https"></a>1、配置nexus支持https</h3><p>参考文档：<a href="https://support.sonatype.com/hc/en-us/articles/217542177" target="_blank" rel="noopener">https://support.sonatype.com/hc/en-us/articles/217542177</a><br>首先使用keytools生成证书秘钥<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">NEXUS_IP_ADDRESS=x.x.x.x  #你的IP</span><br><span class="line">NEXUS_DOMAIN=xxx  #没有可随便填写或取消此配置</span><br><span class="line"></span><br><span class="line">cd etc/ssl</span><br><span class="line">keytool -genkeypair -keystore server-keystore.jks -storepass 111111-keypass 111111-alias jetty -keyalg RSA -keysize 2048 -validity 5000 -dname &quot;CN=*.$&#123;NEXUS_DOMAIN&#125;, OU=Example, O=Sonatype, L=Unspecified, ST=Unspecified, C=US&quot; -ext &quot;SAN=DNS:$&#123;NEXUS_DOMAIN&#125;,IP:$&#123;NEXUS_IP_ADDRESS&#125;&quot; -ext &quot;BC=ca:true&quot;</span><br></pre></td></tr></table></figure></p>
+<p>修改jetty配置文件etc/jetty-https.xml<br>确保证书名称和密码都正确<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;New id=&quot;sslContextFactory&quot; class=&quot;org.eclipse.jetty.util.ssl.SslContextFactory&quot;&gt;</span><br><span class="line">&lt;Set name=&quot;KeyStorePath&quot;&gt;&lt;Property name=&quot;karaf.etc&quot;/&gt;/ssl/server-keystore.jks&lt;/Set&gt;</span><br><span class="line">&lt;Set name=&quot;KeyStorePassword&quot;&gt;111111&lt;/Set&gt;</span><br><span class="line">&lt;Set name=&quot;KeyManagerPassword&quot;&gt;111111&lt;/Set&gt;</span><br><span class="line">&lt;Set name=&quot;TrustStorePath&quot;&gt;&lt;Property name=&quot;karaf.etc&quot;/&gt;/ssl/server-keystore.jks&lt;/Set&gt;</span><br><span class="line">&lt;Set name=&quot;TrustStorePassword&quot;&gt;111111&lt;/Set&gt;</span><br></pre></td></tr></table></figure></p>
+<p>修改jetty配置文件etc/org.sonatype.nexus.cfg<br>增加 application-port-ssl=8443<br>更改nexus-args配置项，添加逗号和${karaf.etc}/jetty-http-redirect-to-https.xml<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">application-port=8081</span><br><span class="line">application-port-ssl=8443</span><br><span class="line"></span><br><span class="line">application-host=0.0.0.0</span><br><span class="line">nexus-args=$&#123;karaf.etc&#125;/jetty.xml,$&#123;karaf.etc&#125;/jetty-http.xml,$&#123;karaf.etc&#125;/jetty-requestlog.xml,$&#123;karaf.etc&#125;/jetty-https.xml</span><br></pre></td></tr></table></figure></p>
+<p>重启nexus服务，使用<a href="https://x.x.x.x:8443重新登录系统，在此https支持配置完成。" target="_blank" rel="noopener">https://x.x.x.x:8443重新登录系统，在此https支持配置完成。</a></p>
+<h3 id="2、创建docker仓库"><a href="#2、创建docker仓库" class="headerlink" title="2、创建docker仓库"></a>2、创建docker仓库</h3><p>一共3个(proxy、hosted、group)<br>创建docker(proxy)仓库,主要配置项如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Connectors-https:18445</span><br><span class="line">Enable Docker V1 API: trun #勾选复选框</span><br><span class="line">Remote Storage: https://registry-1.docker.io</span><br><span class="line">Docker Index : Use Docker Hub</span><br><span class="line">Blob store:default</span><br></pre></td></tr></table></figure></p>
+<p><img src="/uploads/nexus-1.png" alt="nexus-1"></p>
+<p>创建docker(hosted)仓库,主要配置项如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Connectors-https:18444</span><br><span class="line">Enable Docker V1 API: trun #勾选复选框</span><br><span class="line">Blob store:default</span><br></pre></td></tr></table></figure></p>
+<p><img src="/uploads/nexus-2.png" alt="nexus-2"></p>
+<p>创建docker(group)仓库,主要配置项如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Connectors-https:18446</span><br><span class="line">Enable Docker V1 API: trun #勾选复选框</span><br><span class="line">Blob store:default</span><br><span class="line">Member reposltorles: #在Member里添加刚才创建的proxy和hosted仓库</span><br></pre></td></tr></table></figure></p>
+<p><img src="/uploads/nexus-3.png" alt="nexus-3"></p>
+<h3 id="3、使用docker仓库"><a href="#3、使用docker仓库" class="headerlink" title="3、使用docker仓库"></a>3、使用docker仓库</h3><p>The recommended minimal configuration requires one port for a Docker repository group used for read access to all repositories and one port for each hosted Docker repository that will receive push events from your users.<br>官方推荐配置两个Connectors端口，一个配置在docker(group)用来访问所有库，搜索和下载images(group 下包含proxy，所以创建proxy仓库的时候可以不设置Connectors-https端口);<br>另一个配置在docker(hosted)用来push自己的images;<br>使用docker(group)实现搜索和下载images：<br>首先在运行docker的机器上信任nexus证书，<br>ubuntu下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">keytool -printcert -sslserver $&#123;NEXUS_IP_ADDRESS&#125;:8443 -rfc &gt;nexus.crt</span><br><span class="line">sudo mv nexus.crt /usr/local/share/ca-certificates/nexus.crt</span><br><span class="line">sudo update-ca-certificates</span><br></pre></td></tr></table></figure></p>
+<p>centos下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">keytool -printcert -sslserver $&#123;NEXUS_IP_ADDRESS&#125;:8443 -rfc &gt; nexus.crt</span><br><span class="line">cat nexus.crt &gt;&gt; /etc/pki/tls/certs/ca-bundle.crt</span><br></pre></td></tr></table></figure></p>
+<p>或者修改docker配置文件/etc/sysconfig/docker<br>在OPTIONS项添加 “–insecure-registry=192.168.1.3:18446”，然后重启docker服务<br>然后登陆代码仓库，用户名密码： admin—-admin123</p>
+<h4 id="搜索和下载docker镜像"><a href="#搜索和下载docker镜像" class="headerlink" title="搜索和下载docker镜像"></a>搜索和下载docker镜像</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker login $&#123;NEXUS_IP_ADDRESS&#125;:18446</span><br><span class="line">docker search $&#123;NEXUS_IP_ADDRESS&#125;:18446/hello-world</span><br><span class="line">docker pull $&#123;NEXUS_IP_ADDRESS&#125;:18446/hello-world&lt;/pre&gt;</span><br></pre></td></tr></table></figure>
+<p>下载一次后就缓存在nexus中，下载pull直接本地下载。</p>
+<h4 id="上传docker镜像"><a href="#上传docker镜像" class="headerlink" title="上传docker镜像"></a>上传docker镜像</h4><p>使用docker(hosts)实现push本地images<br>在运行docker机器上信任nexus证书，方式如上面。<br>然后就可以提交了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#登陆代码仓库，用户名密码： admin----admin123</span><br><span class="line">docker login $&#123;NEXUS_IP_ADDRESS&#125;:18444</span><br><span class="line">#通过docker tag 修改为私有仓库地址</span><br><span class="line">docker tag my-image $&#123;NEXUS_IP_ADDRESS&#125;:18444/my-image</span><br><span class="line">#现在就可以提交了</span><br><span class="line">docker push $&#123;NEXUS_IP_ADDRESS&#125;:18444/my-image</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/nexus/" rel="tag"># nexus</a>
+          
+            <a href="/tags/仓库/" rel="tag"># 仓库</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/17/Docker容器和宿主机时间不同步的解决办法/" rel="next" title="Docker容器和宿主机时间不同步的解决办法">
+                <i class="fa fa-chevron-left"></i> Docker容器和宿主机时间不同步的解决办法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/29/部署kubernetes集群(一)  运行单节点kubernets在docker容器中/" rel="prev" title="部署kubernetes集群(一)  运行单节点kubernets在docker容器中">
+                部署kubernetes集群(一)  运行单节点kubernets在docker容器中 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#nexus3介绍"><span class="nav-number">1.</span> <span class="nav-text">nexus3介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置nexus"><span class="nav-number">2.</span> <span class="nav-text">配置nexus</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、配置nexus支持https"><span class="nav-number">2.1.</span> <span class="nav-text">1、配置nexus支持https</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、创建docker仓库"><span class="nav-number">2.2.</span> <span class="nav-text">2、创建docker仓库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、使用docker仓库"><span class="nav-number">2.3.</span> <span class="nav-text">3、使用docker仓库</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#搜索和下载docker镜像"><span class="nav-number">2.3.1.</span> <span class="nav-text">搜索和下载docker镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#上传docker镜像"><span class="nav-number">2.3.2.</span> <span class="nav-text">上传docker镜像</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

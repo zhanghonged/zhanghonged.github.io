@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="svn,jenkins,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="架构一般项目开发流程为开发人员提交代码到版本库、编译打包、部署到服务器，最后测试人员开始测试。这个流程牵扯到开发、运维、测试相关人员，颇为繁琐。为了简化此流程我们采用如下架构：svn提交代码——-&amp;gt;jenkins打包—–&amp;gt; jenkins发布1、开发人员提交svn代码到版本库。2、提交动作触发钩子脚本。3、钩子脚本远程执行jenkins打包项目。4、jenkins持续集成完成打包、发布">
+<meta name="keywords" content="svn,jenkins">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Svn提交自动构建Maven项目">
+<meta property="og:url" content="http://zhanghonged.github.io/2017/01/06/Svn提交自动构建Maven项目/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="架构一般项目开发流程为开发人员提交代码到版本库、编译打包、部署到服务器，最后测试人员开始测试。这个流程牵扯到开发、运维、测试相关人员，颇为繁琐。为了简化此流程我们采用如下架构：svn提交代码——-&amp;gt;jenkins打包—–&amp;gt; jenkins发布1、开发人员提交svn代码到版本库。2、提交动作触发钩子脚本。3、钩子脚本远程执行jenkins打包项目。4、jenkins持续集成完成打包、发布">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/pipeline.png">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/apitoken.png">
+<meta property="og:updated_time" content="2017-02-08T09:30:57.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Svn提交自动构建Maven项目">
+<meta name="twitter:description" content="架构一般项目开发流程为开发人员提交代码到版本库、编译打包、部署到服务器，最后测试人员开始测试。这个流程牵扯到开发、运维、测试相关人员，颇为繁琐。为了简化此流程我们采用如下架构：svn提交代码——-&amp;gt;jenkins打包—–&amp;gt; jenkins发布1、开发人员提交svn代码到版本库。2、提交动作触发钩子脚本。3、钩子脚本远程执行jenkins打包项目。4、jenkins持续集成完成打包、发布">
+<meta name="twitter:image" content="http://zhanghonged.github.io/uploads/pipeline.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhanghonged.github.io/2017/01/06/Svn提交自动构建Maven项目/">
+
+
+
+
+
+  <title>Svn提交自动构建Maven项目 | 勇敢的心</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">勇敢的心</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2017/01/06/Svn提交自动构建Maven项目/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Inter">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/inter.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Svn提交自动构建Maven项目</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-01-06T16:21:44+08:00">
+                2017-01-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/日常运维/" itemprop="url" rel="index">
+                    <span itemprop="name">日常运维</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p>一般项目开发流程为开发人员提交代码到版本库、编译打包、部署到服务器，最后测试人员开始测试。这个流程牵扯到开发、运维、测试相关人员，颇为繁琐。<br>为了简化此流程我们采用如下架构：<br>svn提交代码——-&gt;jenkins打包—–&gt; jenkins发布<br>1、开发人员提交svn代码到版本库。<br>2、提交动作触发钩子脚本。<br>3、钩子脚本远程执行jenkins打包项目。<br>4、jenkins持续集成完成打包、发布等动作。<br><a id="more"></a><br>此过程牵扯到的技术点主要包括maven打包、Python-Jenkins API等，maven打包根据具体项目有所不同，这里不做详细说明。<br>下面以我们自己项目为例介绍下此流程的配置过程。</p>
+<h2 id="配置步骤"><a href="#配置步骤" class="headerlink" title="配置步骤"></a>配置步骤</h2><h3 id="jenkins-job配置"><a href="#jenkins-job配置" class="headerlink" title="jenkins job配置"></a>jenkins job配置</h3><p>我们这里配置了3个job:</p>
+<ul>
+<li>lilibar  编译war包</li>
+<li>deploy-bar 部署war包到glassfish服务器</li>
+<li>liliweb  发布前端静态代码</li>
+</ul>
+<p>通过pipeline视图将各个job关联起来：<br><img src="/uploads/pipeline.png" alt="demo"></p>
+<h3 id="svn钩子脚本"><a href="#svn钩子脚本" class="headerlink" title="svn钩子脚本"></a>svn钩子脚本</h3><p>通过钩子脚本来触发jenkins上的lilibar打包job。<br>在svn项目的hook目录下新建两个文件:<br>post-commit.bat<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;start&quot;</span><br><span class="line"></span><br><span class="line">C:\Python27\python.exe D:/Repositories/Project/hooks/lilibar.py</span><br></pre></td></tr></table></figure></p>
+<p>lilibar.py<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">#coding=utf8</span><br><span class="line"></span><br><span class="line">import jenkins</span><br><span class="line">import time</span><br><span class="line"></span><br><span class="line">job=&apos;lilibar&apos;</span><br><span class="line">jenkins_set_url=&apos;http://192.168.1.x:xx&apos;</span><br><span class="line">user_id=&apos;admin&apos;</span><br><span class="line">api_token=&apos;0c3c209cb9281840b3ec12ee3a7fba0f&apos;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def exec_job(job,jenkins_set_url,user_id,api_token):</span><br><span class="line">    server=jenkins.Jenkins(jenkins_set_url,username=user_id,password=api_token)</span><br><span class="line">    last_num=server.get_job_info(job)[&apos;lastBuild&apos;][&apos;number&apos;]</span><br><span class="line"></span><br><span class="line">    if not server.get_build_info(job,last_num)[&apos;building&apos;]:</span><br><span class="line">        server.build_job(job)</span><br><span class="line">    else:</span><br><span class="line">        time.sleep(10)</span><br><span class="line">        server.build_job(job)</span><br><span class="line"></span><br><span class="line">exec_job(job,jenkins_set_url,user_id,api_token)</span><br></pre></td></tr></table></figure></p>
+<p>此处的user_id和api_token在jenkins系统中获得: jenkins—-用户—-配置—-Api Token<br><img src="/uploads/apitoken.png" alt="demo"></p>
+<p>配置完成，现在开发人员提交代码后将自动发布到服务器，完成自动部署。</p>
+<h2 id="Python-Jenkins简介"><a href="#Python-Jenkins简介" class="headerlink" title="Python-Jenkins简介"></a>Python-Jenkins简介</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install python-jenkins</span><br></pre></td></tr></table></figure>
+<h3 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">#定义远程的jenkins master server的url，以及port</span><br><span class="line"></span><br><span class="line">jenkins_server_url=&apos;xxxx:xxxx&apos;</span><br><span class="line"></span><br><span class="line">#定义用户的User Id 和 API Token，获取方式同上文</span><br><span class="line"></span><br><span class="line">user_id=&apos;xxxx&apos;</span><br><span class="line"></span><br><span class="line">api_token=&apos;xxxx&apos;</span><br><span class="line"></span><br><span class="line">#实例化jenkins对象，连接远程的jenkins master server</span><br><span class="line"></span><br><span class="line">server=jenkins.Jenkins(jenkins_server_url, username=user_id, password=api_token)</span><br><span class="line"></span><br><span class="line">#构建job名为job_name的job（不带构建参数）</span><br><span class="line"></span><br><span class="line">server.build_job(job_name)</span><br><span class="line"></span><br><span class="line">#String参数化构建job名为job_name的job, 参数param_dict为字典形式，如：param_dict= &#123;&quot;param1&quot;：“value1”， “param2”：“value2”&#125; </span><br><span class="line"></span><br><span class="line">server.build_job(job_name, parameters=param_dict)</span><br><span class="line"></span><br><span class="line">#获取job名为job_name的job的相关信息</span><br><span class="line"></span><br><span class="line">server.get_job_info(job_name)</span><br><span class="line"></span><br><span class="line">#获取job名为job_name的job的最后次构建号</span><br><span class="line"></span><br><span class="line">server.get_job_info(job_name)[&apos;lastBuild&apos;][&apos;number&apos;]</span><br><span class="line"></span><br><span class="line">#获取job名为job_name的job的某次构建的执行结果状态</span><br><span class="line"></span><br><span class="line">server.get_build_info(job_name,build_number)[&apos;result&apos;]　　   </span><br><span class="line"></span><br><span class="line">#判断job名为job_name的job的某次构建是否还在构建中</span><br><span class="line"></span><br><span class="line">server.get_build_info(job_name,build_number)[&apos;building&apos;]</span><br></pre></td></tr></table></figure>
+<h3 id="Python-Jenkins-API官网"><a href="#Python-Jenkins-API官网" class="headerlink" title="Python-Jenkins API官网"></a>Python-Jenkins API官网</h3><p><a href="http://python-jenkins.readthedocs.io/en/latest/api.html" target="_blank" rel="noopener">http://python-jenkins.readthedocs.io/en/latest/api.html</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/svn/" rel="tag"># svn</a>
+          
+            <a href="/tags/jenkins/" rel="tag"># jenkins</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/28/python操作excel模块xlsxwriter/" rel="next" title="python操作excel模块xlsxwriter">
+                <i class="fa fa-chevron-left"></i> python操作excel模块xlsxwriter
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/01/18/python库fabric运维利器使用介绍/" rel="prev" title="python库fabric运维利器使用介绍">
+                python库fabric运维利器使用介绍 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/inter.png" alt="Inter">
+          <p class="site-author-name" itemprop="name">Inter</p>
+           
+              <p class="site-description motion-element" itemprop="description">富贾，可为吾友乎？</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">134</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.docker.org.cn/" target="_blank" title="docker中文社区">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      docker中文社区
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://man.linuxde.net/" target="_blank" title="Linux命令大全">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Linux命令大全
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.eryajf.net/" target="_blank" title="二丫讲梵">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      二丫讲梵
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      廖雪峰
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/vamei/" target="_blank" title="vamei博客">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      vamei博客
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.cnblogs.com/horizonli/" target="_blank" title="my_cool2007">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      my_cool2007
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://islocal.cc" target="_blank" title="P'sir">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      P'sir
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://iit.im/" target="_blank" title="洁身">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      洁身
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://zhangguanzhang.github.io/" target="_blank" title="张馆长">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      张馆长
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://lework.github.io/" target="_blank" title="lework">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      lework
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.ruanyifeng.com/" target="_blank" title="阮一峰">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      阮一峰
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#架构"><span class="nav-number">1.</span> <span class="nav-text">架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置步骤"><span class="nav-number">2.</span> <span class="nav-text">配置步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#jenkins-job配置"><span class="nav-number">2.1.</span> <span class="nav-text">jenkins job配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#svn钩子脚本"><span class="nav-number">2.2.</span> <span class="nav-text">svn钩子脚本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Python-Jenkins简介"><span class="nav-number">3.</span> <span class="nav-text">Python-Jenkins简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装"><span class="nav-number">3.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法"><span class="nav-number">3.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Python-Jenkins-API官网"><span class="nav-number">3.3.</span> <span class="nav-text">Python-Jenkins API官网</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Inter</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

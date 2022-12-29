@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="系统调优概述系统的运行状况：  CPU-&gt;  MEM  -&gt;DISK*-&gt;  NETWORK -&gt; 应用程序调优性能优化的4个子系统：  CPU Memory IO Network">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux系统监控">
+<meta property="og:url" content="http://zhanghonged.github.io/2017/10/26/Linux%E7%B3%BB%E7%BB%9F%E7%9B%91%E6%8E%A7/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="系统调优概述系统的运行状况：  CPU-&gt;  MEM  -&gt;DISK*-&gt;  NETWORK -&gt; 应用程序调优性能优化的4个子系统：  CPU Memory IO Network">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/iostat.png">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/nload.png">
+<meta property="article:published_time" content="2017-10-26T08:14:04.000Z">
+<meta property="article:modified_time" content="2017-10-26T09:09:24.431Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="优化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://zhanghonged.github.io/uploads/iostat.png">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2017/10/26/Linux%E7%B3%BB%E7%BB%9F%E7%9B%91%E6%8E%A7/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2017/10/26/Linux%E7%B3%BB%E7%BB%9F%E7%9B%91%E6%8E%A7/","path":"2017/10/26/Linux系统监控/","title":"Linux系统监控"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Linux系统监控 | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E8%B0%83%E4%BC%98%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">系统调优概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CPU"><span class="nav-number">2.</span> <span class="nav-text">CPU</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81uptime%E5%91%BD%E4%BB%A4"><span class="nav-number">2.1.</span> <span class="nav-text">1、uptime命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81top%E5%91%BD%E4%BB%A4"><span class="nav-number">2.2.</span> <span class="nav-text">2、top命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81ps%E5%91%BD%E4%BB%A4"><span class="nav-number">2.3.</span> <span class="nav-text">3、ps命令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98"><span class="nav-number">3.</span> <span class="nav-text">内存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#top%E5%91%BD%E4%BB%A4"><span class="nav-number">3.1.</span> <span class="nav-text">top命令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ps%E5%91%BD%E4%BB%A4"><span class="nav-number">4.</span> <span class="nav-text">ps命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A1%AC%E7%9B%98I-x2F-O"><span class="nav-number">5.</span> <span class="nav-text">硬盘I&#x2F;O</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#iostat"><span class="nav-number">5.1.</span> <span class="nav-text">iostat</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#iotop"><span class="nav-number">5.2.</span> <span class="nav-text">iotop</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C"><span class="nav-number">6.</span> <span class="nav-text">网络</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#nload"><span class="nav-number">6.1.</span> <span class="nav-text">nload</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2017/10/26/Linux%E7%B3%BB%E7%BB%9F%E7%9B%91%E6%8E%A7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Linux系统监控 | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Linux系统监控
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2017-10-26 16:14:04 / 修改时间：17:09:24" itemprop="dateCreated datePublished" datetime="2017-10-26T16:14:04+08:00">2017-10-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%97%A5%E5%B8%B8%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index"><span itemprop="name">日常运维</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="系统调优概述"><a href="#系统调优概述" class="headerlink" title="系统调优概述"></a>系统调优概述</h2><p>系统的运行状况：  CPU-&gt;  MEM  -&gt;DISK*-&gt;  NETWORK -&gt; 应用程序调优<br>性能优化的4个子系统：</p>
+<ul>
+<li>CPU</li>
+<li>Memory</li>
+<li>IO</li>
+<li>Network<span id="more"></span></li>
+</ul>
+<h2 id="CPU"><a href="#CPU" class="headerlink" title="CPU"></a>CPU</h2><h3 id="1、uptime命令"><a href="#1、uptime命令" class="headerlink" title="1、uptime命令"></a>1、uptime命令</h3><p>查看CPU负载</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">14:35:38 up 79 days,  4:13,  1 user,  load average: 0.01, 0.05, 0.05</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>Tables</th>
+<th align="center">Are</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>14:35:38</td>
+<td align="center">当前时间</td>
+</tr>
+<tr>
+<td>up 79 days</td>
+<td align="center">系统运行时间</td>
+</tr>
+<tr>
+<td>1 user</td>
+<td align="center">当前登录用户数</td>
+</tr>
+<tr>
+<td>load average: 0.01, 0.05, 0.05</td>
+<td align="center">系统负载，即任务队列的平均长度。 三个数值分别为  1分钟、5分钟、15分钟前到现在的平均值。</td>
+</tr>
+</tbody></table>
+<p><strong>负载和cpu核数有关</strong><br>当cpu核心数为1时，load average &gt;&#x3D;3 的时候，表示负载过高。<br>当cpu核心数为4时，load average &gt;&#x3D;12 的时候，表示负载过高。</p>
+<h3 id="2、top命令"><a href="#2、top命令" class="headerlink" title="2、top命令"></a>2、top命令</h3><p>按大写P键，cpu使用率按从大到小排序<br>按数字1,，显示cpu核心数</p>
+<h3 id="3、ps命令"><a href="#3、ps命令" class="headerlink" title="3、ps命令"></a>3、ps命令</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps aux --sort -pcpu | more</span><br></pre></td></tr></table></figure>
+<p>按cpu排序, pcpu 表示cpu的使用率</p>
+<h2 id="内存"><a href="#内存" class="headerlink" title="内存"></a>内存</h2><h3 id="top命令"><a href="#top命令" class="headerlink" title="top命令"></a>top命令</h3><p>按大写M键，按内存使用率排序</p>
+<h2 id="ps命令"><a href="#ps命令" class="headerlink" title="ps命令"></a>ps命令</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps aux --sort -rss | more</span><br></pre></td></tr></table></figure>
+<p>#rss resident set size 常驻集大小</p>
+<h2 id="硬盘I-x2F-O"><a href="#硬盘I-x2F-O" class="headerlink" title="硬盘I&#x2F;O"></a>硬盘I&#x2F;O</h2><h3 id="iostat"><a href="#iostat" class="headerlink" title="iostat"></a>iostat</h3><p>可以显示CPU和I&#x2F;O系统的负载情况及每个磁盘分区的读写状态信息。<br>参数：<br>-d  仅显示磁盘统计信息<br>-k  以K为单位显示磁盘每秒的请求数<br>-p device | ALL  显示块设备及系统分区统计信息<br>例：显示每个分区读写速度</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iostat  -dk -p /dev/xvda</span><br></pre></td></tr></table></figure>
+<p><img src="/uploads/iostat.png" alt="1"><br>每列含意：<br>kB_read&#x2F;s    每秒从驱动器读入的数据量,单位为K.<br>kB_wrtn&#x2F;s    每秒向驱动器写入的数据量,单位为K.<br>kB_read      读入的数据总量,单位为K.<br>kB_wrtn      写入的数据总量,单位为K.</p>
+<h3 id="iotop"><a href="#iotop" class="headerlink" title="iotop"></a>iotop</h3><p>查看系统中使用io最多的进程<br>参数：<br>-o –only  只显示有读取硬盘的进程<br>-d SEC, -delay&#x3D;SEC  设置显示时间间隔<br>例:显示正在使用的磁盘进程</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptop -o -d 1</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h2><h3 id="nload"><a href="#nload" class="headerlink" title="nload"></a>nload</h3><p>监控总体带宽使用情况<br>centos安装</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install nload</span><br></pre></td></tr></table></figure>
+<img src="/uploads/nload.png" width = "400" height = "400" alt="图片名称" align=center />
+### iptraf
+是一款交互式、色彩鲜艳的IP局域网监控工具。它可以显示每个连接以及主机之间传输的数据量。
+centos安装
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install iptraf</span><br></pre></td></tr></table></figure>
+![](/uploads/iptraf.png)
+### nethogs
+nethogs是一款小巧的"net top"工具，可以显示每个进程所使用的带宽，并对列表排序，将耗用带宽最多的进程排在最上面。
+源码安装
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#安装依赖包 libpcap-devel</span><br><span class="line">rpm -ivh --nodeps libpcap-devel-1.3.0-2.4.1.x86_64.rpm</span><br><span class="line">#解压安装 nethogs</span><br><span class="line">tar xvf nethogs-0.8.1.tar.gz</span><br><span class="line">cd nethogs-0.8.1</span><br><span class="line">make  &amp;&amp;  make  install</span><br></pre></td></tr></table></figure>
+![](/uploads/nethogs.png)
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Linux/" rel="tag"># Linux</a>
+              <a href="/tags/%E4%BC%98%E5%8C%96/" rel="tag"># 优化</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2017/10/20/ORM%E6%A1%86%E6%9E%B6peewee%E7%9A%84%E4%BD%BF%E7%94%A8%E4%BB%8B%E7%BB%8D/" rel="prev" title="ORM框架peewee的使用介绍">
+                  <i class="fa fa-chevron-left"></i> ORM框架peewee的使用介绍
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2017/10/30/Python%E5%9F%BA%E7%A1%80-%E6%95%B0%E5%AD%97%E3%80%81%E5%AD%97%E7%AC%A6%E4%B8%B2/" rel="next" title="Python基础-数字、字符串">
+                  Python基础-数字、字符串 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

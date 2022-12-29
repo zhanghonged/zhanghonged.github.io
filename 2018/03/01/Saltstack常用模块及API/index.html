@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Saltstatck提供了丰富的功能模块，涉及操作系统的基础功能，常用工具支持等。通过官网查看更多详细信息 https:&#x2F;&#x2F;docs.saltstack.com&#x2F;en&#x2F;latest&#x2F;ref&#x2F;modules&#x2F;all&#x2F;index.html也可以通过 sys 模块列出当前版本支持的功能模块。salt ‘*’ sys.list">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Saltstack常用模块及API">
+<meta property="og:url" content="http://zhanghonged.github.io/2018/03/01/Saltstack%E5%B8%B8%E7%94%A8%E6%A8%A1%E5%9D%97%E5%8F%8AAPI/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Saltstatck提供了丰富的功能模块，涉及操作系统的基础功能，常用工具支持等。通过官网查看更多详细信息 https:&#x2F;&#x2F;docs.saltstack.com&#x2F;en&#x2F;latest&#x2F;ref&#x2F;modules&#x2F;all&#x2F;index.html也可以通过 sys 模块列出当前版本支持的功能模块。salt ‘*’ sys.list">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-03-01T03:02:09.000Z">
+<meta property="article:modified_time" content="2018-03-01T08:07:31.986Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="saltstack">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2018/03/01/Saltstack%E5%B8%B8%E7%94%A8%E6%A8%A1%E5%9D%97%E5%8F%8AAPI/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2018/03/01/Saltstack%E5%B8%B8%E7%94%A8%E6%A8%A1%E5%9D%97%E5%8F%8AAPI/","path":"2018/03/01/Saltstack常用模块及API/","title":"Saltstack常用模块及API"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Saltstack常用模块及API | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#cmd%E6%A8%A1%E5%9D%97"><span class="nav-number">1.</span> <span class="nav-text">cmd模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cp%E6%A8%A1%E5%9D%97"><span class="nav-number">2.</span> <span class="nav-text">cp模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cron%E6%A8%A1%E5%9D%97"><span class="nav-number">3.</span> <span class="nav-text">cron模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#file%E6%A8%A1%E5%9D%97"><span class="nav-number">4.</span> <span class="nav-text">file模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PKG%E5%8C%85%E7%AE%A1%E7%90%86%E6%A8%A1%E5%9D%97"><span class="nav-number">5.</span> <span class="nav-text">PKG包管理模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#service%E6%9C%8D%E5%8A%A1%E6%A8%A1%E5%9D%97"><span class="nav-number">6.</span> <span class="nav-text">service服务模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#network%E6%A8%A1%E5%9D%97"><span class="nav-number">7.</span> <span class="nav-text">network模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#iptables%E6%A8%A1%E5%9D%97"><span class="nav-number">8.</span> <span class="nav-text">iptables模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Archive%E6%A8%A1%E5%9D%97"><span class="nav-number">9.</span> <span class="nav-text">Archive模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dnsutil%E6%A8%A1%E5%9D%97"><span class="nav-number">10.</span> <span class="nav-text">dnsutil模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E6%A8%A1%E5%9D%97"><span class="nav-number">11.</span> <span class="nav-text">其他模块</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2018/03/01/Saltstack%E5%B8%B8%E7%94%A8%E6%A8%A1%E5%9D%97%E5%8F%8AAPI/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Saltstack常用模块及API | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Saltstack常用模块及API
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2018-03-01 11:02:09 / 修改时间：16:07:31" itemprop="dateCreated datePublished" datetime="2018-03-01T11:02:09+08:00">2018-03-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Saltstack/" itemprop="url" rel="index"><span itemprop="name">Saltstack</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Saltstatck提供了丰富的功能模块，涉及操作系统的基础功能，常用工具支持等。<br>通过官网查看更多详细信息 <a target="_blank" rel="noopener" href="https://docs.saltstack.com/en/latest/ref/modules/all/index.html">https://docs.saltstack.com/en/latest/ref/modules/all/index.html</a><br>也可以通过 <strong>sys</strong> 模块列出当前版本支持的功能模块。<br><strong>salt ‘*’ sys.list_modules</strong></p>
+<span id="more"></span>
+<p>下面抽取常见的模块进行介绍，同时也会介绍API的使用方法。<br>API的原理是通过调用 <strong>salt.client</strong> 模块，实例化一个 <strong>LocalClient</strong> 对象，再调用 <strong>cmd()</strong> 方法来实现。</p>
+<p>下面是API实现 <strong>test.ping</strong> 的实例:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment">#coding:utf-8</span></span><br><span class="line"><span class="keyword">import</span> salt.client</span><br><span class="line"></span><br><span class="line">client = salt.client.LocalClient()</span><br><span class="line">result = client.cmd(<span class="string">&quot;*&quot;</span>,<span class="string">&quot;test.ping&quot;</span>)</span><br><span class="line"><span class="built_in">print</span> <span class="built_in">type</span>(result)</span><br><span class="line"><span class="built_in">print</span> result</span><br></pre></td></tr></table></figure>
+<p>结果以python字典形式返回:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="built_in">type</span> <span class="string">&#x27;dict&#x27;</span>&gt;</span><br><span class="line">&#123;<span class="string">&#x27;192.168.3.5&#x27;</span>: <span class="literal">True</span>, <span class="string">&#x27;192.168.3.4&#x27;</span>: <span class="literal">True</span>&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="cmd模块"><a href="#cmd模块" class="headerlink" title="cmd模块"></a><span style="color:red;">cmd模块</span></h2><p><span style="font-weight:bold;font-size:18px;">功能:</span><br>实现远程的命令行调用执行(默认具备root操作权限)。<br><span style="font-weight:bold;font-size:18px;">示例:</span></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 获取所有被控主机的内存使用情况:</span><br><span class="line">salt &quot;*&quot; cmd.run &quot;free -m&quot;</span><br></pre></td></tr></table></figure>
+<p><span style="font-weight:bold">API调用:</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">client.cmd(<span class="string">&quot;*&quot;</span>,<span class="string">&quot;cmd.run&quot;</span>,[<span class="string">&quot;free -m&quot;</span>])</span><br></pre></td></tr></table></figure>
+<h2 id="cp模块"><a href="#cp模块" class="headerlink" title="cp模块"></a><span style="color:red;">cp模块</span></h2><p><span style="font-weight:bold;font-size:18px;">功能:</span><br>实现远程文件、目录的复制，以及下载URL文件等操作。<br><span style="font-weight:bold;font-size:18px;">示例:</span></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将指定minion端主机/etc/hosts文件下载到此机器的salt cache 目录(/var/cache/salt/minion/localfiles)</span></span><br><span class="line">salt &#x27;192.168.3.5&#x27; cp.cache_local_file /etc/hosts</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将master主服务器file_roots指定位置下的目录复制到被控主机</span></span><br><span class="line">salt &#x27;192.168.3.5&#x27; cp.get_dir salt://files /root/linshi</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将master主服务器file_roots指定位置下的文件复制到被控主机</span></span><br><span class="line">salt &#x27;192.168.3.5&#x27; cp.get_file salt://nginx-stop.sls /root/linshi/1.sls</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">下载URL文件到minion的指定位置</span></span><br><span class="line">salt &#x27;192.168.3.5&#x27; cp.get_url https://www.5ecat.com/index.html /root/linshi/2.html</span><br></pre></td></tr></table></figure>
+<p><span style="font-weight:bold;font-size:18px;">API调用:</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">client.cmd(<span class="string">&quot;192.168.3.5&quot;</span>,<span class="string">&quot;cp.get_file&quot;</span>,[<span class="string">&quot;salt://nginx-stop.sls&quot;</span>,<span class="string">&quot;/root/linshi/1.sls&quot;</span>])</span><br></pre></td></tr></table></figure>
+<h2 id="cron模块"><a href="#cron模块" class="headerlink" title="cron模块"></a><span style="color:red;">cron模块</span></h2><p><span style="font-weight:bold;font-size:18px;">功能:</span><br>实现被控主机的crontab操作。<br><span style="font-weight:bold;font-size:18px;">示例:</span></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看指定被控主机、root用户的crontab清单</span></span><br><span class="line">salt &quot;192.168.3.5&quot; cron.raw_cron root</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">给被控主机root用户添加cron任务</span></span><br><span class="line">salt &quot;192.168.3.5&quot; cron.set_job root &quot;*&quot; &quot;1&quot; &quot;12&quot; &quot;*&quot; &quot;*&quot; /usr/local/mycron.sh</span><br><span class="line"></span><br><span class="line">删除被控主机root用户的cron任务</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">salt <span class="string">&quot;192.168.3.5&quot;</span> cron.rm_job root /usr/local/mycron.sh</span></span><br></pre></td></tr></table></figure>
+<p><span style="font-weight:bold;font-size:18px;">API调用:</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">client.cmd(<span class="string">&quot;192.168.3.5&quot;</span>,<span class="string">&quot;crom.set_job&quot;</span>,[<span class="string">&quot;root&quot;</span>,<span class="string">&quot;*&quot;</span>,<span class="string">&quot;1&quot;</span>,<span class="string">&quot;12&quot;</span>,<span class="string">&quot;*&quot;</span>,<span class="string">&quot;*&quot;</span>,<span class="string">&quot;/usr/local/mycron.sh&quot;</span>])</span><br></pre></td></tr></table></figure>
+
+<h2 id="file模块"><a href="#file模块" class="headerlink" title="file模块"></a><span style="color:red;">file模块</span></h2><p><span style="font-weight:bold;font-size:18px;">功能:</span><br>被控主机文件的常见操作，包括文件读写、权限、查找、校验等。<br><span style="font-weight:bold;font-size:18px;">示例:</span></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">校验minion端/etc/hosts文件的md5是否为54fb6627dbaa37721048e4549db3224d，正确返回TRUE。</span></span><br><span class="line">salt &quot;*&quot; file.check_hash /etc/hosts &quot;md5:54fb6627dbaa37721048e4549db3224d&quot;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">修改被控主机/etc/passwd文件的属组、用户权限</span></span><br><span class="line">salt &#x27;192.168.3.5&#x27; file.chown /usr/local/src/test.py mysql mysql</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">复制被控主机/usr/local/src/test.py文件到此机器本地的/root/1.py文件</span></span><br><span class="line">salt &quot;192.168.3.5&quot; file.copy /usr/local/src/test.py /root/1.py</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">检查所有被控主机/etc目录是否存在，存在则返回True,检查文件是否存在使用file.file_exists方法</span></span><br><span class="line">salt &#x27;*&#x27; file.directory_exists /etc</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">获取所有被控主机/etc/passwd的stats信息</span></span><br><span class="line">salt &#x27;*&#x27; file.stats /etc/passwd</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">获取所有被控主机/etc/passwd的权限mode，如755，644</span></span><br><span class="line">salt &#x27;*&#x27; file.get_mode /etc/passwd</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">修改所有被控主机/etc/passwd的权限mode为0644</span></span><br><span class="line">salt &#x27;*&#x27; file.set_mode /etc/passwd 0644</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">在所有被控主机创建/opt/test目录</span></span><br><span class="line">salt &#x27;*&#x27; file.mkdir /opt/test</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">修改被控主机/etc/hosts文件的记录192.168.1.5的值www.yiqun.com修改为www.5ecat.com</span></span><br><span class="line">salt &#x27;192.168.3.5&#x27; file.sed /etc/hosts &#x27;192.168.1.5 www.yiqun.com&#x27; &#x27;192.168.1.5 www.5ecat.com&#x27;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">给被控主机的/etc/hosts文件追加内容<span class="string">&#x27;192.168.1.5 view.5ecat.com&#x27;</span></span></span><br><span class="line">salt &#x27;192.168.3.5&#x27; file.append /etc/hosts &#x27;192.168.1.5 view.5ecat.com&#x27;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">删除被控主机的/root/22.py文件</span></span><br><span class="line">salt &#x27;192.168.3.5&#x27; file.remove /root/22.py</span><br></pre></td></tr></table></figure>
+<p><span style="font-weight:bold;font-size:18px;">API调用:</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">client.cmd(<span class="string">&#x27;*&#x27;</span>,<span class="string">&#x27;file.remove&#x27;</span>,[<span class="string">&#x27;/root/22.py&#x27;</span>])</span><br></pre></td></tr></table></figure>
+
+<h2 id="PKG包管理模块"><a href="#PKG包管理模块" class="headerlink" title="PKG包管理模块"></a><span style="color:red;">PKG包管理模块</span></h2><p><span style="font-weight:bold;font-size:18px;">功能:</span><br>被控主机程序包管理，如：yum、apt-getdegn<br><span style="font-weight:bold;font-size:18px;">示例:</span></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">为被控主机安装vim-enhanced包，根据不同系统发行版调用不同安装工具进行部署，如redhat平台的yum，等价于yum -y install vim-enhanced</span></span><br><span class="line">salt &#x27;192.168.3.5&#x27; pkg.install vim-enhanced</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">卸载被控主机的vim-enhanced包</span></span><br><span class="line">salt &#x27;192.168.3.5&#x27; pkg.remove vim-enhanced</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">升级所有被控主机的软件包</span></span><br><span class="line">salt &#x27;*&#x27; pkg.upgrade</span><br></pre></td></tr></table></figure>
+<p><span style="font-weight:bold">API调用:</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">client.cmd(<span class="string">&#x27;*&#x27;</span>,<span class="string">&#x27;pkg.remove&#x27;</span>,[<span class="string">&#x27;vim-enhanced&#x27;</span>])</span><br></pre></td></tr></table></figure>
+
+<h2 id="service服务模块"><a href="#service服务模块" class="headerlink" title="service服务模块"></a><span style="color:red;">service服务模块</span></h2><p><span style="font-weight:bold;font-size:18px;">功能:</span><br>被控主机程序包服务管理。<br><span style="font-weight:bold;font-size:18px;">示例:</span></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">开启（<span class="built_in">enable</span>）、禁用（<span class="built_in">disable</span>）nginx开机自启动脚本</span></span><br><span class="line">salt &#x27;*&#x27; service.enable nginx</span><br><span class="line">salt &#x27;*&#x27; service.disable nginx</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">针对nginx服务的reload、restart、start、stop、status操作</span></span><br><span class="line">salt &#x27;*&#x27; service.reload nginx</span><br><span class="line">salt &#x27;*&#x27; service.restart nginx</span><br><span class="line">salt &#x27;*&#x27; service.start nginx</span><br><span class="line">salt &#x27;*&#x27; service.stop nginx</span><br><span class="line">salt &#x27;*&#x27; service.status nginx</span><br></pre></td></tr></table></figure>
+<p><span style="font-weight:bold">API调用:</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">client.cmd(<span class="string">&#x27;*&#x27;</span>,<span class="string">&#x27;service.stop&#x27;</span>,[<span class="string">&#x27;nginx&#x27;</span>])</span><br></pre></td></tr></table></figure>
+
+<h2 id="network模块"><a href="#network模块" class="headerlink" title="network模块"></a><span style="color:red;">network模块</span></h2><p><span style="font-weight:bold;font-size:18px;">功能:</span><br>返回被控主机的网络信息。<br><span style="font-weight:bold;font-size:18px;">示例:</span></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">在指定被控主机获取ping、traceroute目录域名信息</span></span><br><span class="line">salt &#x27;192.168.3.5&#x27; network.ping www.qq.com</span><br><span class="line">salt &#x27;192.168.3.5&#x27; network.traceroute www.qq.com</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">获取指定被控主机的mac地址</span></span><br><span class="line">salt &#x27;192.168.3.5&#x27; network.hwaddr eth0</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">检测被控主机是否属于10.0.0.0/16子网范围，属于则返回True</span></span><br><span class="line">salt &#x27;*&#x27; network.in_subnet 192.168.3.0/24</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">获取指定被控主机的网卡配置信息</span></span><br><span class="line">salt &#x27;192.168.3.5&#x27; network.interfaces</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">获取指定被控主机的IP地址配置信息</span></span><br><span class="line">salt &#x27;192.168.3.5&#x27; network.ip_addrs</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">获取指定被控主机的子网信息</span></span><br><span class="line">salt &#x27;192.168.3.5&#x27; network.subnets</span><br></pre></td></tr></table></figure>
+<p><span style="font-weight:bold">API调用:</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">client.cmd(<span class="string">&#x27;192.168.3.5&#x27;</span>,<span class="string">&#x27;network.ip_addrs&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="iptables模块"><a href="#iptables模块" class="headerlink" title="iptables模块"></a><span style="color:red;">iptables模块</span></h2><p><span style="font-weight:bold;font-size:18px;">功能:</span><br>被控主机的iptables支持。<br><span style="font-weight:bold;font-size:18px;">示例:</span></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">在所有被控主机端追加（append）、插入（insert）iptables规则，其中INPUT为输入链</span></span><br><span class="line">salt &#x27;*&#x27; iptables.append filter INPUT rule=&#x27;-m state --state RELATED,ESTABLISHED -j ACCEPT&#x27;</span><br><span class="line">salt &#x27;*&#x27; iptables.insert filter INPUT position=3 rule=&#x27;-m state --state RELATED,ESTABLISHED -j ACCEPT&#x27;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">在所有被控主机删除指定链编号为3（position=3）或指定存在的规则</span></span><br><span class="line">salt &#x27;*&#x27; iptalbes.delete filter INPUT position=3</span><br><span class="line">salt &#x27;*&#x27; iptables.delete filter INPUT rule=&#x27;-m state --state RELATEC,ESTABLISHED -j ACCEPT&#x27;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">保存所有被控主机端主机规则到本地硬盘（/etc/sysconfig/iptables）</span></span><br><span class="line">salt &#x27;*&#x27; iptables.save /etc/sysconfig/iptables</span><br></pre></td></tr></table></figure>
+<p><span style="font-weight:bold">API调用:</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">client.cmd(<span class="string">&#x27;*&#x27;</span>,<span class="string">&#x27;iptables.append&#x27;</span>,[<span class="string">&#x27;filter&#x27;</span>,<span class="string">&#x27;INPUT&#x27;</span>,<span class="string">&#x27;rule=\&#x27;-p tcp --sport 80 -j ACCEPT\&#x27;&#x27;</span>])</span><br></pre></td></tr></table></figure>
+
+<h2 id="Archive模块"><a href="#Archive模块" class="headerlink" title="Archive模块"></a><span style="color:red;">Archive模块</span></h2><p><span style="font-weight:bold;font-size:18px;">功能:</span><br>实现系统层面的压缩包调用，支持gzip、gunzip、rar、tar、unrar、unzip等。<br><span style="font-weight:bold;font-size:18px;">示例:</span></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">采用gunzip解压sourcefile.txt.gz包</span></span><br><span class="line">salt &#x27;*&#x27; archive.gunzip sourcefile.txt.gz</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">采用gzip压缩sourcefile.txt文件</span></span><br><span class="line">salt &#x27;*&#x27; archive.gzip sourcefile.txt</span><br></pre></td></tr></table></figure>
+<p><span style="font-weight:bold">API调用:</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">client.cmd(<span class="string">&#x27;*&#x27;</span>,<span class="string">&#x27;archive.gunzip&#x27;</span>,[<span class="string">&#x27;sourcefile.txt.gz&#x27;</span>])</span><br></pre></td></tr></table></figure>
+
+<h2 id="dnsutil模块"><a href="#dnsutil模块" class="headerlink" title="dnsutil模块"></a><span style="color:red;">dnsutil模块</span></h2><p><span style="font-weight:bold;font-size:18px;">功能:</span><br>实现被控主机通用DNS操作。<br><span style="font-weight:bold;font-size:18px;">示例:</span></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">添加指定被控主机hosts的主机配置项</span></span><br><span class="line">salt &#x27;192.168.3.5&#x27; dnsutil.hosts_append /etc/hosts 127.0.0.1 adl.yuk.com,ad2.yuk.com</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">删除指定被控主机的hosts的主机配置项</span></span><br><span class="line">salt &#x27;192.168.3.5&#x27; dnsutil.hosts_remove /etc/hosts ad1.yuk.com</span><br></pre></td></tr></table></figure>
+<p><span style="font-weight:bold">API调用:</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">clietn.cmd(<span class="string">&#x27;192.168.3.5&#x27;</span>,<span class="string">&#x27;dnsutil.hosts_append&#x27;</span>,[<span class="string">&#x27;/etc/hosts&#x27;</span>,<span class="string">&#x27;127.0.0.1&#x27;</span>,<span class="string">&#x27;ad1.yuk.com&#x27;</span>,<span class="string">&#x27;ad2.yuk.com&#x27;</span>])</span><br></pre></td></tr></table></figure>
+
+<h2 id="其他模块"><a href="#其他模块" class="headerlink" title="其他模块"></a><span style="color:red;">其他模块</span></h2><p>除了上述模块外，saltstack还提供了user(系统用户模块）、group（系统组模块）、partition（系统分区模块）、puppet（puppet管理模块）、system（系统重启、关机模块）、timezone（时区管理模块）、nginx（nginx管理模块）、mount（文件系统挂载模块）等等。当然我们也可以通过Python扩展模块来满足需求。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/saltstack/" rel="tag"># saltstack</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/02/11/Django%E7%AE%80%E5%8D%95API%E5%AE%9E%E7%8E%B0/" rel="prev" title="Django简单API实现">
+                  <i class="fa fa-chevron-left"></i> Django简单API实现
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/03/02/Saltstack%E7%A4%BA%E4%BE%8B-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E9%9B%86%E4%B8%AD%E5%8C%96%E7%AE%A1%E7%90%86/" rel="next" title="Saltstack示例-配置文件集中化管理">
+                  Saltstack示例-配置文件集中化管理 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="定义负载标签 一、随机生成用户load标签定义了几个用户到达阶段 12345678910111213&lt;load&gt;  &lt;arrivalphase phase&#x3D;&quot;1&quot; duration&#x3D;&quot;10&quot; unit&#x3D;&quot;minute&quot;&gt;    &lt;users interarrival&#x3D;&quot;2&quot; unit&#x3D;&amp;q">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tsung配置文件解析-Load">
+<meta property="og:url" content="http://zhanghonged.github.io/2016/08/25/Tsung%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90-Load/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="定义负载标签 一、随机生成用户load标签定义了几个用户到达阶段 12345678910111213&lt;load&gt;  &lt;arrivalphase phase&#x3D;&quot;1&quot; duration&#x3D;&quot;10&quot; unit&#x3D;&quot;minute&quot;&gt;    &lt;users interarrival&#x3D;&quot;2&quot; unit&#x3D;&amp;q">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-08-25T06:48:37.000Z">
+<meta property="article:modified_time" content="2016-08-25T07:18:43.894Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="Tsung">
+<meta property="article:tag" content="测试">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2016/08/25/Tsung%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90-Load/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2016/08/25/Tsung%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90-Load/","path":"2016/08/25/Tsung配置文件解析-Load/","title":"Tsung配置文件解析-Load"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Tsung配置文件解析-Load | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E9%9A%8F%E6%9C%BA%E7%94%9F%E6%88%90%E7%94%A8%E6%88%B7"><span class="nav-number">1.</span> <span class="nav-text">一、随机生成用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E9%9D%99%E6%80%81%E7%94%9F%E6%88%90%E7%94%A8%E6%88%B7"><span class="nav-number">2.</span> <span class="nav-text">二、静态生成用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81load-test%E6%8C%81%E7%BB%AD%E6%97%B6%E9%97%B4"><span class="nav-number">3.</span> <span class="nav-text">三、load test持续时间</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2016/08/25/Tsung%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90-Load/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Tsung配置文件解析-Load | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Tsung配置文件解析-Load
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2016-08-25 14:48:37 / 修改时间：15:18:43" itemprop="dateCreated datePublished" datetime="2016-08-25T14:48:37+08:00">2016-08-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%B5%8B%E8%AF%95%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index"><span itemprop="name">测试相关</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><strong>定义负载标签</strong></p>
+<h2 id="一、随机生成用户"><a href="#一、随机生成用户" class="headerlink" title="一、随机生成用户"></a>一、随机生成用户</h2><p>load标签定义了几个用户到达阶段</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;load&gt;</span><br><span class="line">  &lt;arrivalphase phase=&quot;1&quot; duration=&quot;10&quot; unit=&quot;minute&quot;&gt;</span><br><span class="line">    &lt;users interarrival=&quot;2&quot; unit=&quot;second&quot;&gt;&lt;/users&gt;</span><br><span class="line">  &lt;/arrivalphase&gt;</span><br><span class="line"></span><br><span class="line">  &lt;arrivalphase phase=&quot;2&quot; duration=&quot;10&quot; unit=&quot;minute&quot;&gt;</span><br><span class="line">    &lt;users interarrival=&quot;1&quot; unit=&quot;second&quot;&gt;&lt;/users&gt;</span><br><span class="line">  &lt;/arrivalphase&gt;</span><br><span class="line"></span><br><span class="line">  &lt;arrivalphase phase=&quot;3&quot; duration=&quot;10&quot; unit=&quot;minute&quot;&gt;</span><br><span class="line">    &lt;users interarrival=&quot;0.1&quot; unit=&quot;second&quot;&gt;&lt;/users&gt;</span><br><span class="line">  &lt;/arrivalphase&gt;</span><br><span class="line">&lt;/load&gt;</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<p>上面的配置文件表示：用户的生成分三个阶段，在第一个10分钟阶段每2秒钟生成1个新用户，在第二个10分钟阶段每秒钟生成1个用户，最后一个10分钟阶段每秒钟生成10个新用户。这些测试将在所有用户执行完它们的过程(后面的session标签代表的过程)之后，整个测试就结束了。<br>上面的第三阶段是每秒生成10个用户，但它字面上理解是每0.1秒生成一个用户，你还可以使用”arrivalrate”代替”interarrival”，例如：你需要每秒生成10个用户：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;arrivalphase phase=&quot;1&quot; duration=&quot;10&quot; unit=&quot;minute&quot;&gt;</span><br><span class="line">  &lt;users arrivalrate=&quot;10&quot; unit=&quot;second&quot;&gt;&lt;/users&gt;</span><br><span class="line">&lt;/arrivalphase&gt;</span><br></pre></td></tr></table></figure>
+<p>可以使用<strong>maxnumber</strong>属性限制每阶段生成用户的最大数量，例如下面：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;arrivalphase phase=&quot;1&quot; duration=&quot;10&quot; unit=&quot;minute&quot;&gt;</span><br><span class="line">  &lt;users maxnumber=&quot;100&quot; arrivalrate=&quot;10&quot; unit=&quot;second&quot;&gt;&lt;/users&gt;</span><br><span class="line">&lt;/arrivalphase&gt;</span><br><span class="line">&lt;arrivalphase phase=&quot;2&quot; duration=&quot;10&quot; unit=&quot;minute&quot;&gt;</span><br><span class="line">  &lt;users maxnumber=&quot;200&quot; arrivalrate=&quot;10&quot; unit=&quot;second&quot;&gt;&lt;/users&gt;</span><br><span class="line">&lt;/arrivalphase&gt;</span><br></pre></td></tr></table></figure>
+<p>按照上面配置，第一阶段将只能生成100个用户，第二阶段200个用户。</p>
+<p>还可以用load标签中用loop属性来让整个过程执行多次，如：loop&#x3D;’2′的意思是这序列被循环两次，所以完整负载被执行三次。(这个要在版本1.2.2之后可用)。<br>负载每秒http的请求数依赖于每个session的request的个数，例如：每个session有100个request， 每秒生成10个新用户，那么理论的平均吞吐量是每秒1000个request。</p>
+<p>还可以重写特定阶段中会话的概率设置，使用session_setup：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;arrivalphase phase=&quot;3&quot; duration=&quot;1&quot; unit=&quot;minute&quot;&gt;</span><br><span class="line">  &lt;session_setup name=&quot;http_test_1&quot; probability=&quot;80&quot;/&gt;</span><br><span class="line">  &lt;session_setup name=&quot;fake&quot;        probability=&quot;20&quot;/&gt;</span><br><span class="line">  &lt;users  interarrival=&quot;1&quot; unit=&quot;second&quot;/&gt;</span><br><span class="line">&lt;/arrivalphase&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="二、静态生成用户"><a href="#二、静态生成用户" class="headerlink" title="二、静态生成用户"></a>二、静态生成用户</h2><p>你想在测试的过程中在指定的时间上启动给定的session，在1.3.1版本之后可以实现。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;load&gt;</span><br><span class="line">  &lt;arrivalphase phase=&quot;1&quot; duration=&quot;10&quot; unit=&quot;minute&quot;&gt;</span><br><span class="line">    &lt;users interarrival=&quot;2&quot; unit=&quot;second&quot;&gt;&lt;/users&gt;</span><br><span class="line">  &lt;/arrivalphase&gt;</span><br><span class="line">  &lt;user session=&quot;http-example&quot; start_time=&quot;185&quot; unit=&quot;second&quot;&gt;&lt;/user&gt;</span><br><span class="line">  &lt;user session=&quot;http-example&quot; start_time=&quot;10&quot; unit=&quot;minute&quot;&gt;&lt;/user&gt;</span><br><span class="line">  &lt;user session=&quot;foo&quot; start_time=&quot;11&quot; unit=&quot;minute&quot;&gt;&lt;/user&gt;</span><br><span class="line">&lt;/load&gt;</span><br><span class="line">&lt;sessions&gt;</span><br><span class="line">  &lt;session name=&quot;http-example&quot; probability=&quot;0&quot; type=&quot;ts_http&quot;&gt;</span><br><span class="line">    &lt;request&gt; &lt;http url=&quot;/&quot; method=&quot;GET&quot;&gt;&lt;/http&gt; &lt;/request&gt;</span><br><span class="line">  &lt;/session&gt;</span><br><span class="line">  &lt;session name=&quot;foobar&quot; probability=&quot;0&quot; type=&quot;ts_http&quot;&gt;</span><br><span class="line">    &lt;request&gt; &lt;http url=&quot;/bar&quot; method=&quot;GET&quot;&gt;&lt;/http&gt; &lt;/request&gt;</span><br><span class="line">  &lt;/session&gt;</span><br><span class="line">  &lt;session name=&quot;foo&quot; probability=&quot;100&quot; type=&quot;ts_http&quot;&gt;</span><br><span class="line">    &lt;request&gt; &lt;http url=&quot;/&quot; method=&quot;GET&quot;&gt;&lt;/http&gt; &lt;/request&gt;</span><br><span class="line">  &lt;/session&gt;</span><br><span class="line">&lt;sessions&gt;</span><br></pre></td></tr></table></figure>
+<p>在这个例子中，有2ession，一个的probability为“0”(因此在第一阶段不会被执行，就是随机生成用户部分)， 而另一个是100。<br>在测试开始之后，我们设置3个用户分别启动，第一个在3分5秒(执行http-example session)启动，第二个在10分钟后启动(http-example session)，最后一个在11分钟后启动(foo session)。</p>
+<p>如果你想要同时启动多个sessions，并且这些sessions的名字前缀都一样，你可以使用通配符。<br>鉴于上面例子的sessions，这个例子我们将在10秒后开始2个用户(foo和foobar session)。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;user session=&quot;foo*&quot; start_time=&quot;10&quot; unit=&quot;second&quot;/&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="三、load-test持续时间"><a href="#三、load-test持续时间" class="headerlink" title="三、load test持续时间"></a>三、load test持续时间</h2><p>默认情况下，tsung在所有用户都完成他们的session之后结束，因此这个时间可能会长于&lt;arrivalphase&gt;定义的持续时间。<br>如果你想要停止tsung而不管阶段是否完成，也不管是否有session正处于激活状态。那么你可以在load标签中增加duration属性(版本1.3.2后有效)。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;load duration=&quot;1&quot; unit=&quot;hour&quot;&gt;</span><br><span class="line">  &lt;arrivalphase phase=&quot;1&quot; duration=&quot;10&quot; unit=&quot;minute&quot;&gt;</span><br><span class="line">    &lt;users interarrival=&quot;2&quot; unit=&quot;second&quot;&gt;&lt;/users&gt;</span><br><span class="line">  &lt;/arrivalphase&gt;</span><br><span class="line">&lt;/load&gt;</span><br></pre></td></tr></table></figure>
+<p>目前这个duration的值不能大于50天，unit可以设置为second，minut或者hour。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Tsung/" rel="tag"># Tsung</a>
+              <a href="/tags/%E6%B5%8B%E8%AF%95/" rel="tag"># 测试</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/08/25/Tsung%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90-Monitoring/" rel="prev" title="Tsung配置文件解析-Monitoring">
+                  <i class="fa fa-chevron-left"></i> Tsung配置文件解析-Monitoring
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/08/25/Tsung%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90-Options/" rel="next" title="Tsung配置文件解析-Options">
+                  Tsung配置文件解析-Options <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

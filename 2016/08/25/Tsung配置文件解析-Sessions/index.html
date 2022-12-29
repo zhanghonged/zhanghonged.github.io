@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Sessions定义了场景本身，它描述了要运行的请求。每个session都有一个指定的probablity属性，这个被用来决定一个新用户要运行哪个session，所有session的probability属性和为100。也可以用权重(weight)来代替probability，下面例子中，session s1是s2的两倍。 12&lt;session name&#x3D;&quot;s1&quot; wei">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tsung配置文件解析-Sessions">
+<meta property="og:url" content="http://zhanghonged.github.io/2016/08/25/Tsung%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90-Sessions/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="Sessions定义了场景本身，它描述了要运行的请求。每个session都有一个指定的probablity属性，这个被用来决定一个新用户要运行哪个session，所有session的probability属性和为100。也可以用权重(weight)来代替probability，下面例子中，session s1是s2的两倍。 12&lt;session name&#x3D;&quot;s1&quot; wei">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/ldap-hierarchy.png">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/ldap-results.png">
+<meta property="article:published_time" content="2016-08-25T09:04:42.000Z">
+<meta property="article:modified_time" content="2016-08-29T03:17:32.247Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="Tsung">
+<meta property="article:tag" content="测试">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://zhanghonged.github.io/uploads/ldap-hierarchy.png">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2016/08/25/Tsung%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90-Sessions/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2016/08/25/Tsung%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90-Sessions/","path":"2016/08/25/Tsung配置文件解析-Sessions/","title":"Tsung配置文件解析-Sessions"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Tsung配置文件解析-Sessions | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81Thinktimes"><span class="nav-number">1.</span> <span class="nav-text">一、Thinktimes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81HTTP"><span class="nav-number">2.</span> <span class="nav-text">二、HTTP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1%E3%80%81Authentication"><span class="nav-number">2.1.</span> <span class="nav-text">2.1、Authentication</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81Jabber-x2F-XMPP"><span class="nav-number">3.</span> <span class="nav-text">三、Jabber&#x2F;XMPP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1%E3%80%81%E6%B6%88%E6%81%AF%E9%82%AE%E6%88%B3"><span class="nav-number">3.1.</span> <span class="nav-text">3.1、消息邮戳</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2%E3%80%81StartTLS"><span class="nav-number">3.2.</span> <span class="nav-text">3.2、StartTLS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3%E3%80%81Roster"><span class="nav-number">3.3.</span> <span class="nav-text">3.3、Roster</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4%E3%80%81SASL-Plain"><span class="nav-number">3.4.</span> <span class="nav-text">3.4、SASL Plain</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5%E3%80%81anonymous-SASL"><span class="nav-number">3.5.</span> <span class="nav-text">3.5、anonymous SASL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-7%E3%80%81MUC"><span class="nav-number">3.6.</span> <span class="nav-text">3.7、MUC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-8%E3%80%81PubSub"><span class="nav-number">3.7.</span> <span class="nav-text">3.8、PubSub</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-9%E3%80%81VHost"><span class="nav-number">3.8.</span> <span class="nav-text">3.9、VHost</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-10%E3%80%81%E4%BB%8ECSV%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E7%94%A8%E6%88%B7%E5%90%8D%E5%92%8C%E5%AF%86%E7%A0%81"><span class="nav-number">3.9.</span> <span class="nav-text">3.10、从CSV文件读取用户名和密码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-11%E3%80%81raw-XML"><span class="nav-number">3.10.</span> <span class="nav-text">3.11、raw XML</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-12%E3%80%81resource"><span class="nav-number">3.11.</span> <span class="nav-text">3.12、resource</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81PostgreSQL"><span class="nav-number">4.</span> <span class="nav-text">四、PostgreSQL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81MysQL"><span class="nav-number">5.</span> <span class="nav-text">五、MysQL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81Websocket"><span class="nav-number">6.</span> <span class="nav-text">六、Websocket</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81AMQP"><span class="nav-number">7.</span> <span class="nav-text">七、AMQP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E3%80%81MQTT"><span class="nav-number">8.</span> <span class="nav-text">八、MQTT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%9D%E3%80%81LDAP"><span class="nav-number">9.</span> <span class="nav-text">九、LDAP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#9-1%E3%80%81Authentication"><span class="nav-number">9.1.</span> <span class="nav-text">9.1、Authentication</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-2%E3%80%81LDAP-Setup"><span class="nav-number">9.2.</span> <span class="nav-text">9.2、LDAP Setup</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-3%E3%80%81%E5%85%B6%E4%BB%96%E7%A4%BA%E4%BE%8B"><span class="nav-number">9.3.</span> <span class="nav-text">9.3、其他示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E3%80%81-%E6%B7%B7%E5%90%88session-type"><span class="nav-number">10.</span> <span class="nav-text">十、 混合session type</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%B8%80%E3%80%81Raw"><span class="nav-number">11.</span> <span class="nav-text">十一、Raw</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2016/08/25/Tsung%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90-Sessions/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Tsung配置文件解析-Sessions | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Tsung配置文件解析-Sessions
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-08-25 17:04:42" itemprop="dateCreated datePublished" datetime="2016-08-25T17:04:42+08:00">2016-08-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2016-08-29 11:17:32" itemprop="dateModified" datetime="2016-08-29T11:17:32+08:00">2016-08-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%B5%8B%E8%AF%95%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index"><span itemprop="name">测试相关</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>Sessions定义了场景本身，它描述了要运行的请求。<br>每个session都有一个指定的probablity属性，这个被用来决定一个新用户要运行哪个session，所有session的probability属性和为100。<br>也可以用权重(weight)来代替probability，下面例子中，session s1是s2的两倍。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;session name=&quot;s1&quot; weight=&quot;2&quot; type=&quot;ts_http&quot;&gt;</span><br><span class="line">&lt;session name=&quot;s2&quot; weight=&quot;1&quot; type=&quot;ts_http&quot;&gt;</span><br></pre></td></tr></table></figure>
+<p>一个事务是一种手工统计数据的一种方式。比如说你想知道你网站登录页面的反应时间，你就需要把这个页面的所有请求(html和内嵌的图片等)放到这个事务里面。在下面HTTP的例子中你就会看到，名为index_request的事务统计数据和报告。<br>需要注意的是，如果你的事务中包含thinktime，那thinktime也是响应时间的一部分。</p>
+<span id="more"></span>
+
+<h2 id="一、Thinktimes"><a href="#一、Thinktimes" class="headerlink" title="一、Thinktimes"></a>一、Thinktimes</h2><p>思考时间理解：<br>用户访问某个网站或软件，一般不会不停地做个各种操作，例如一次查询，用户需要时间查看查询的结果是否是自己想要的。例如一次订单提交，用户需要时间核对自己填写的信息是否正确等。<br>也就是说用户在做某些操作时，是会有停留时间的，我把这个时间叫思考时间。但利用代码去执行的时候是没有时间的，当然，脚本运行本身是需要时间的，但比起人的思考时间要小很多。这也是我们为什么要用软件来代替人的某些工作。<br>但有时候，我们在做性能测试时，为了更真实的模拟用户的操作，需要给代码加入思考时间</p>
+<p>可以设置固定或者随机的思考时间来分离请求，默认情况下，随机思考时间是以value为基准的指数分布:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;thinktime value=&quot;20&quot; random=&quot;true&quot;&gt;&lt;/thinktime&gt;</span><br></pre></td></tr></table></figure>
+<p>这儿思考时间就是以20为基准的指数分布。<br>1.3.0版本之后，还增加了一个范围的控制，可以设定一个最大最小值，随机时间就在最大最小值之间波动:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;thinktime min=&quot;2&quot; max=&quot;10&quot; random=&quot;true&quot;&gt;&lt;/thinktime&gt;</span><br></pre></td></tr></table></figure>
+<p>1.4.0版本后，可以使用动态变量来设置thinktime值<span style="color: #ff0000;">(不会用)</span>:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;thinktime value=&quot;%%_rndthink%%&quot; random=&quot;true&quot;&gt;&lt;/thinktime&gt;</span><br></pre></td></tr></table></figure>
+<p>还可以同步所有用户使用wait_global值<span style="color: #ff0000;">(不会用)</span>:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;thinktime value=&#x27;wait_global&#x27;&gt;</span><br></pre></td></tr></table></figure>
+<p>解释：等待所有用户(或指定N用户)连接并等待全局锁(value可以在option中设置<option name="global_number" value ="XXX"/>并且在 <arrivalphase>设置maxnumber&#x3D;N)。<br>1.6.0版本之后，你可以等待bidi ack，如果协议是双向的(例如XMPP，WebSocket，…)，你可以一直等到服务器发送一些数据，用代码处理这些存在think状态的数据。<br><span style="color: #ff0000;">(不会用)</span></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;thinktime value=&quot;wait_bidi&quot;&gt;&lt;/thinktime&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="二、HTTP"><a href="#二、HTTP" class="headerlink" title="二、HTTP"></a>二、HTTP</h2><p>下面这个例子展示了http协议支持Tsung的多种特性:get和post请求、基本的认证、事务、数据统计定义、状态请求。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">&lt;sessions&gt;</span><br><span class="line"> &lt;session name=&quot;http-example&quot; probability=&quot;70&quot; type=&quot;ts_http&quot;&gt;</span><br><span class="line"></span><br><span class="line">   &lt;request&gt; &lt;http url=&quot;/&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;</span><br><span class="line">                   &lt;/http&gt; &lt;/request&gt;</span><br><span class="line">   &lt;request&gt; &lt;http url=&quot;/images/logo.gif&quot;</span><br><span class="line">              method=&quot;GET&quot; version=&quot;1.1&quot;</span><br><span class="line">              if_modified_since=&quot;Fri, 14 Nov 2003 02:43:31 GMT&quot;&gt;</span><br><span class="line">             &lt;/http&gt;&lt;/request&gt;</span><br><span class="line"></span><br><span class="line">   &lt;thinktime value=&quot;20&quot; random=&quot;true&quot;&gt;&lt;/thinktime&gt;</span><br><span class="line"></span><br><span class="line">   &lt;transaction name=&quot;index_request&quot;&gt;</span><br><span class="line">    &lt;request&gt;&lt;http url=&quot;/index.en.html&quot;</span><br><span class="line">                         method=&quot;GET&quot; version=&quot;1.1&quot; &gt;</span><br><span class="line">             &lt;/http&gt; &lt;/request&gt;</span><br><span class="line">    &lt;request&gt;&lt;http url=&quot;/images/header.gif&quot;</span><br><span class="line">                         method=&quot;GET&quot; version=&quot;1.1&quot;&gt;</span><br><span class="line">             &lt;/http&gt; &lt;/request&gt;</span><br><span class="line">   &lt;/transaction&gt;</span><br><span class="line"></span><br><span class="line">   &lt;thinktime value=&quot;60&quot; random=&quot;true&quot;&gt;&lt;/thinktime&gt;</span><br><span class="line">   &lt;request&gt;</span><br><span class="line">     &lt;http url=&quot;/&quot; method=&quot;POST&quot; version=&quot;1.1&quot;</span><br><span class="line">              contents=&quot;bla=blu&quot;&gt;</span><br><span class="line">     &lt;/http&gt; &lt;/request&gt;</span><br><span class="line">   &lt;request&gt;</span><br><span class="line">      &lt;http url=&quot;/bla&quot; method=&quot;POST&quot; version=&quot;1.1&quot;</span><br><span class="line">            contents=&quot;bla=blu&amp;amp;name=glop&quot;&gt;</span><br><span class="line">      &lt;www_authenticate userid=&quot;Aladdin&quot;</span><br><span class="line">                        passwd=&quot;open sesame&quot;/&gt;&lt;/http&gt;</span><br><span class="line">   &lt;/request&gt;</span><br><span class="line"> &lt;/session&gt;</span><br><span class="line"></span><br><span class="line"> &lt;session name=&quot;backoffice&quot; probability=&quot;30&quot; ...&gt;</span><br><span class="line"> ...</span><br><span class="line"> &lt;/session&gt;</span><br><span class="line">&lt;/sessions&gt;</span><br></pre></td></tr></table></figure>
+<p><strong>If-Modified-Since</strong>作用：If-Modified-Since是标准的HTTP请求头标签，在发送HTTP请求时，把浏览器端缓存页面的最后修改时间一起发到服务器去，服务器会把这个时间与服务器上实际文件的最后修改时间进行比较。</p>
+<ul>
+<li>如果时间一致，那么返回HTTP状态码304（不返回文件内容），客户端接到之后，就直接把本地缓存文件显示到浏览器中。</li>
+<li>如果时间不一致，就返回HTTP状态码200和新的文件内容，客户端接到之后，会丢弃旧文件，把新文件缓存起来，并显示到浏览器中。</li>
+</ul>
+<p>如果使用绝对路径地址，该网址中使用的server将覆盖&lt;server&gt;部分中指定的server。在session中后面的相关请求也将使用这个新的server值（直到一个新的绝对的网址被设置）。<br>在1.2.2版本之后，你还可以像下面这样增加任何的http头：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;request&gt;</span><br><span class="line">  &lt;http url=&quot;/bla&quot; method=&quot;POST&quot; contents=&quot;bla=blu&amp;amp;name=glop&quot;&gt;</span><br><span class="line">    &lt;www_authenticate userid=&quot;Aladdin&quot; passwd=&quot;open sesame&quot;/&gt;</span><br><span class="line">    &lt;http_header name=&quot;Cache-Control&quot; value=&quot;no-cache&quot;/&gt;</span><br><span class="line">    &lt;http_header name=&quot;Referer&quot; value=&quot;http://www.w3.org/&quot;/&gt;</span><br><span class="line">  &lt;/http&gt;</span><br><span class="line">&lt;/request&gt;</span><br></pre></td></tr></table></figure>
+<p>在版本1.3.0你可以从外部文件中读取post和put的内容:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;http url=&quot;mypage&quot; method=&quot;POST&quot; contents_from_file=&quot;/tmp/myfile&quot; /&gt;</span><br></pre></td></tr></table></figure>
+<p>在版本1.3.1之后，你还可以手动的设定一个cookie，由于cookie不是可持久的，所以你要在每个请求中&lt;request&gt;增加它的代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;http url=&quot;/&quot;&gt;</span><br><span class="line">  &lt;add_cookie key=&quot;foo&quot; value=&quot;bar&quot;/&gt;</span><br><span class="line">  &lt;add_cookie key=&quot;id&quot;  value=&quot;123&quot;/&gt;</span><br><span class="line">&lt;/http&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="2-1、Authentication"><a href="#2-1、Authentication" class="headerlink" title="2.1、Authentication"></a>2.1、Authentication</h3><p>1.5.0版本之前只支持基本认证，现在可以使用Digest认证和OAuth 1.0认证。<br>使用Digest认证:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- 1. First request return 401. We use dynvars to fetch nonce and realm --&gt;</span><br><span class="line">&lt;request&gt;</span><br><span class="line">  &lt;dyn_variable name=&quot;nonce&quot; header=&quot;www-authenticate/nonce&quot;/&gt;</span><br><span class="line">  &lt;dyn_variable name=&quot;realm&quot; header=&quot;www-authenticate/realm&quot;/&gt;</span><br><span class="line">  &lt;http url=&quot;/digest&quot; method=&quot;GET&quot; version=&quot;1.1&quot;/&gt;</span><br><span class="line">&lt;/request&gt;</span><br><span class="line"></span><br><span class="line"> &lt;!--</span><br><span class="line"> 2. This request will be authenticated. Type=&quot;digest&quot; is important.</span><br><span class="line"> We use the nonce and realm values returned from the previous</span><br><span class="line"> If the webserver returns the nextnonce we set it to the nonce dynvar</span><br><span class="line"> for use with the next request.</span><br><span class="line"> Else it stays set to the old value</span><br><span class="line"> --&gt;</span><br><span class="line"> &lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">   &lt;dyn_variable name=&quot;nonce&quot; header=&quot;authentication-info/nextnonce&quot;/&gt;</span><br><span class="line">   &lt;http url=&quot;/digest&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;</span><br><span class="line">     &lt;www_authenticate userid=&quot;user&quot; passwd=&quot;passwd&quot; type=&quot;digest&quot; realm=&quot;%%_realm%%&quot; nonce=&quot;%%_nonce%%&quot;/&gt;</span><br><span class="line">   &lt;/http&gt;</span><br><span class="line"> &lt;/request&gt;</span><br></pre></td></tr></table></figure>
+<p>使用OAuth认证:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- Getting a Request Token --&gt;</span><br><span class="line"></span><br><span class="line">  &lt;request&gt;</span><br><span class="line">    &lt;dyn_variable name=&quot;access_token&quot; re=&quot;oauth_token=([^&amp;amp;]*)&quot;/&gt;</span><br><span class="line">      &lt;dyn_variable name=&quot;access_token_secret&quot; re=&quot;oauth_token_secret=([^&amp;amp;]*)&quot; /&gt;</span><br><span class="line">      &lt;http url=&quot;/oauth/example/request_token.php&quot; method=&quot;POST&quot; version=&quot;1.1&quot; contents=&quot;empty&quot;&gt;</span><br><span class="line">        &lt;oauth consumer_key=&quot;key&quot; consumer_secret=&quot;secret&quot;  method=&quot;HMAC-SHA1&quot;/&gt;</span><br><span class="line">      &lt;/http&gt;</span><br><span class="line">  &lt;/request&gt;</span><br><span class="line"></span><br><span class="line">  &lt;!-- Getting an Access Token --&gt;</span><br><span class="line"></span><br><span class="line">  &lt;request subst=&#x27;true&#x27;&gt;</span><br><span class="line">       &lt;dyn_variable name=&quot;access_token&quot; re=&quot;oauth_token=([^&amp;amp;]*)&quot;/&gt;</span><br><span class="line">       &lt;dyn_variable name=&quot;access_token_secret&quot; re=&quot;oauth_token_secret=([^&amp;amp;]*)&quot;/&gt;</span><br><span class="line">         &lt;http url=&quot;/oauth/example/access_token.php&quot; method=&quot;POST&quot; version=&quot;1.1&quot; contents=&quot;empty&quot;&gt;</span><br><span class="line">         &lt;oauth consumer_key=&quot;key&quot; consumer_secret=&quot;secret&quot;  method=&quot;HMAC-SHA1&quot; access_token=&quot;%%_access_token%%&quot; access_token_secret=&quot;%%_access_token_secret%%&quot;/&gt;</span><br><span class="line">       &lt;/http&gt;</span><br><span class="line">     &lt;/request&gt;</span><br><span class="line"></span><br><span class="line">     &lt;!-- Making Authenticated Calls --&gt;</span><br><span class="line"></span><br><span class="line">     &lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">       &lt;http url=&quot;/oauth/example/echo_api.php&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;</span><br><span class="line">        &lt;oauth consumer_key=&quot;key&quot; consumer_secret=&quot;secret&quot; access_token=&quot;%%_access_token%%&quot; access_token_secret=&quot;%%_access_token_secret%%&quot;/&gt;</span><br><span class="line">       &lt;/http&gt;</span><br><span class="line">     &lt;/request&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="三、Jabber-x2F-XMPP"><a href="#三、Jabber-x2F-XMPP" class="headerlink" title="三、Jabber&#x2F;XMPP"></a>三、Jabber&#x2F;XMPP</h2><p>这里是一个Jabber&#x2F;XMPP协议的session定义实例:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">&lt;sessions&gt;</span><br><span class="line">  &lt;session probability=&quot;70&quot; name=&quot;jabber-example&quot; type=&quot;ts_jabber&quot;&gt;</span><br><span class="line"></span><br><span class="line">    &lt;request&gt; &lt;jabber type=&quot;connect&quot; ack=&quot;local&quot; /&gt; &lt;/request&gt;</span><br><span class="line"></span><br><span class="line">    &lt;thinktime value=&quot;2&quot;&gt;&lt;/thinktime&gt;</span><br><span class="line"></span><br><span class="line">    &lt;transaction name=&quot;authenticate&quot;&gt;</span><br><span class="line">      &lt;request&gt; &lt;jabber type=&quot;auth_get&quot; ack=&quot;local&quot;&gt;&lt;/jabber&gt; &lt;/request&gt;</span><br><span class="line">      &lt;request&gt; &lt;jabber type=&quot;auth_set_plain&quot; ack=&quot;local&quot;&gt;&lt;/jabber&gt; &lt;/request&gt;</span><br><span class="line">    &lt;/transaction&gt;</span><br><span class="line"></span><br><span class="line">    &lt;request&gt; &lt;jabber type=&quot;presence:initial&quot; ack=&quot;no_ack&quot;/&gt; &lt;/request&gt;</span><br><span class="line"></span><br><span class="line">    &lt;thinktime value=&quot;30&quot;&gt;&lt;/thinktime&gt;</span><br><span class="line"></span><br><span class="line">    &lt;transaction name=&quot;online&quot;&gt;</span><br><span class="line">      &lt;request&gt; &lt;jabber type=&quot;chat&quot; ack=&quot;no_ack&quot; size=&quot;16&quot; destination=&quot;online&quot;/&gt;&lt;/request&gt;</span><br><span class="line">    &lt;/transaction&gt;</span><br><span class="line"></span><br><span class="line">    &lt;thinktime value=&quot;30&quot;&gt;&lt;/thinktime&gt;</span><br><span class="line"></span><br><span class="line">    &lt;transaction name=&quot;offline&quot;&gt;</span><br><span class="line">      &lt;request&gt; &lt;jabber type=&quot;chat&quot; ack=&quot;no_ack&quot; size=&quot;56&quot; destination=&quot;offline&quot;/&gt;&lt;request&gt;</span><br><span class="line">    &lt;/transaction&gt;</span><br><span class="line"></span><br><span class="line">    &lt;thinktime value=&quot;30&quot;&gt;&lt;/thinktime&gt;</span><br><span class="line"></span><br><span class="line">    &lt;transaction name=&quot;close&quot;&gt;</span><br><span class="line">      &lt;request&gt; &lt;jabber type=&quot;close&quot; ack=&quot;local&quot;&gt; &lt;/jabber&gt;&lt;/request&gt;</span><br><span class="line">    &lt;/transaction&gt;</span><br><span class="line">  &lt;/session&gt;</span><br><span class="line">&lt;/sessions&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="3-1、消息邮戳"><a href="#3-1、消息邮戳" class="headerlink" title="3.1、消息邮戳"></a>3.1、消息邮戳</h3><p><strong><span style="color: #ff0000;">(不理解未验证)</span></strong><br>通过配置&lt;jabber&gt;标签的<em>stamped</em>属性来设置聊天消息邮戳确保请求是正确的。<br>邮戳将包含发送节点的当前时间戳和ID。如果接受者准备识别节点ID，它将比较现在和消息里的时间戳，差异将以xmpp_msg_latency(毫秒)被报告。节点ID比较的目的是为了避免在不同Tsung节点的时间戳轻微的不一致。<br>只有一小部分的请求将达到相同的节点，但随着请求率足够高，这部分应该是够的。<br>stamped仅允许<em>size</em>属性，data将会导致stamped被忽略。stamp的最小长度大约是30bytes，如果size大于stamp长度，将随机生成一些填满stamp。如果stamp长度大于size，只有将stamp作为消息内容，保证超出的指定长度是有效的。</p>
+<h3 id="3-2、StartTLS"><a href="#3-2、StartTLS" class="headerlink" title="3.2、StartTLS"></a>3.2、StartTLS</h3><p><strong><span style="color: #ff0000;">(不理解未验证)</span></strong><br>使用STARTTLS来保证stream安全，使用：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;jabber type=&quot;starttls&quot; ack=&quot;bidi_ack&quot; /&gt;</span><br></pre></td></tr></table></figure>
+<p>1.5.1版本后可以使用客户端证书，例如，你可以使用动态变量，像这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;jabber type=&quot;starttls&quot; ack=&quot;bidi_ack&quot;</span><br><span class="line">           cacertfile=&quot;%%_cacert%%&quot;</span><br><span class="line">           certfile=&quot;%%_certfile%%&quot;</span><br><span class="line">           keyfile=&quot;%%_keyfile%%&quot; /&gt;</span><br></pre></td></tr></table></figure>
+<p>注：STARTTLS 是对纯文本通信协议的扩展。它提供一种方式将纯文本连接升级为加密连接（TLS或SSL），而不是另外使用一个端口作加密通信。</p>
+<h3 id="3-3、Roster"><a href="#3-3、Roster" class="headerlink" title="3.3、Roster"></a>3.3、Roster</h3><p><strong><span style="color: #ff0000;">(不理解未验证)</span></strong><br>Tsung对Roster的支持：</p>
+<ul>
+<li>添加新的联系人的到名单-新联系人添加到Tsung Group组，名字对应他们的JID。</li>
+<li>发送订阅消息到新建联系人的JID。</li>
+<li>重命名联系人。</li>
+<li>删除以前的联系人。</li>
+</ul>
+<p>新建一个联系人时，JID将被存储和用于后续操作。建议配置执行这些操作的每个session只做一次。换句话说，你不想为每个session添加多于一个联系人。在测试用如果你想改变rose函数的使用频率，最好使用session的<em>probability</em>来实现。<br>很棒的一点是当测试跑完时，名单表看起来应该和测试前是相同的。因此，如果您正确设置了它，您可以在测试之前加载需要的名单条目，然后使用这些方法来动态添加、修改和删除在测试过程中的名单条目。<br>示例，名单变更步骤：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">&lt;session probability=&quot;100&quot; name=&quot;jabber-rostermod&quot; type=&quot;ts_jabber&quot;&gt;</span><br><span class="line"></span><br><span class="line">   &lt;!-- connect, authenticate, roster &#x27;get&#x27;, etc... --&gt;</span><br><span class="line"></span><br><span class="line">   &lt;transaction name=&quot;rosteradd&quot;&gt;</span><br><span class="line">     &lt;request&gt;</span><br><span class="line">       &lt;jabber type=&quot;iq:roster:add&quot; ack=&quot;no_ack&quot; destination=&quot;online&quot;&gt;&lt;/jabber&gt;</span><br><span class="line">     &lt;/request&gt;</span><br><span class="line">     &lt;request&gt;</span><br><span class="line">       &lt;jabber type=&quot;presence:subscribe&quot; ack=&quot;no_ack&quot;/&gt;</span><br><span class="line">     &lt;/request&gt;</span><br><span class="line">   &lt;/transaction&gt;</span><br><span class="line"></span><br><span class="line">   &lt;!-- ... --&gt;</span><br><span class="line"></span><br><span class="line">   &lt;transaction name=&quot;rosterrename&quot;&gt;</span><br><span class="line">     &lt;request&gt; &lt;jabber type=&quot;iq:roster:rename&quot; ack=&quot;no_ack&quot;&gt;&lt;/jabber&gt; &lt;/request&gt;</span><br><span class="line">   &lt;/transaction&gt;</span><br><span class="line"></span><br><span class="line">   &lt;!-- ... --&gt;</span><br><span class="line"></span><br><span class="line">   &lt;transaction name=&quot;rosterdelete&quot;&gt;</span><br><span class="line">     &lt;request&gt; &lt;jabber type=&quot;iq:roster:remove&quot; ack=&quot;no_ack&quot;&gt;&lt;/jabber&gt; &lt;/request&gt;</span><br><span class="line">   &lt;/transaction&gt;</span><br><span class="line"></span><br><span class="line">   &lt;!-- remainder of session... --&gt;</span><br><span class="line"></span><br><span class="line"> &lt;/session&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="3-4、SASL-Plain"><a href="#3-4、SASL-Plain" class="headerlink" title="3.4、SASL Plain"></a>3.4、SASL Plain</h3><p><strong><span style="color: #ff0000;">(不理解未验证)</span></strong><br>SASL Plain认证例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;session probability=&quot;100&quot; name=&quot;sasl&quot; type=&quot;ts_jabber&quot;&gt;</span><br><span class="line"></span><br><span class="line">  &lt;request&gt; &lt;jabber type=&quot;connect&quot; ack=&quot;local&quot;&gt;&lt;/jabber&gt; &lt;/request&gt;</span><br><span class="line"></span><br><span class="line">  &lt;thinktime value=&quot;10&quot;&gt;&lt;/thinktime&gt;</span><br><span class="line"></span><br><span class="line">  &lt;transaction name=&quot;authenticate&quot;&gt;</span><br><span class="line">   &lt;request&gt;</span><br><span class="line">     &lt;jabber type=&quot;auth_sasl&quot; ack=&quot;local&quot;&gt;&lt;/jabber&gt;&lt;/request&gt;</span><br><span class="line"></span><br><span class="line">   &lt;request&gt;</span><br><span class="line">     &lt;jabber type=&quot;connect&quot; ack=&quot;local&quot;&gt;&lt;/jabber&gt; &lt;/request&gt;</span><br><span class="line"></span><br><span class="line">  &lt;request&gt;</span><br><span class="line">     &lt;jabber type=&quot;auth_sasl_bind&quot; ack=&quot;local&quot; &gt;&lt;/jabber&gt;&lt;/request&gt;</span><br><span class="line">  &lt;request&gt;</span><br><span class="line">     &lt;jabber type=&quot;auth_sasl_session&quot; ack=&quot;local&quot; &gt;&lt;/jabber&gt;&lt;/request&gt;</span><br><span class="line"></span><br><span class="line">  &lt;/transaction&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="3-5、anonymous-SASL"><a href="#3-5、anonymous-SASL" class="headerlink" title="3.5、anonymous SASL"></a>3.5、anonymous SASL</h3><p><strong><span style="color: #ff0000;">(不理解未验证)</span></strong><br>anonymous SASL认证例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;session probability=&quot;100&quot; name=&quot;sasl&quot; type=&quot;ts_jabber&quot;&gt;</span><br><span class="line"></span><br><span class="line">  &lt;request&gt; &lt;jabber type=&quot;connect&quot; ack=&quot;local&quot;&gt;&lt;/jabber&gt; &lt;/request&gt;</span><br><span class="line"></span><br><span class="line">  &lt;thinktime value=&quot;10&quot;&gt;&lt;/thinktime&gt;</span><br><span class="line"></span><br><span class="line">  &lt;transaction name=&quot;authenticate&quot;&gt;</span><br><span class="line">   &lt;request&gt;</span><br><span class="line">     &lt;jabber type=&quot;auth_sasl_anonymous&quot; ack=&quot;local&quot;&gt;&lt;/jabber&gt;&lt;/request&gt;</span><br><span class="line"></span><br><span class="line">   &lt;request&gt;</span><br><span class="line">     &lt;jabber type=&quot;connect&quot; ack=&quot;local&quot;&gt;&lt;/jabber&gt; &lt;/request&gt;</span><br><span class="line"></span><br><span class="line">  &lt;request&gt;</span><br><span class="line">     &lt;jabber type=&quot;auth_sasl_bind&quot; ack=&quot;local&quot; &gt;&lt;/jabber&gt;&lt;/request&gt;</span><br><span class="line">  &lt;request&gt;</span><br><span class="line">     &lt;jabber type=&quot;auth_sasl_session&quot; ack=&quot;local&quot; &gt;&lt;/jabber&gt;&lt;/request&gt;</span><br><span class="line"></span><br><span class="line">  &lt;/transaction&gt;</span><br></pre></td></tr></table></figure>
+<p>7.3.6、Presence<br>type：可设置为presence:broadcast 或 presence:directed。<br>show：可设置为away, chat, dnd, 或 xa。<br>status：可以是任何文本。<br>如果你省略了show和status属性，则默认为chat和Available。<br>广播发送例子(广播到你的Rose(名单)用户)：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&lt;request&gt;</span><br><span class="line">  &lt;jabber type=&quot;presence:broadcast&quot; show=&quot;away&quot; status=&quot;Be right back...&quot; ack=&quot;no_ack&quot;/&gt;</span><br><span class="line">&lt;/request&gt;</span><br><span class="line"></span><br><span class="line">&lt;thinktime value=&quot;5&quot;&gt;&lt;/thinktime&gt;</span><br><span class="line"></span><br><span class="line">&lt;request&gt;</span><br><span class="line">  &lt;jabber type=&quot;presence:broadcast&quot; show=&quot;chat&quot; status=&quot;Available</span><br><span class="line">  to chat&quot; ack=&quot;no_ack&quot;/&gt;</span><br><span class="line">&lt;/request&gt;</span><br><span class="line"></span><br><span class="line">&lt;thinktime value=&quot;5&quot;&gt;&lt;/thinktime&gt;</span><br><span class="line"></span><br><span class="line">&lt;request&gt;</span><br><span class="line">  &lt;jabber type=&quot;presence:broadcast&quot; show=&quot;dnd&quot; status=&quot;Don&#x27;t bother me!&quot; ack=&quot;no_ack&quot;/&gt;</span><br><span class="line">&lt;/request&gt;</span><br><span class="line">&lt;thinktime value=&quot;5&quot;&gt;&lt;/thinktime&gt;</span><br><span class="line"></span><br><span class="line">&lt;request&gt;</span><br><span class="line"> &lt;jabber type=&quot;presence:broadcast&quot; show=&quot;xa&quot; status=&quot;I may never come back...&quot;</span><br><span class="line">  ack=&quot;no_ack&quot;/&gt;</span><br><span class="line">&lt;/request&gt;</span><br><span class="line">&lt;thinktime value=&quot;5&quot;&gt;&lt;/thinktime&gt;</span><br><span class="line"></span><br><span class="line">&lt;request&gt; &lt;jabber type=&quot;presence:broadcast&quot; ack=&quot;no_ack&quot;/&gt; &lt;/request&gt;</span><br><span class="line">&lt;thinktime value=&quot;5&quot;&gt;&lt;/thinktime&gt;</span><br></pre></td></tr></table></figure>
+<p>单独发送例子(随机发送到在线用户)：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">&lt;request&gt;</span><br><span class="line">  &lt;jabber type=&quot;presence:directed&quot; show=&quot;away&quot; status=&quot;Be right back...&quot; ack=&quot;no_ack&quot;/&gt;</span><br><span class="line">&lt;/request&gt;</span><br><span class="line">&lt;thinktime value=&quot;5&quot;&gt;&lt;/thinktime&gt;</span><br><span class="line"></span><br><span class="line">&lt;request&gt;</span><br><span class="line">  &lt;jabber type=&quot;presence:directed&quot; show=&quot;chat&quot; status=&quot;Available to chat&quot; ack=&quot;no_ack&quot;/&gt;</span><br><span class="line">&lt;/request&gt;</span><br><span class="line">&lt;thinktime value=&quot;5&quot;&gt;&lt;/thinktime&gt;</span><br><span class="line"></span><br><span class="line">&lt;request&gt;</span><br><span class="line">  &lt;jabber type=&quot;presence:directed&quot; show=&quot;dnd&quot; status=&quot;Don&#x27;t bother me!&quot; ack=&quot;no_ack&quot;/&gt;</span><br><span class="line">&lt;/request&gt;</span><br><span class="line">&lt;thinktime value=&quot;5&quot;&gt;&lt;/thinktime&gt;</span><br><span class="line"></span><br><span class="line">&lt;request&gt;</span><br><span class="line">  &lt;jabber type=&quot;presence:directed&quot; show=&quot;xa&quot; status=&quot;I may never come back...&quot;</span><br><span class="line">    ack=&quot;no_ack&quot;/&gt;</span><br><span class="line"> &lt;/request&gt;</span><br><span class="line">&lt;thinktime value=&quot;5&quot;&gt;&lt;/thinktime&gt;</span><br><span class="line"></span><br><span class="line">&lt;request&gt;</span><br><span class="line">  &lt;jabber type=&quot;presence:directed&quot; ack=&quot;no_ack&quot;/&gt;</span><br><span class="line">&lt;/request&gt;</span><br><span class="line">&lt;thinktime value=&quot;5&quot;&gt;&lt;/thinktime&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="3-7、MUC"><a href="#3-7、MUC" class="headerlink" title="3.7、MUC"></a>3.7、MUC</h3><p>Tsung支持4种MUC操作：</p>
+<ul>
+<li>加入房间(属性type&#x3D;’muc:join’)</li>
+<li>发送一个消息到房间(属性type&#x3D;’muc:chat’)</li>
+<li>修改昵称(属性type&#x3D;’muc:nick’)</li>
+<li>退出房间(属性 type&#x3D;’muc:exit’)</li>
+</ul>
+<p>下面是个例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">&lt;-- First, choose an random room and random nickname: --&gt;</span><br><span class="line">&lt;setdynvars sourcetype=&quot;random_number&quot; start=&quot;1&quot; end=&quot;100&quot;&gt;</span><br><span class="line">  &lt;var name=&quot;room&quot;/&gt;</span><br><span class="line">&lt;/setdynvars&gt;</span><br><span class="line">&lt;setdynvars sourcetype=&quot;random_string&quot; length=&quot;10&quot;&gt;</span><br><span class="line">  &lt;var name=&quot;nick1&quot;/&gt;</span><br><span class="line">&lt;/setdynvars&gt;</span><br><span class="line"></span><br><span class="line">&lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">  &lt;jabber type=&#x27;muc:join&#x27; ack=&quot;local&quot; room=&quot;room%%_room%%&quot; nick=&quot;%%_nick1%%&quot;/&gt;</span><br><span class="line">&lt;/request&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- use a for loop to send several messages to the room --&gt;</span><br><span class="line">&lt;for from=&quot;1&quot; to=&quot;6&quot; var=&quot;i&quot;&gt;</span><br><span class="line"> &lt;thinktime value=&quot;30&quot;/&gt;</span><br><span class="line"> &lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">   &lt;jabber type=&quot;muc:chat&quot; ack=&quot;no_ack&quot; size=&quot;16&quot; room=&quot;room%%_room%%&quot;/&gt;</span><br><span class="line"> &lt;/request&gt;</span><br><span class="line">&lt;/for&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- change nickname--&gt;</span><br><span class="line">&lt;thinktime value=&quot;2&quot;/&gt;</span><br><span class="line">&lt;setdynvars sourcetype=&quot;random_string&quot; length=&quot;10&quot;&gt;</span><br><span class="line"> &lt;var name=&quot;nick2&quot;/&gt;</span><br><span class="line">&lt;/setdynvars&gt;</span><br><span class="line"></span><br><span class="line">&lt;request subst=&quot;true&quot;&gt;</span><br><span class="line"> &lt;jabber type=&quot;muc:nick&quot; room=&quot;room%%_room%%&quot; nick=&quot;%%_nick2%%&quot;</span><br><span class="line">         ack=&quot;no_ack&quot;/&gt;</span><br><span class="line">&lt;/request&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="3-8、PubSub"><a href="#3-8、PubSub" class="headerlink" title="3.8、PubSub"></a>3.8、PubSub</h3><p><strong><span style="color: #ff0000;">略</span></strong></p>
+<h3 id="3-9、VHost"><a href="#3-9、VHost" class="headerlink" title="3.9、VHost"></a>3.9、VHost</h3><p>1.3.2版本后就开始支持VHost了。<br>Tsung可以在连接的时候从列表中选择一个vhost XMPP名称从而设置多个vhost实例。<br>vhost列表是从外部文件读取的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;options&gt;</span><br><span class="line">...</span><br><span class="line">&lt;option name=&quot;file_server&quot; value=&quot;domains.csv&quot; id=&quot;vhostfileId&quot;&gt;&lt;/option&gt;</span><br><span class="line">...</span><br><span class="line">&lt;option type=&quot;ts_jabber&quot; name=&quot;vhost_file&quot; value=&quot;vhostfileId&quot;&gt;&lt;/option&gt;</span><br><span class="line">...</span><br><span class="line">&lt;/options&gt;</span><br></pre></td></tr></table></figure>
+<p>当每个client启动session时，它们随机选择一个domain(每个domain都有相同的probability)。</p>
+<h3 id="3-10、从CSV文件读取用户名和密码"><a href="#3-10、从CSV文件读取用户名和密码" class="headerlink" title="3.10、从CSV文件读取用户名和密码"></a>3.10、从CSV文件读取用户名和密码</h3><p>1.4.0版本后就可以从csv文件读取用户名和密码了。<br>配置CSV文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;options&gt;</span><br><span class="line"> &lt;option name=&quot;file_server&quot; id=&#x27;userdb&#x27; value=&quot;/home/foo/.tsung/users.csv&quot;/&gt;</span><br><span class="line">&lt;/options&gt;</span><br></pre></td></tr></table></figure>
+<p>接下来你需要定义两个类型为file的变量，第一个jabber 请求(connect)必须包含该一个xmpp_authenticate标签：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">&lt;session probability=&quot;100&quot; name=&quot;jabber-example&quot; type=&quot;ts_jabber&quot;&gt;</span><br><span class="line"></span><br><span class="line"> &lt;setdynvars sourcetype=&quot;file&quot; fileid=&quot;userdb&quot; delimiter=&quot;;&quot; order=&quot;iter&quot;&gt;</span><br><span class="line">   &lt;var name=&quot;username&quot; /&gt;</span><br><span class="line">   &lt;var name=&quot;password&quot; /&gt;</span><br><span class="line"> &lt;/setdynvars&gt;</span><br><span class="line"></span><br><span class="line">   &lt;request subst=&#x27;true&#x27;&gt;</span><br><span class="line">     &lt;jabber type=&quot;connect&quot; ack=&quot;no_ack&quot;&gt;</span><br><span class="line">        &lt;xmpp_authenticate username=&quot;%%_username%%&quot; passwd=&quot;%%_password%%&quot;/&gt;</span><br><span class="line">     &lt;/jabber&gt;</span><br><span class="line">   &lt;/request&gt;</span><br><span class="line"></span><br><span class="line">  &lt;thinktime value=&quot;2&quot;&gt;&lt;/thinktime&gt;</span><br><span class="line"></span><br><span class="line">  &lt;transaction name=&quot;authenticate&quot;&gt;</span><br><span class="line"></span><br><span class="line">  &lt;request&gt;</span><br><span class="line">    &lt;jabber type=&quot;auth_get&quot; ack=&quot;local&quot;&gt; &lt;/jabber&gt;</span><br><span class="line">  &lt;/request&gt;</span><br><span class="line">  &lt;request&gt;</span><br><span class="line">    &lt;jabber type=&quot;auth_set_plain&quot; ack=&quot;local&quot;&gt;&lt;/jabber&gt;</span><br><span class="line">  &lt;/request&gt;</span><br><span class="line"></span><br><span class="line"> &lt;/transaction&gt;</span><br><span class="line"> ...</span><br><span class="line">&lt;/session&gt;</span><br></pre></td></tr></table></figure>
+<p>此外，当发送聊天信息到随机或离线用户时，你需要通过配置userid_max为0和设置fileid为离线或随机用户(也用户Pubsub)来禁用默认用户(不是CSV的):</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;options&gt;</span><br><span class="line"> &lt;option type=&quot;ts_jabber&quot; name=&quot;userid_max&quot; value=&quot;0&quot; /&gt;</span><br><span class="line"> &lt;option type=&quot;ts_jabber&quot; name=&quot;random_from_fileid&quot; value=&#x27;userdb&#x27;/&gt;</span><br><span class="line"> &lt;option type=&quot;ts_jabber&quot; name=&quot;offline_from_fileid&quot; value=&#x27;userdb&#x27;/&gt;</span><br><span class="line"> &lt;option type=&quot;ts_jabber&quot; name=&quot;fileid_delimiter&quot; value=&quot;;&quot;/&gt;</span><br><span class="line">&lt;/options&gt;</span><br></pre></td></tr></table></figure>
+<p>用户名(密码)应该在每行CSV的第一格(第二格)分隔符是”;”，可以修改。</p>
+<h3 id="3-11、raw-XML"><a href="#3-11、raw-XML" class="headerlink" title="3.11、raw XML"></a>3.11、raw XML</h3><p>可以使用类型为<em>raw</em>来发送raw XML数据到服务器。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;jabber type=&quot;raw&quot; ack=&quot;no_ack&quot; data=&quot;&amp;lt;stream&amp;gt;foo&amp;lt;/stream&amp;gt;&quot;&gt;&lt;/jabber&gt;</span><br></pre></td></tr></table></figure>
+<p>当心：你必须对XML字符进行编码，如&lt;,&gt;,等待。</p>
+<h3 id="3-12、resource"><a href="#3-12、resource" class="headerlink" title="3.12、resource"></a>3.12、resource</h3><p>默认情况下，XMPP资源设置为tsung。自从版本1.5.0，可以重写这个(在所有auth_ *和注册请求)使用的资源属性。</p>
+<h2 id="四、PostgreSQL"><a href="#四、PostgreSQL" class="headerlink" title="四、PostgreSQL"></a>四、PostgreSQL</h2><p>对于PostgreSQL，4种请求类型是可用的：</p>
+<ul>
+<li>connect(提供用户名)</li>
+<li>authenticate (提供密码或不提供)</li>
+<li>sql(基本协议)</li>
+<li>close</li>
+</ul>
+<p>此外，下列额外部分协议也是支持的：</p>
+<ul>
+<li>copy</li>
+<li>parse, bind, execute, describe</li>
+<li>sync, flush</li>
+</ul>
+<p>下面例子展示了postgresql session的多个特征：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"> &lt;session probability=&quot;100&quot; name=&quot;pgsql-example&quot; type=&quot;ts_pgsql&quot;&gt;</span><br><span class="line">   &lt;transaction name=&quot;connection&quot;&gt;</span><br><span class="line">     &lt;request&gt;</span><br><span class="line">       &lt;pgsql type=&quot;connect&quot; database=&quot;bench&quot; username=&quot;bench&quot; /&gt;</span><br><span class="line">     &lt;/request&gt;</span><br><span class="line">   &lt;/transaction&gt;</span><br><span class="line"></span><br><span class="line">   &lt;request&gt;&lt;pgsql type=&quot;authenticate&quot; password=&quot;sesame&quot;/&gt;&lt;/request&gt;</span><br><span class="line"></span><br><span class="line">   &lt;thinktime value=&quot;12&quot;/&gt;</span><br><span class="line"></span><br><span class="line">   &lt;request&gt;&lt;pgsql type=&quot;sql&quot;&gt;SELECT * from accounts;&lt;/pgsql&gt;&lt;/request&gt;</span><br><span class="line"></span><br><span class="line">   &lt;thinktime value=&quot;20&quot;/&gt;</span><br><span class="line"></span><br><span class="line">   &lt;request&gt;&lt;pgsql type=&quot;sql&quot;&gt;SELECT * from users;&lt;/pgsql&gt;&lt;/request&gt;</span><br><span class="line"></span><br><span class="line">   &lt;request&gt;&lt;pgsql type=&#x27;sql&#x27;&gt;&lt;![CDATA[SELECT n.nspname as &quot;Schema&quot;,</span><br><span class="line"> c.relname as &quot;Name&quot;,</span><br><span class="line"> CASE c.relkind WHEN &#x27;r&#x27; THEN &#x27;table&#x27; WHEN &#x27;v&#x27; THEN &#x27;view&#x27; WHEN &#x27;i&#x27;</span><br><span class="line"> THEN &#x27;index&#x27; WHEN &#x27;S&#x27; THEN &#x27;sequence&#x27; WHEN &#x27;s&#x27; THEN &#x27;%_toto_% END as &quot;Type&quot;,</span><br><span class="line"> u.usename as &quot;Owner&quot;</span><br><span class="line">FROM pg_catalog.pg_class c</span><br><span class="line">    LEFT JOIN pg_catalog.pg_user u ON u.usesysid = c.relowner</span><br><span class="line">    LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace</span><br><span class="line">WHERE c.relkind IN (&#x27;r&#x27;,&#x27;v&#x27;,&#x27;S&#x27;,&#x27;&#x27;)</span><br><span class="line">     AND n.nspname NOT IN (&#x27;pg_catalog&#x27;, &#x27;pg_toast&#x27;)</span><br><span class="line">     AND pg_catalog.pg_table_is_visible(c.oid)</span><br><span class="line">ORDER BY 1,2;]]&gt;&lt;/pgsql&gt;&lt;/request&gt;</span><br><span class="line"></span><br><span class="line">   &lt;request&gt;&lt;pgsql type=&quot;close&quot;&gt;&lt;/pgsql&gt;&lt;/request&gt;</span><br><span class="line"></span><br><span class="line"> &lt;/session&gt;</span><br></pre></td></tr></table></figure>
+<p>下面是额外协议的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"> &lt;request&gt;&lt;pgsql type=&#x27;parse&#x27; name_prepared=&#x27;P0_7&#x27;&gt;&lt;![CDATA[BEGIN;]]&gt;&lt;/pgsql&gt;&lt;/request&gt;</span><br><span class="line">&lt;request&gt;&lt;pgsql type=&#x27;sync&#x27;/&gt;&lt;/request&gt;</span><br><span class="line">&lt;request&gt;&lt;pgsql type=&#x27;parse&#x27; name_prepared=&#x27;P0_8&#x27;&gt;&lt;![CDATA[UPDATE pgbench_accounts</span><br><span class="line"> SET abalance = abalance + $1 WHERE aid = $2;]]&gt;&lt;/pgsql&gt;&lt;/request&gt;</span><br><span class="line">&lt;request&gt;&lt;pgsql type=&#x27;sync&#x27;/&gt;&lt;/request&gt;</span><br><span class="line">&lt;request&gt;&lt;pgsql type=&#x27;parse&#x27; name_prepared=&#x27;P0_9&#x27;&gt;&lt;![CDATA[SELECT</span><br><span class="line"> abalance FROM pgbench_accounts</span><br><span class="line"> WHERE aid = $1;]]&gt;&lt;/pgsql&gt;&lt;/request&gt;</span><br><span class="line">&lt;request&gt;&lt;pgsql type=&#x27;sync&#x27;/&gt;&lt;/request&gt;</span><br><span class="line">&lt;request&gt;&lt;pgsql type=&#x27;parse&#x27; name_prepared=&#x27;P0_10&#x27;&gt;&lt;![CDATA[UPDATE pgbench_tellers</span><br><span class="line">  SET tbalance = tbalance + $1 WHERE tid = $2;]]&gt;&lt;/pgsql&gt;&lt;/request&gt;</span><br><span class="line">&lt;request&gt;&lt;pgsql type=&#x27;sync&#x27;/&gt;&lt;/request&gt;</span><br><span class="line">&lt;request&gt;&lt;pgsql type=&#x27;parse&#x27; name_prepared=&#x27;P0_11&#x27;&gt;&lt;![CDATA[UPDATE pgbench_branches</span><br><span class="line">  SET bbalance = bbalance + $1 WHERE bid = $2;]]&gt;&lt;/pgsql&gt;&lt;/request&gt;</span><br><span class="line">&lt;request&gt;&lt;pgsql type=&#x27;sync&#x27;/&gt;&lt;/request&gt;</span><br><span class="line">&lt;request&gt;&lt;pgsql type=&#x27;parse&#x27; name_prepared=&#x27;P0_12&#x27;&gt;&lt;![CDATA[INSERT</span><br><span class="line">  INTO pgbench_history (tid, bid, aid, delta, mtime)</span><br><span class="line">  VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP);]]&gt;&lt;/pgsql&gt;&lt;/request&gt;</span><br><span class="line">&lt;request&gt;&lt;pgsql type=&#x27;sync&#x27;/&gt;&lt;/request&gt;</span><br><span class="line">&lt;request&gt;&lt;pgsql type=&#x27;parse&#x27; name_prepared=&#x27;P0_13&#x27;&gt;&lt;![CDATA[END;]]&gt;&lt;/pgsql&gt;&lt;/request&gt;</span><br><span class="line">&lt;request&gt;&lt;pgsql type=&#x27;sync&#x27;/&gt;&lt;/request&gt;</span><br><span class="line">&lt;request&gt;&lt;pgsql type=&#x27;bind&#x27; name_prepared=&#x27;P0_7&#x27; formats=&#x27;none&#x27; formats_results=&#x27;text&#x27; /&gt;&lt;/request&gt;</span><br><span class="line">&lt;request&gt;&lt;pgsql type=&#x27;describe&#x27; name_portal=&#x27;&#x27;/&gt;&lt;/request&gt;</span><br><span class="line">&lt;request&gt;&lt;pgsql type=&#x27;execute&#x27;/&gt;&lt;/request&gt;</span><br><span class="line">&lt;request&gt;&lt;pgsql type=&#x27;sync&#x27;/&gt;&lt;/request&gt;</span><br><span class="line">&lt;request&gt;&lt;pgsql type=&#x27;bind&#x27; name_portal=&#x27;&#x27; name_prepared=&#x27;P0_8&#x27;</span><br><span class="line">  formats=&#x27;none&#x27; formats_results=&#x27;text&#x27;</span><br><span class="line">  parameters=&#x27;2924,37801&#x27;/&gt;&lt;/request&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="五、MysQL"><a href="#五、MysQL" class="headerlink" title="五、MysQL"></a>五、MysQL</h2><p>对于mysql，4种类型的请求是支持的：</p>
+<ul>
+<li>connect(提供用户名)</li>
+<li>authenticate (提供密码或不提供)</li>
+<li>sql</li>
+<li>close</li>
+</ul>
+<p>下面例子展示了mysql相关的sessions：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;session probability=&quot;100&quot; name=&quot;mysql-example&quot; type=&quot;ts_mysql&quot;&gt;</span><br><span class="line">&lt;request&gt;</span><br><span class="line"> &lt;mysql type=&quot;connect&quot; /&gt;</span><br><span class="line">&lt;/request&gt;</span><br><span class="line">&lt;request&gt;</span><br><span class="line"> &lt;mysql type=&quot;authenticate&quot; database=&quot;test&quot; username=&quot;test&quot; password=&quot;test&quot; /&gt;</span><br><span class="line">&lt;/request&gt;</span><br><span class="line">&lt;request&gt;</span><br><span class="line"> &lt;mysql type=&quot;sql&quot;&gt;SHOW TABLES&lt;/mysql&gt;</span><br><span class="line">&lt;/request&gt;</span><br><span class="line">&lt;request&gt;</span><br><span class="line"> &lt;mysql type=&quot;sql&quot;&gt;SELECT * FROM mytable&lt;/mysql&gt;</span><br><span class="line">&lt;/request&gt;</span><br><span class="line">&lt;request&gt;</span><br><span class="line"> &lt;mysql type=&quot;close&quot; /&gt;</span><br><span class="line">&lt;/request&gt;</span><br><span class="line">&lt;/session&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="六、Websocket"><a href="#六、Websocket" class="headerlink" title="六、Websocket"></a>六、Websocket</h2><p>对于Websocket，3种类型的请求是支持的：</p>
+<ul>
+<li>connect (提供path)</li>
+<li>message (发送消息到服务器，添加一个’ack’属性来指定是否Tsung应该等待响应)</li>
+<li>close</li>
+</ul>
+<p>Websocke session类型：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&lt;session probability=&quot;100&quot; name=&quot;websocket-example&quot; type=&quot;ts_websocket&quot;&gt;</span><br><span class="line">  &lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">    &lt;websocket type=&quot;connect&quot; path=&quot;/path/to/ws&quot;&gt;&lt;/websocket&gt;</span><br><span class="line">  &lt;/request&gt;</span><br><span class="line">  &lt;request&gt;</span><br><span class="line">    &lt;dyn_variable name=&quot;uid&quot; jsonpath=&quot;uid&quot;/&gt;</span><br><span class="line">    &lt;!-- send data with text frame, default binary--&gt;</span><br><span class="line">    &lt;websocket type=&quot;message&quot; frame=&quot;text&quot;&gt;&#123;&quot;user&quot;:&quot;user&quot;, &quot;password&quot;:&quot;password&quot;&#125;&lt;/websocket&gt;</span><br><span class="line">  &lt;/request&gt;</span><br><span class="line"></span><br><span class="line">  &lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">    &lt;match do=&quot;log&quot; when=&quot;nomatch&quot;&gt;ok&lt;/match&gt;</span><br><span class="line">    &lt;websocket type=&quot;message&quot;&gt;&#123;&quot;uid&quot;:&quot;%%_uid%%&quot;, &quot;data&quot;:&quot;data&quot;&#125;&lt;/websocket&gt;</span><br><span class="line">  &lt;/request&gt;</span><br><span class="line"></span><br><span class="line">  &lt;request&gt;</span><br><span class="line">    &lt;websocket type=&quot;message&quot; ack=&quot;no_ack&quot;&gt;&#123;&quot;key&quot;:&quot;value&quot;&#125;&lt;/websocket&gt;</span><br><span class="line">  &lt;/request&gt;</span><br><span class="line"></span><br><span class="line">  &lt;request&gt;</span><br><span class="line">    &lt;websocket type=&quot;close&quot;&gt;&lt;/websocket&gt;</span><br><span class="line">  &lt;/request&gt;</span><br><span class="line">&lt;/session&gt;</span><br></pre></td></tr></table></figure>
+<p>你可以替换<em>path</em>属性和消息内容，使匹配响应或基于消息响应定义动态变量。<br>如果你使用change_type来启动一个websocket，不要忘了设置*bidi&#x3D;”true”*，例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;change_type new_type=&quot;ts_websocket&quot; host=&quot;127.0.0.1&quot; port=&quot;8080&quot; server_type=&quot;tcp&quot; restore=&quot;true&quot; store=&quot;true&quot; bidi=&quot;true&quot;/&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="七、AMQP"><a href="#七、AMQP" class="headerlink" title="七、AMQP"></a>七、AMQP</h2><p>对于AMQP，支持在多个信道上发送和消耗消息，可用请求类型：</p>
+<ul>
+<li>connection.open (given vhost)</li>
+<li>connection.close</li>
+<li>channel.open (一个指定和有效的channel id)</li>
+<li>channel.close (一个指定和有效的channel id)</li>
+<li>confirm.select (一个指定和已经打开的channel)</li>
+<li>basic.qos (在一个指定和已经打开的channel, 只支持‘prefetch_count’属性)</li>
+<li>basic.publish (with channel id, exchange name, routing_key and the payload)</li>
+<li>basic.consume (with channel id, queue name)</li>
+<li>waitForConfirms (从服务器确认超时)</li>
+<li>waitForMessages (向client确认消息交付超时)</li>
+</ul>
+<p>AMQP session类型的例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">&lt;session probability=&quot;100&quot; name=&quot;amqp-example&quot; type=&quot;ts_amqp&quot; bidi=&quot;true&quot;&gt;</span><br><span class="line">    &lt;request&gt;</span><br><span class="line">        &lt;amqp type=&quot;connection.open&quot; vhost=&quot;/&quot;&gt;&lt;/amqp&gt;</span><br><span class="line">    &lt;/request&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!--  open channel, channel id is from 1 to 10 --&gt;</span><br><span class="line">    &lt;for from=&quot;1&quot; to=&quot;10&quot; incr=&quot;1&quot; var=&quot;loops&quot;&gt;</span><br><span class="line">        &lt;request&gt;</span><br><span class="line">            &lt;amqp type=&quot;channel.open&quot;&gt;&lt;/amqp&gt;</span><br><span class="line">        &lt;/request&gt;</span><br><span class="line">    &lt;/for&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!-- ignore this request if you don&#x27;t need publisher confirm --&gt;</span><br><span class="line">    &lt;for from=&quot;1&quot; to=&quot;10&quot; incr=&quot;1&quot; var=&quot;loops&quot;&gt;</span><br><span class="line">        &lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">            &lt;amqp type=&quot;confirm.select&quot; channel=&quot;%%_loops%%&quot;&gt;&lt;/amqp&gt;</span><br><span class="line">        &lt;/request&gt;</span><br><span class="line">    &lt;/for&gt;</span><br><span class="line"></span><br><span class="line">    &lt;for from=&quot;1&quot; to=&quot;10&quot; incr=&quot;1&quot; var=&quot;loops&quot;&gt;</span><br><span class="line">        &lt;for from=&quot;1&quot; to=&quot;100&quot; incr=&quot;1&quot; var=&quot;counter&quot;&gt;</span><br><span class="line">            &lt;transaction name=&quot;publish&quot;&gt;</span><br><span class="line">                &lt;!-- specify payload_size to have tsung generate a payload for you --&gt;</span><br><span class="line">                &lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">                    &lt;amqp type=&quot;basic.publish&quot; channel=&quot;%%_loops%%&quot; exchange=&quot;test_exchange&quot;</span><br><span class="line">                    routing_key=&quot;test_queue&quot; persistent=&quot;true&quot; payload_size=&quot;100&quot;&gt;&lt;/amqp&gt;</span><br><span class="line">                &lt;/request&gt;</span><br><span class="line">        &lt;!-- substitutions are supported on the payload. Payload will override payload_size. --&gt;</span><br><span class="line">                &lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">                    &lt;amqp type=&quot;basic.publish&quot; channel=&quot;%%_loops%%&quot; exchange=&quot;test_exchange&quot;</span><br><span class="line">                    routing_key=&quot;test_queue&quot; persistent=&quot;true&quot; payload=&quot;Test Payload&quot;&gt;&lt;/amqp&gt;</span><br><span class="line">                &lt;/request&gt;</span><br><span class="line">            &lt;/transaction&gt;</span><br><span class="line">        &lt;/for&gt;</span><br><span class="line"></span><br><span class="line">        &lt;!-- if publish with confirm, add a waitForConfirms request as you need: timeout=1s --&gt;</span><br><span class="line">        &lt;request&gt;</span><br><span class="line">            &lt;amqp type=&quot;waitForConfirms&quot; timeout=&quot;1&quot;&gt;&lt;/amqp&gt;</span><br><span class="line">        &lt;/request&gt;</span><br><span class="line">    &lt;/for&gt;</span><br><span class="line"></span><br><span class="line">    &lt;for from=&quot;1&quot; to=&quot;10&quot; incr=&quot;1&quot; var=&quot;loops&quot;&gt;</span><br><span class="line">        &lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">            &lt;amqp type=&quot;basic.consume&quot; channel=&quot;%%_loops%%&quot; queue=&quot;test_queue&quot; ack=&quot;true&quot;&gt;&lt;/amqp&gt;</span><br><span class="line">        &lt;/request&gt;</span><br><span class="line">    &lt;/for&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!-- wait to receive messages from the server: timeout=180s --&gt;</span><br><span class="line">    &lt;request&gt;</span><br><span class="line">        &lt;amqp type=&quot;waitForMessages&quot; timeout=&quot;180&quot;&gt;&lt;/amqp&gt;</span><br><span class="line">    &lt;/request&gt;</span><br><span class="line"></span><br><span class="line">    &lt;for from=&quot;1&quot; to=&quot;10&quot; incr=&quot;1&quot; var=&quot;loops&quot;&gt;</span><br><span class="line">        &lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">            &lt;amqp type=&quot;channel.close&quot; channel=&quot;%%_loops%%&quot;&gt;&lt;/amqp&gt;</span><br><span class="line">        &lt;/request&gt;</span><br><span class="line">    &lt;/for&gt;</span><br><span class="line"></span><br><span class="line">    &lt;request&gt;</span><br><span class="line">        &lt;amqp type=&quot;connection.close&quot;&gt;&lt;/amqp&gt;</span><br><span class="line">    &lt;/request&gt;</span><br><span class="line">&lt;/session&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="八、MQTT"><a href="#八、MQTT" class="headerlink" title="八、MQTT"></a>八、MQTT</h2><p>支持发布消息，订阅和取消订阅话题，可用请求类型：</p>
+<ul>
+<li>connect (with options like clean_start, will_topic etc)</li>
+<li>disconnect</li>
+<li>publish (with topic name, qos level and retain flag)</li>
+<li>subscribe (with topic name and qos level)</li>
+<li>unsubscribe (with topic name)</li>
+<li>waitForMessages (with timeout for messages published from server to the client)</li>
+</ul>
+<p>MQTT session类型的例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">&lt;session name=&quot;mqtt-example&quot; probability=&quot;100&quot; type=&quot;ts_mqtt&quot;&gt;</span><br><span class="line">    &lt;request&gt;</span><br><span class="line">        &lt;mqtt type=&quot;connect&quot; clean_start=&quot;true&quot; keepalive=&quot;10&quot; will_topic=&quot;will_topic&quot; will_qos=&quot;0&quot; will_msg=&quot;will_msg&quot; will_retain=&quot;false&quot;&gt;&lt;/mqtt&gt;</span><br><span class="line">    &lt;/request&gt;</span><br><span class="line"></span><br><span class="line">    &lt;for from=&quot;1&quot; to=&quot;10&quot; incr=&quot;1&quot; var=&quot;loops&quot;&gt;</span><br><span class="line">        &lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">            &lt;mqtt type=&quot;publish&quot; topic=&quot;test_topic&quot; qos=&quot;1&quot; retained=&quot;true&quot;&gt;test_message&lt;/mqtt&gt;</span><br><span class="line">        &lt;/request&gt;</span><br><span class="line">    &lt;/for&gt;</span><br><span class="line"></span><br><span class="line">    &lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">        &lt;mqtt type=&quot;subscribe&quot; topic=&quot;test_topic&quot; qos=&quot;1&quot;&gt;&lt;/mqtt&gt;</span><br><span class="line">    &lt;/request&gt;</span><br><span class="line"></span><br><span class="line">    &lt;request&gt;</span><br><span class="line">        &lt;!-- wait for 60s --&gt;</span><br><span class="line">        &lt;mqtt type=&quot;waitForMessages&quot; timeout=&quot;60&quot;&gt;&lt;/mqtt&gt;</span><br><span class="line">    &lt;/request&gt;</span><br><span class="line"></span><br><span class="line">    &lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">        &lt;mqtt type=&quot;unsubscribe&quot; topic=&quot;test_topic&quot;&gt;&lt;/mqtt&gt;</span><br><span class="line">    &lt;/request&gt;</span><br><span class="line"></span><br><span class="line">    &lt;request&gt;</span><br><span class="line">        &lt;mqtt type=&quot;disconnect&quot;&gt;&lt;/mqtt&gt;</span><br><span class="line">    &lt;/request&gt;</span><br><span class="line">&lt;/session&gt;</span><br></pre></td></tr></table></figure>
+<p>注：MQTT（Message Queuing Telemetry Transport，消息队列遥测传输）是IBM开发的一个即时通讯协议，有可能成为物联网的重要组成部分。</p>
+<h2 id="九、LDAP"><a href="#九、LDAP" class="headerlink" title="九、LDAP"></a>九、LDAP</h2><h3 id="9-1、Authentication"><a href="#9-1、Authentication" class="headerlink" title="9.1、Authentication"></a>9.1、Authentication</h3><p>推荐机制用于LDAP库对用户进行身份验证，需要下面两个步骤。给定一个用户名和密码，然后：</p>
+<ul>
+<li>在库的树结构对用户搜索，使用用户名（用户可以驻留在不同组织的子树）</li>
+<li>尝试绑定为用户，使用在第一步中发现的名称和用户的密码</li>
+</ul>
+<p>如果绑定成功，此用户就验证通过(这是使用的方案，其中，LDAP认证模块由Apache支持)。</p>
+<h3 id="9-2、LDAP-Setup"><a href="#9-2、LDAP-Setup" class="headerlink" title="9.2、LDAP Setup"></a>9.2、LDAP Setup</h3><p>对于这个例子，我们将使用下面的层次结构来使用一个简单的存储库。<br><img src="/uploads/ldap-hierarchy.png" alt="hierarch"><br>LDAP层次结构：<br>库中有两个组织单位的用户</p>
+<ul>
+<li>users(4个成员)</li>
+<li>users2(3个成员)</li>
+</ul>
+<p>简单起见，我们为每个用户设置和名称一样的密码，在测试中Tsung setup我们将使用CSV文件作为输入，包含user:password对。因此我们从编写这个开始，在这种情况下我们对文件命名users.csv：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">user1;user1</span><br><span class="line">user2;user2</span><br><span class="line">user3;user3</span><br><span class="line">user4;user4</span><br><span class="line">jane;jane</span><br><span class="line">mary;mary</span><br><span class="line">paul;pablo</span><br><span class="line">paul;paul</span><br></pre></td></tr></table></figure>
+<p>这对用户名密码对paul:pablo应该验证失败，我们将在Tsung报告中看到。现在在Tsung配置单元，我们先引人这个文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;options&gt;</span><br><span class="line">  &lt;option name=&quot;file_server&quot; id=&quot;users&quot; value=&quot;users.csv&quot;/&gt;</span><br><span class="line">&lt;/options&gt;</span><br><span class="line">&lt;!-- We use two dynamic variables to hold the username and password --&gt;</span><br><span class="line">&lt;setdynvars sourcetype=&quot;file&quot; fileid=&quot;users&quot; delimiter=&quot;;&quot; order=&quot;iter&quot;&gt;</span><br><span class="line">             &lt;var name=&quot;username&quot; /&gt;</span><br><span class="line">             &lt;var name=&quot;password&quot; /&gt;</span><br><span class="line">&lt;/setdynvars&gt;</span><br></pre></td></tr></table></figure>
+<p>启动认证过程，我们通知Tsung执行搜索，找到我们试图验证的用户的可分辨名称:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;ldap type=&quot;search&quot; base=&quot;dc=pablo-desktop&quot; filter=&quot;(cn=%%_username%%)&quot;</span><br><span class="line">      result_var=&quot;search_result&quot; scope=&quot;wholeSubtree&quot;&gt;&lt;/ldap&gt;</span><br></pre></td></tr></table></figure>
+<p>当需要访问搜索结果的时候，我们定义它使用<em>result_var</em>属性，这个属性告诉Tsung哪些变量我们想要存储(如果<em>result_var</em>属性没有被设置，Tsung不能再任何地方存储搜索结果)。最后我们试图绑定这个用户:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">  &lt;ldap type=&quot;bind&quot; user=&quot;%%ldap_auth:user_dn%%&quot;</span><br><span class="line">        password=&quot;%%_password%%&quot;&gt;&lt;/ldap&gt;</span><br><span class="line">&lt;/request&gt;</span><br></pre></td></tr></table></figure>
+<p>唯一剩下要做的是实现<strong>ldap_auth:user_dn</strong>功能，从搜索结果提取的可分辨名称：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">-module(ldap_auth).</span><br><span class="line">-export([user_dn/1]).</span><br><span class="line">user_dn(&#123;_Pid,DynVars&#125;) -&gt;</span><br><span class="line">     [SearchResultEntry] = proplists:get_value(search_result,DynVars),</span><br><span class="line">     &#123;_,DN,_&#125; = SearchResultEntry,</span><br><span class="line">     DN.</span><br></pre></td></tr></table></figure>
+<p>我们不在这里覆盖错误。假设总有一个（只有一个）用户被发现，这是我们从<em>search_result</em>变量提取的(在前面搜索操作定义的)。在结果集中的每个条目是一个searchresultentry记录。记录定义可以在 <TSUNG_DIR>&#x2F;include&#x2F;ELDAPv3.hrl 中找到。<br>事实上，test运行后我们可以在Tsung报告里确认(见LDAP结果图),绑定操作包含两个计时器：<em>ldap_bind_ok</em>和<em>ldap_bind_error</em>，成功数量和不成功的尝试。<br>LDAP结果：<br><img src="/uploads/ldap-results.png" alt="results"></p>
+<h3 id="9-3、其他示例"><a href="#9-3、其他示例" class="headerlink" title="9.3、其他示例"></a>9.3、其他示例</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">&lt;session probability=&quot;100&quot; name=&quot;ldap-example&quot; type=&quot;ts_ldap&quot;&gt;</span><br><span class="line">  &lt;request&gt;</span><br><span class="line">    &lt;ldap type=&quot;bind&quot; user=&quot;uid=foo&quot; password=&quot;bar&quot;/&gt;</span><br><span class="line">  &lt;/request&gt;</span><br><span class="line"></span><br><span class="line">  &lt;request&gt;</span><br><span class="line">    &lt;ldap type=&quot;search&quot; base=&quot;dc=pablo-desktop&quot; filter=&quot;(cn=user2)&quot;</span><br><span class="line">    scope=&quot;wholeSubtree&quot;&gt;&lt;/ldap&gt;</span><br><span class="line">  &lt;/request&gt;</span><br><span class="line"></span><br><span class="line">  &lt;!-- Add. Adds a new entry to the directory* --&gt;</span><br><span class="line">  &lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">    &lt;ldap type=&quot;add&quot; dn=&quot;%%_new_user_dn%%&quot; &gt;</span><br><span class="line">      &lt;attr type=&quot;objectClass&quot;&gt;</span><br><span class="line">        &lt;value&gt;organizationalPerson&lt;/value&gt;</span><br><span class="line">        &lt;value&gt;inetOrgPerson&lt;/value&gt;</span><br><span class="line">        &lt;value&gt;person&lt;/value&gt;</span><br><span class="line">      &lt;/attr&gt;</span><br><span class="line">      &lt;attr type=&quot;cn&quot;&gt;&lt;value&gt;%%_new_user_cn%%&lt;/value&gt;&lt;/attr&gt;</span><br><span class="line">      &lt;attr type=&quot;sn&quot;&gt;&lt;value&gt;fffs&lt;/value&gt;&lt;/attr&gt;</span><br><span class="line">    &lt;/ldap&gt;</span><br><span class="line">  &lt;/request&gt;</span><br><span class="line"></span><br><span class="line">  &lt;!-- Modify. Modifies an existing entry; type=add|delete|modify--&gt;</span><br><span class="line">  &lt;request subst=&quot;false&quot;&gt;</span><br><span class="line">    &lt;ldap type=&quot;modify&quot; dn=&quot;cn=u119843,dc=pablo-desktop&quot; &gt;</span><br><span class="line">      &lt;modification type=&quot;replace&quot;&gt;</span><br><span class="line">        &lt;attr type=&quot;sn&quot;&gt;&lt;value&gt;SomeSN&lt;/value&gt;&lt;/attr&gt;</span><br><span class="line">        &lt;attr type=&quot;mail&quot;&gt;&lt;value&gt;some@mail.com&lt;/value&gt;&lt;/attr&gt;</span><br><span class="line">      &lt;/modification&gt;</span><br><span class="line">    &lt;/ldap&gt;</span><br><span class="line">  &lt;/request&gt;</span><br><span class="line">&lt;/session&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="十、-混合session-type"><a href="#十、-混合session-type" class="headerlink" title="十、 混合session type"></a>十、 混合session type</h2><p>1.3.2版本后，一个新标记<em>change_type</em>用在session中来改变它的类型：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&lt;request&gt;</span><br><span class="line">  &lt;jabber type=&quot;chat&quot; ack=&quot;no_ack&quot; size=&quot;16&quot;</span><br><span class="line">          destination=&quot;offline&quot;/&gt;</span><br><span class="line">&lt;/request&gt;</span><br><span class="line"></span><br><span class="line">&lt;thinktime value=&quot;3&quot;/&gt;</span><br><span class="line"></span><br><span class="line">&lt;change_type new_type=&quot;ts_http&quot; host=&quot;foo.bar&quot; port=&quot;80&quot;</span><br><span class="line">server_type=&quot;tcp&quot; store=&quot;true&quot;/&gt;</span><br><span class="line"></span><br><span class="line">&lt;request&gt; &lt;http url=&quot;http://foo.bar/&quot;/&gt; &lt;/request&gt;</span><br><span class="line">&lt;request&gt; &lt;http url=&quot;/favicon&quot;/&gt; &lt;/request&gt;</span><br><span class="line"></span><br><span class="line">&lt;change_type new_type=&quot;ts_jabber&quot; host=&quot;localhost&quot; port=&quot;5222&quot;</span><br><span class="line">server_type=&quot;tcp&quot; restore=&quot;true&quot;/&gt;</span><br><span class="line"></span><br><span class="line">&lt;request&gt; &lt;jabber type=&quot;chat&quot; ack=&quot;no_ack&quot; size=&quot;16&quot;</span><br><span class="line">destination=&quot;previous&quot;/&gt; &lt;/request&gt;</span><br></pre></td></tr></table></figure>
+<p>**store&#x3D;”true”<strong>可用来存储session当前的状态(socket, cookies for http等)，而</strong>restore&#x3D;”true”<strong>是切换到旧的协议，重新使用以前的状态。<br>可以使用</strong>bidi&#x3D;”true”<strong>表示新协议是双向的，或者</strong>bidi&#x3D;”false”*<em>表示非双向协议。<br>一个动态变量设置在session的第一部分,可以在</em>&lt;change_type&gt;<em>后仍然可用。这是目前一个警告：在<br>警告：在</em>&lt;change_type&gt;*后你的第一个HTTP请求必须使用一个完整的URL。</p>
+<h2 id="十一、Raw"><a href="#十一、Raw" class="headerlink" title="十一、Raw"></a>十一、Raw</h2><p>ts_raw插件允许在没有任何相关协议标识的情况下，发送数据到任何类型的TCP&#x2F;UDP服务器。你可以通过<em>data</em>属性设置数据，也可以通过<em>data_size</em>属性设置数据大小(这种情况下，发送的数据大小为0)。<em>data</em>和 <em>datasize</em>都可以是动态值。<br>从服务器控制响应的唯一方法是使用<strong>ack</strong>属性（也可用Jabber插件）：</p>
+<ul>
+<li>ack&#x3D;”local” 一旦从服务器接收到一个数据包，该请求被认为是完成的。因此，如果你使用一个local ack的请求，服务器就不需要响应，它将永远等待(或直到到达超时)。</li>
+<li>ack&#x3D;”no_ack” 一旦请求发送，它就被认为是完成（不要等待传入的数据）。</li>
+<li>ack&#x3D;”global” 用户同步。它的主要用途是在发送消息前等待所有用户连接。要做到这一点，建立一个global ack类型的请求(这个值可以使用option设置 <option name="global_number" value ="XXX"/> 并且在&lt;arrivalphase&gt;里设置 maxnumber&#x3D;N)。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;session probability=&quot;100&quot; name=&quot;raw&quot; type=&quot;ts_raw&quot;&gt;</span><br><span class="line">   &lt;transaction name=&quot;open&quot;&gt;</span><br><span class="line">     &lt;request&gt; &lt;raw data=&quot;HELLO&quot; ack=&quot;local&quot;&gt;&lt;/raw&gt; &lt;/request&gt;</span><br><span class="line">   &lt;/transaction&gt;</span><br><span class="line"></span><br><span class="line">   &lt;thinktime value=&quot;4&quot;/&gt;</span><br><span class="line">   &lt;request&gt; &lt;raw datasize=&quot;2048&quot; ack=&quot;local&quot;&gt;&lt;/raw&gt; &lt;/request&gt;</span><br><span class="line"></span><br><span class="line">   &lt;transaction name=&quot;bye&quot;&gt;</span><br><span class="line">     &lt;request&gt; &lt;raw data=&quot;BYEBYE&quot; ack=&quot;local&quot;&gt;&lt;/raw&gt; &lt;/request&gt;</span><br><span class="line">   &lt;/transaction&gt;</span><br><span class="line">&lt;/session&gt;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Tsung/" rel="tag"># Tsung</a>
+              <a href="/tags/%E6%B5%8B%E8%AF%95/" rel="tag"># 测试</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/08/25/Tsung%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90-Options/" rel="prev" title="Tsung配置文件解析-Options">
+                  <i class="fa fa-chevron-left"></i> Tsung配置文件解析-Options
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/08/30/Tsung%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90-%E9%AB%98%E7%BA%A7%E9%85%8D%E7%BD%AE/" rel="next" title="Tsung配置文件解析-高级配置">
+                  Tsung配置文件解析-高级配置 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

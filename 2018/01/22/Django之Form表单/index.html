@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="表单是HTML中重要组成部分，是网页提供的一种交互式操作手段，主要用于采集和提交用户输入的信息。表单是一个包含表单元素的区域，而表单元素是允许用户在表单中(比如:文本域、下拉列表、单选框、复选框等等)输入信息的元素。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Django之Form表单">
+<meta property="og:url" content="http://zhanghonged.github.io/2018/01/22/Django%E4%B9%8BForm%E8%A1%A8%E5%8D%95/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="表单是HTML中重要组成部分，是网页提供的一种交互式操作手段，主要用于采集和提交用户输入的信息。表单是一个包含表单元素的区域，而表单元素是允许用户在表单中(比如:文本域、下拉列表、单选框、复选框等等)输入信息的元素。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-01-22T06:22:17.000Z">
+<meta property="article:modified_time" content="2018-02-01T06:43:32.791Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="Django">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2018/01/22/Django%E4%B9%8BForm%E8%A1%A8%E5%8D%95/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2018/01/22/Django%E4%B9%8BForm%E8%A1%A8%E5%8D%95/","path":"2018/01/22/Django之Form表单/","title":"Django之Form表单"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Django之Form表单 | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Form%E8%A1%A8%E5%8D%95%E7%9A%84%E5%8A%9F%E8%83%BD"><span class="nav-number">1.</span> <span class="nav-text">Form表单的功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Form%E5%AD%97%E6%AE%B5%E5%92%8C%E6%8F%92%E4%BB%B6"><span class="nav-number">2.</span> <span class="nav-text">Form字段和插件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Django%E5%B8%B8%E7%94%A8%E5%86%85%E7%BD%AE%E5%AD%97%E6%AE%B5"><span class="nav-number">2.1.</span> <span class="nav-text">Django常用内置字段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Django%E5%86%85%E7%BD%AE%E6%8F%92%E4%BB%B6"><span class="nav-number">2.2.</span> <span class="nav-text">Django内置插件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E7%9A%84%E9%80%89%E6%8B%A9%E6%8F%92%E4%BB%B6"><span class="nav-number">2.3.</span> <span class="nav-text">常用的选择插件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Django-Form%E7%B1%BB%E5%88%9B%E5%BB%BA%E8%A1%A8%E5%8D%95"><span class="nav-number">3.</span> <span class="nav-text">使用Django Form类创建表单</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%9C%A8app%E4%B8%AD%E5%88%9B%E5%BB%BAform-py%E6%96%87%E4%BB%B6"><span class="nav-number">3.1.</span> <span class="nav-text">一、在app中创建form.py文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%9C%A8%E8%A7%86%E5%9B%BE%E4%B8%AD%E8%B0%83%E7%94%A8Form%E7%B1%BB"><span class="nav-number">3.2.</span> <span class="nav-text">二、在视图中调用Form类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%89%8D%E7%AB%AF%E8%B0%83%E7%94%A8"><span class="nav-number">3.3.</span> <span class="nav-text">三、前端调用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Django-Form%E9%94%99%E8%AF%AF%E4%BF%A1%E6%81%AF%E8%8E%B7%E5%8F%96"><span class="nav-number">4.</span> <span class="nav-text">Django Form错误信息获取</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Django-Form%E8%87%AA%E5%8A%A8%E5%88%9B%E5%BB%BAHtml%E4%BB%A3%E7%A0%81"><span class="nav-number">5.</span> <span class="nav-text">Django Form自动创建Html代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E6%AE%8A%E7%9A%84%E5%8D%95%E9%80%89%E6%88%96%E5%A4%9A%E9%80%89%E6%95%B0%E6%8D%AE%E6%BA%90%E5%AE%9E%E6%97%B6%E6%9B%B4%E6%96%B0%E9%97%AE%E9%A2%98"><span class="nav-number">6.</span> <span class="nav-text">特殊的单选或多选数据源实时更新问题</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2018/01/22/Django%E4%B9%8BForm%E8%A1%A8%E5%8D%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Django之Form表单 | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Django之Form表单
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-01-22 14:22:17" itemprop="dateCreated datePublished" datetime="2018-01-22T14:22:17+08:00">2018-01-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2018-02-01 14:43:32" itemprop="dateModified" datetime="2018-02-01T14:43:32+08:00">2018-02-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Django/" itemprop="url" rel="index"><span itemprop="name">Django</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>表单是HTML中重要组成部分，是网页提供的一种交互式操作手段，主要用于采集和提交用户输入的信息。表单是一个包含表单元素的区域，而表单元素是允许用户在表单中(比如:文本域、下拉列表、单选框、复选框等等)输入信息的元素。</p>
+<span id="more"></span>
+<p>在HTML中，只要在需要使用表单的地方插入成对的表单标记 <strong>&lt;form&gt;&lt;&#x2F;form&gt;<strong>，就可以完成表单的基本定义。<br>Django在内部集成了一个表单功能，以面向对象的方式，直接使用Python代码生成HTML表单代码，专门帮助我们快速处理表单相关的内容。<br>下面开始</strong>Django</strong>中<strong>Form</strong>表单的使用。</p>
+<h2 id="Form表单的功能"><a href="#Form表单的功能" class="headerlink" title="Form表单的功能"></a>Form表单的功能</h2><ul>
+<li>自动生成HTML表单元素</li>
+<li>实现验证(内部正则匹配去验证)</li>
+</ul>
+<p>创建Form类时，主要涉及到<strong>【字段】</strong>和<strong>【插件】</strong>，字段用于对用户请求数据的验证，插件用于自动生成HTML。</p>
+<h2 id="Form字段和插件"><a href="#Form字段和插件" class="headerlink" title="Form字段和插件"></a>Form字段和插件</h2><h3 id="Django常用内置字段"><a href="#Django常用内置字段" class="headerlink" title="Django常用内置字段"></a>Django常用内置字段</h3><p><span style="font-size:20px;font-weight:bold;color:#24CDDB;">field</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">required=<span class="literal">True</span>,               是否允许为空</span><br><span class="line">widget=<span class="literal">None</span>,                 HTML插件</span><br><span class="line">label=<span class="literal">None</span>,                  用于生成Label标签或显示内容</span><br><span class="line">initial=<span class="literal">None</span>,                初始值</span><br><span class="line">help_text=<span class="string">&#x27;&#x27;</span>,                帮助信息(在标签旁边显示)</span><br><span class="line">error_messages=<span class="literal">None</span>,         错误信息 &#123;<span class="string">&#x27;required&#x27;</span>: <span class="string">&#x27;不能为空&#x27;</span>, <span class="string">&#x27;invalid&#x27;</span>: <span class="string">&#x27;格式错误&#x27;</span>&#125;</span><br><span class="line">show_hidden_initial=<span class="literal">False</span>,   是否在当前插件后面再加一个隐藏的且具有默认值的插件（可用于检验两次输入是否一直）</span><br><span class="line">validators=[],               自定义验证规则</span><br><span class="line">localize=<span class="literal">False</span>,              是否支持本地化（根据不同语言地区访问用户显示不同语言）</span><br><span class="line">disabled=<span class="literal">False</span>,              是否可以编辑</span><br><span class="line">label_suffix=<span class="literal">None</span>            Label内容后缀</span><br></pre></td></tr></table></figure>
+<p><span style="font-size:20px;font-weight:bold;color:#24CDDB;">CharField(Field)</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">max_length=<span class="literal">None</span>,             最大长度</span><br><span class="line">min_length=<span class="literal">None</span>,             最小长度</span><br><span class="line">strip=<span class="literal">True</span>                   是否移除用户输入空白</span><br></pre></td></tr></table></figure>
+<p><span style="font-size:20px;font-weight:bold;color:#24CDDB;">IntegerField(Field), FloatField(IntegerField)</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">max_value=<span class="literal">None</span>,              最大值</span><br><span class="line">min_value=<span class="literal">None</span>,              最小值</span><br></pre></td></tr></table></figure>
+<p><span style="font-size:20px;font-weight:bold;color:#24CDDB;">DecimalField(IntegerField) 小数，举例，涉及金钱计算保留小数点后两位</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">max_value=<span class="literal">None</span>,              最大值</span><br><span class="line">min_value=<span class="literal">None</span>,              最小值</span><br><span class="line">max_digits=<span class="literal">None</span>,             总长度</span><br><span class="line">decimal_places=<span class="literal">None</span>,         小数位长度</span><br></pre></td></tr></table></figure>
+<p><span style="font-size:20px;font-weight:bold;color:#24CDDB;">RegexField(CharField)</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">regex,                      自定制正则表达式</span><br><span class="line">max_length=<span class="literal">None</span>,            最大长度</span><br><span class="line">min_length=<span class="literal">None</span>,            最小长度</span><br><span class="line">error_message=<span class="literal">None</span>,         忽略，错误信息使用 error_messages=&#123;<span class="string">&#x27;invalid&#x27;</span>: <span class="string">&#x27;...&#x27;</span>&#125;</span><br></pre></td></tr></table></figure>
+<p><span style="font-size:20px;font-weight:bold;color:#24CDDB;">FileField(Field)</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">allow_empty_file=<span class="literal">False</span>     是否允许空文件</span><br></pre></td></tr></table></figure>
+<p><span style="font-size:20px;font-weight:bold;color:#24CDDB;">ImageField(FileField)</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">注：需要PIL模块，pip install Pillow</span><br><span class="line">以上两个字典使用时，需要注意两点：</span><br><span class="line">- form表单中 enctype=<span class="string">&quot;multipart/form-data&quot;</span></span><br><span class="line">- view函数中 obj = MyForm(request.POST, request.FILES)</span><br></pre></td></tr></table></figure>
+<p><span style="font-size:20px;font-weight:bold;color:#24CDDB;">EmailField(CharField)</span><br><span style="font-size:20px;font-weight:bold;color:#24CDDB;">URLField(Field)</span><br><span style="font-size:20px;font-weight:bold;color:#24CDDB;">BooleanField(Field)</span><br><span style="font-size:20px;font-weight:bold;color:#24CDDB;">NullBooleanField(BooleanField)</span></p>
+<p><span style="font-size:20px;font-weight:bold;color:#24CDDB;">ChoiceField(Field)</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">choices=(),                选项，如：choices = ((<span class="number">0</span>,<span class="string">&#x27;上海&#x27;</span>),(<span class="number">1</span>,<span class="string">&#x27;北京&#x27;</span>),)</span><br><span class="line">required=<span class="literal">True</span>,             是否必填</span><br><span class="line">widget=<span class="literal">None</span>,               插件，默认select插件</span><br><span class="line">label=<span class="literal">None</span>,                Label内容</span><br><span class="line">initial=<span class="literal">None</span>,              初始值</span><br><span class="line">help_text=<span class="string">&#x27;&#x27;</span>,              帮助提示</span><br></pre></td></tr></table></figure>
+<p><span style="font-size:20px;font-weight:bold;color:#24CDDB;">TypedChoiceField(ChoiceField)</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">coerce = <span class="keyword">lambda</span> val: val   对选中的值进行一次转换，通过<span class="keyword">lambda</span>函数实现</span><br><span class="line">empty_value= <span class="string">&#x27;&#x27;</span>            空值的默认值</span><br></pre></td></tr></table></figure>
+<p><span style="font-size:20px;font-weight:bold;color:#24CDDB;">MultipleChoiceField(ChoiceField)多选框</span><br><span style="font-size:20px;font-weight:bold;color:#24CDDB;">TypedMultipleChoiceField(MultipleChoiceField)</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">coerce = <span class="keyword">lambda</span> val: val   对选中的每一个值进行一次转换</span><br><span class="line">empty_value= <span class="string">&#x27;&#x27;</span>            空值的默认值</span><br></pre></td></tr></table></figure>
+<p><span style="font-size:20px;font-weight:bold;color:#24CDDB;">ComboField(Field)</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">fields=()                  使用多个验证，如下：即验证最大长度<span class="number">20</span>，又验证邮箱格式</span><br><span class="line">fields.ComboField(fields=[fields.CharField(max_length=<span class="number">20</span>), fields.EmailField(),])</span><br></pre></td></tr></table></figure>
+<p><span style="font-size:20px;font-weight:bold;color:#24CDDB;">FilePathField(ChoiceField) 文件选项，目录下文件显示在页面中</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">path,                      文件夹路径</span><br><span class="line"><span class="keyword">match</span>=<span class="literal">None</span>,                正则匹配</span><br><span class="line">recursive=<span class="literal">False</span>,           递归下面的文件夹</span><br><span class="line">allow_files=<span class="literal">True</span>,          允许文件</span><br><span class="line">allow_folders=<span class="literal">False</span>,       允许文件夹</span><br><span class="line">required=<span class="literal">True</span>,</span><br><span class="line">widget=<span class="literal">None</span>,</span><br><span class="line">label=<span class="literal">None</span>,</span><br><span class="line">initial=<span class="literal">None</span>,</span><br><span class="line">help_text=<span class="string">&#x27;&#x27;</span></span><br></pre></td></tr></table></figure>
+<p><span style="font-size:20px;font-weight:bold;color:#24CDDB;">GenericIPAddressField</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">protocol=<span class="string">&#x27;both&#x27;</span>,           both,ipv4,ipv6支持的IP格式</span><br><span class="line">unpack_ipv4=<span class="literal">False</span>          解析ipv4地址，如果是::ffff:<span class="number">192.0</span><span class="number">.2</span><span class="number">.1</span>时候，可解析为<span class="number">192.0</span><span class="number">.2</span><span class="number">.1</span>， PS：protocol必须为both才能启用</span><br></pre></td></tr></table></figure>
+<h3 id="Django内置插件"><a href="#Django内置插件" class="headerlink" title="Django内置插件"></a>Django内置插件</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">TextInput(Input)  <span class="comment">#input type=&quot;text&quot;</span></span><br><span class="line">NumberInput(TextInput)  <span class="comment"># 数字输入框</span></span><br><span class="line">EmailInput(TextInput)  <span class="comment"># 邮箱输入框</span></span><br><span class="line">URLInput(TextInput)  <span class="comment"># url输入框</span></span><br><span class="line">PasswordInput(TextInput)  <span class="comment"># 密码输入框</span></span><br><span class="line">HiddenInput(TextInput)  <span class="comment"># 隐藏输入框</span></span><br><span class="line">Textarea(Widget)  <span class="comment"># textarea文本区</span></span><br><span class="line">DateInput(DateTimeBaseInput)  <span class="comment"># 日期输入框</span></span><br><span class="line">DateTimeInput(DateTimeBaseInput)  <span class="comment"># 日期时间输入框</span></span><br><span class="line">TimeInput(DateTimeBaseInput)  <span class="comment"># 时间输入框</span></span><br><span class="line">CheckboxInput  <span class="comment"># 多选框</span></span><br><span class="line">Select  <span class="comment"># 下拉框</span></span><br><span class="line">NullBooleanSelect  <span class="comment"># 非空布尔值下拉框</span></span><br><span class="line">SelectMultiple  <span class="comment"># 多选下拉框</span></span><br><span class="line">RadioSelect  <span class="comment"># 单选框</span></span><br><span class="line">CheckboxSelectMultiple  <span class="comment"># 多选checkbox ？？？</span></span><br><span class="line">FileInput  <span class="comment"># 文件上传</span></span><br><span class="line">ClearableFileInput</span><br><span class="line">MultipleHiddenInput  <span class="comment"># 多隐藏输入框</span></span><br><span class="line">SplitDateTimeWidget  <span class="comment"># 时间分割框（两个input框）</span></span><br><span class="line">SplitHiddenDateTimeWidget</span><br><span class="line">SelectDateWidget</span><br></pre></td></tr></table></figure>
+<h3 id="常用的选择插件"><a href="#常用的选择插件" class="headerlink" title="常用的选择插件"></a>常用的选择插件</h3><p><strong>widget</strong> 用来指定控件的类型<br><strong>choices</strong> 用来指定可选列表</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 单radio，值为字符串</span></span><br><span class="line">user = fields.CharField(</span><br><span class="line">    initial=<span class="number">2</span>,</span><br><span class="line">    widget=widgets.RadioSelect(choices=((<span class="number">1</span>,<span class="string">&#x27;上海&#x27;</span>),(<span class="number">2</span>,<span class="string">&#x27;北京&#x27;</span>),))</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 单radio，值为字符串</span></span><br><span class="line">user = fields.ChoiceField(</span><br><span class="line">    choices=((<span class="number">1</span>, <span class="string">&#x27;上海&#x27;</span>), (<span class="number">2</span>, <span class="string">&#x27;北京&#x27;</span>),),</span><br><span class="line">    initial=<span class="number">2</span>,</span><br><span class="line">    widget=widgets.RadioSelect</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 单select，值为字符串</span></span><br><span class="line">user = fields.CharField(</span><br><span class="line">    initial=<span class="number">2</span>,</span><br><span class="line">    widget=widgets.Select(choices=((<span class="number">1</span>,<span class="string">&#x27;上海&#x27;</span>),(<span class="number">2</span>,<span class="string">&#x27;北京&#x27;</span>),))</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 单select，值为字符串</span></span><br><span class="line">user = fields.ChoiceField(</span><br><span class="line">    choices=((<span class="number">1</span>, <span class="string">&#x27;上海&#x27;</span>), (<span class="number">2</span>, <span class="string">&#x27;北京&#x27;</span>),),</span><br><span class="line">    initial=<span class="number">2</span>,</span><br><span class="line">    widget=widgets.Select</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 多选select，值为列表</span></span><br><span class="line">user = fields.MultipleChoiceField(</span><br><span class="line">    choices=((<span class="number">1</span>,<span class="string">&#x27;上海&#x27;</span>),(<span class="number">2</span>,<span class="string">&#x27;北京&#x27;</span>),),</span><br><span class="line">    initial=[<span class="number">1</span>,],</span><br><span class="line">    widget=widgets.SelectMultiple</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 单checkbox</span></span><br><span class="line">user = fields.CharField(</span><br><span class="line">    widget=widgets.CheckboxInput()</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 多选checkbox,值为列表</span></span><br><span class="line">user = fields.MultipleChoiceField(</span><br><span class="line">    initial=[<span class="number">2</span>, ],</span><br><span class="line">    choices=((<span class="number">1</span>, <span class="string">&#x27;上海&#x27;</span>), (<span class="number">2</span>, <span class="string">&#x27;北京&#x27;</span>),),</span><br><span class="line">    widget=widgets.CheckboxSelectMultiple</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h2 id="使用Django-Form类创建表单"><a href="#使用Django-Form类创建表单" class="headerlink" title="使用Django Form类创建表单"></a>使用Django Form类创建表单</h2><p>首先需要创建一个 <strong>form</strong> 的类，这个里面可以定义字段，每个字段本身只做认证；然后通过字段里的 <strong>widget</strong> 这个插件，可以生成对应的HTML和绑定各种style等属性；这样在html界面直接调用对应的 **obj.id **就行了。</p>
+<h3 id="一、在app中创建form-py文件"><a href="#一、在app中创建form-py文件" class="headerlink" title="一、在app中创建form.py文件"></a>一、在app中创建form.py文件</h3><p>创建py文件并编写form类</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django <span class="keyword">import</span> forms</span><br><span class="line"><span class="keyword">from</span> django.forms <span class="keyword">import</span> fields,widgets</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">F1Form</span>(forms.Form):</span><br><span class="line">    username = fields.CharField(</span><br><span class="line">        max_length = <span class="number">8</span>,</span><br><span class="line">        min_length = <span class="number">4</span>,</span><br><span class="line">        required = <span class="literal">True</span>,</span><br><span class="line">        error_messages=&#123;</span><br><span class="line">            <span class="string">&#x27;required&#x27;</span>:<span class="string">&#x27;用户名不能为空&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;min_length&#x27;</span>:<span class="string">&#x27;用户名至少4位&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;max_length&#x27;</span>:<span class="string">&#x27;用户名最大8位&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    )</span><br><span class="line">    email = fields.EmailField(</span><br><span class="line">        required=<span class="literal">True</span>,</span><br><span class="line">        min_length=<span class="number">6</span>,</span><br><span class="line">        error_messages=&#123;</span><br><span class="line">            <span class="string">&#x27;required&#x27;</span>: <span class="string">&#x27;邮箱不能为空&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;invalid&#x27;</span>:<span class="string">&#x27;请填写有效邮箱地址&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;min_length&#x27;</span>: <span class="string">&#x27;邮箱至少6位&#x27;</span>,</span><br><span class="line">        &#125;</span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+<h3 id="二、在视图中调用Form类"><a href="#二、在视图中调用Form类" class="headerlink" title="二、在视图中调用Form类"></a>二、在视图中调用Form类</h3><p>POST传过来的值经form类校验，在传到视图函数中</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> app01.form <span class="keyword">import</span> F1Form</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">myform</span>(<span class="params">request</span>):</span><br><span class="line">    <span class="keyword">if</span> request.method == <span class="string">&#x27;GET&#x27;</span>:</span><br><span class="line">        obj = F1Form()</span><br><span class="line">        <span class="keyword">return</span> render(request,<span class="string">&#x27;myform.html&#x27;</span>,&#123;<span class="string">&#x27;obj&#x27;</span>:obj&#125;)</span><br><span class="line">    <span class="keyword">if</span> request.method == <span class="string">&#x27;POST&#x27;</span>:</span><br><span class="line">        obj = F1Form(request.POST)</span><br><span class="line">        <span class="keyword">if</span> obj.is_valid():</span><br><span class="line">            <span class="built_in">print</span> <span class="string">&#x27;表单校验成功.&#x27;</span>,obj.cleaned_data</span><br><span class="line">            UserInfo.objects.create(**obj.cleaned_data)</span><br><span class="line">            <span class="keyword">return</span> redirect(user)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            error = obj.errors</span><br><span class="line">            <span class="built_in">print</span> <span class="string">&#x27;校验失败.&#x27;</span>,obj.errors</span><br><span class="line">            <span class="keyword">return</span> render(request,<span class="string">&#x27;myform.html&#x27;</span>,<span class="built_in">locals</span>())</span><br></pre></td></tr></table></figure>
+<p>对于非POST方法发送数据时，比如GET方法请求页面，返回空的表单，让用户可以填入数据；<br>对于POST方法，接收表单数据，并验证；<br>使用表单类自带的 <strong>is_valid()</strong> 方法一步完成数据验证工作；<br>验证成功后可以从表单对象的 <strong>cleaned_data</strong> 数据字典中获取表单的具体值；<br>如果验证不通过，则返回一个包含先前数据的表单给前端页面，方便用户修改。也就是说，它会帮你保留先前填写的数据内容，而不是返回一个空表！<br><span style="color:red;font-weight:bold;">注意:UserInfo.objects.create(**obj.cleaned_data) 这种方式写入数据库form的字段必须与model的字段一一对应。</span></p>
+<h3 id="三、前端调用"><a href="#三、前端调用" class="headerlink" title="三、前端调用"></a>三、前端调用</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">&quot;&#123;% url &#x27;test&#x27; %&#125;&quot;</span> <span class="attr">method</span>=<span class="string">&quot;post&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123; obj.username &#125;&#125;&#123;&#123; obj.errors.username &#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123; obj.email &#125;&#125;&#123;&#123; obj.errors.email &#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="Django-Form错误信息获取"><a href="#Django-Form错误信息获取" class="headerlink" title="Django Form错误信息获取"></a>Django Form错误信息获取</h2><p>1、获取全部错误信息</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">obj = F1Form(request.POST)</span><br><span class="line"><span class="built_in">print</span> obj.errors</span><br></pre></td></tr></table></figure>
+<p>2、前端调用错误信息</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123; obj.username &#125;&#125;&#123;&#123; obj.errors.username &#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>通常情况下显示单条错误信息，多条的话前端显示不好看</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123; obj.username &#125;&#125;&#123;&#123; obj.errors.username.0 &#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>4、自定义错误信息<br>也可以自定义错误信息，这样前端就根据错误匹配显示自定义的错误信息：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">email = fields.EmailField(</span><br><span class="line">	required=<span class="literal">True</span>,</span><br><span class="line">	min_length=<span class="number">6</span>,</span><br><span class="line">	error_messages=&#123;</span><br><span class="line">		<span class="string">&#x27;required&#x27;</span>: <span class="string">&#x27;邮箱不能为空&#x27;</span>,</span><br><span class="line">		<span class="string">&#x27;invalid&#x27;</span>:<span class="string">&#x27;请填写有效邮箱地址&#x27;</span>,</span><br><span class="line">		<span class="string">&#x27;min_length&#x27;</span>: <span class="string">&#x27;邮箱至少6位&#x27;</span>,</span><br><span class="line">	&#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h2 id="Django-Form自动创建Html代码"><a href="#Django-Form自动创建Html代码" class="headerlink" title="Django Form自动创建Html代码"></a>Django Form自动创建Html代码</h2><p>1、手动调用Form中自定义的表单项</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">&quot;&#123;% url &#x27;test&#x27; %&#125;&quot;</span> <span class="attr">method</span>=<span class="string">&quot;post&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123; obj.username &#125;&#125;&#123;&#123; obj.errors.username &#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123; obj.email &#125;&#125;&#123;&#123; obj.errors.email &#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>2、通过 <strong>as</strong> 快捷方式来调用<br>这样默认调用所有的Form定义的表单项，但一般不推荐这样操作，因为前端的样式不好处理。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">&quot;&#123;% url &#x27;test&#x27; %&#125;&quot;</span> <span class="attr">method</span>=<span class="string">&quot;post&quot;</span>&gt;</span></span><br><span class="line">	&#123;&#123; obj.as_p &#125;&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>共支持以下几种格式：<br><strong>login_form.as_table</strong> 将表单渲染成一个表格元素，每个输入框作为一个 <strong>&lt;tr&gt;</strong> 标签<br><strong>login_form.as_p</strong> 将表单的每个输入框包裹在一个 <strong>&lt;p&gt;</strong> 标签内<br><strong>login_form.as_ul</strong> 将表单渲染成一个列表元素，每个输入框作为一个 <strong>&lt;li&gt;</strong> 标签<br><span style="color:red;">注意：上面的渲染方法中都要自己手动编写 <strong>&lt;table&gt;</strong> 或者 <strong>&lt;ul&gt;</strong> 标签。</span></p>
+<h2 id="特殊的单选或多选数据源实时更新问题"><a href="#特殊的单选或多选数据源实时更新问题" class="headerlink" title="特殊的单选或多选数据源实时更新问题"></a>特殊的单选或多选数据源实时更新问题</h2><p>这里有一个单项下拉框，读取数据库数据展示到前端让用户选择：<br><strong>models.py:</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Store</span>(models.Model):</span><br><span class="line">    name = models.CharField(max_length=<span class="number">32</span>)</span><br></pre></td></tr></table></figure>
+<p><strong>form.py:</strong><br>name字段直接读取数据库里面内容</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> app01.models <span class="keyword">import</span> Store</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">StoreForm</span>(forms.Form):</span><br><span class="line">    name = fields.CharField(</span><br><span class="line">        widget=widgets.Select(choices = models.Store.objects.values_list(<span class="string">&#x27;id&#x27;</span>,<span class="string">&#x27;name&#x27;</span>))</span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+<p><strong>views.py:</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> app01.form <span class="keyword">import</span> StoreForm</span><br><span class="line"><span class="keyword">from</span> app01.models <span class="keyword">import</span> Store</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">store</span>(<span class="params">request</span>):</span><br><span class="line">    obj = StoreForm()</span><br><span class="line">    <span class="keyword">return</span> render(request,<span class="string">&#x27;store.html&#x27;</span>,<span class="built_in">locals</span>())</span><br></pre></td></tr></table></figure>
+<p><strong>store.html:</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;panel-body&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">p</span>&gt;</span>商品：&#123;&#123; obj.name &#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><span style="color:red;font-weight:bold;">但这种写法将导致一个问题，当数据库有数据更新时，前端无法自动加载新数据，必须重启服务来解决。</span><br><span style="font-size:20px;font-weight:bold;">解决办法：</span><br>方法一：自定义构造方法从而达到此目的。<br><strong>form.py:</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">StoreForm</span>(forms.Form):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self,*args,**kwargs</span>):</span><br><span class="line">        <span class="built_in">super</span>(StoreForm,self).__init__(*args,**kwargs)  <span class="comment">#继承父级对象的__init__其他方法</span></span><br><span class="line">        self.fields[<span class="string">&#x27;name&#x27;</span>].widget.choices = models.Store.objects.values_list(<span class="string">&#x27;id&#x27;</span>,<span class="string">&#x27;name&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    name = fields.CharField(</span><br><span class="line">        widget=widgets.Select()</span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+<p>方法二：使用django提供的 <strong>ModelChoiceField</strong> 和 <strong>ModelMultipChoiceField</strong> 字段来实现<br><span style="color:red;">这种django内置的方法不推荐使用，如果要在前端显示数据库中的名称，需要依赖models中的 __str__方法，而且一个class中只有一个 __str__, 如果在有的场景中需要同时显示如id user, age等多个字段名时，这个方法就做不到。</span><br><strong>form.py:</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">StoreForm</span>(forms.Form):</span><br><span class="line">    name = ModelChoiceField(</span><br><span class="line">        queryset=models.Store.objects.<span class="built_in">all</span>(),</span><br><span class="line">        to_field_name=<span class="string">&#x27;id&#x27;</span>,</span><br><span class="line">		empty_label=<span class="literal">None</span></span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+<p><strong>models.py:</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ModelChoiceField字段动态获取数据</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Store</span>(models.Model):</span><br><span class="line">    name = models.CharField(max_length=<span class="number">32</span>)</span><br><span class="line"><span class="comment"># 注意：依赖models中的str方法</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__str__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> self.name</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"># python</a>
+              <a href="/tags/Django/" rel="tag"># Django</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/01/21/Django%E4%B9%8BCookie%E5%92%8CSession/" rel="prev" title="Django之Cookie和Session">
+                  <i class="fa fa-chevron-left"></i> Django之Cookie和Session
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/01/23/Django%E5%88%86%E9%A1%B5%E7%9A%84%E5%AE%9E%E7%8E%B0/" rel="next" title="Django分页的实现">
+                  Django分页的实现 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

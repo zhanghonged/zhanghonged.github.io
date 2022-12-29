@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;通常我们提交(使用submit button)时，会把form中的所有表单元素的name与value组成一个 queryString，提交到后台。这用jQuery的方法来说，就是 serialize。但通过Ajax方式操作post提交包含二进制文件时就会出错。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="jQueryAjax使用FormData对象上传文件">
+<meta property="og:url" content="http://zhanghonged.github.io/2018/03/09/jQueryAjax%E4%BD%BF%E7%94%A8FormData%E5%AF%B9%E8%B1%A1%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;通常我们提交(使用submit button)时，会把form中的所有表单元素的name与value组成一个 queryString，提交到后台。这用jQuery的方法来说，就是 serialize。但通过Ajax方式操作post提交包含二进制文件时就会出错。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-03-09T02:16:39.000Z">
+<meta property="article:modified_time" content="2018-03-09T02:46:24.154Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="Ajax">
+<meta property="article:tag" content="jQuery">
+<meta property="article:tag" content="FormData">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2018/03/09/jQueryAjax%E4%BD%BF%E7%94%A8FormData%E5%AF%B9%E8%B1%A1%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2018/03/09/jQueryAjax%E4%BD%BF%E7%94%A8FormData%E5%AF%B9%E8%B1%A1%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6/","path":"2018/03/09/jQueryAjax使用FormData对象上传文件/","title":"jQueryAjax使用FormData对象上传文件"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>jQueryAjax使用FormData对象上传文件 | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#FormData%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">FormData概述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAFormData%E5%AF%B9%E8%B1%A1"><span class="nav-number">1.1.</span> <span class="nav-text">创建FormData对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#js%E4%BB%A3%E7%A0%81"><span class="nav-number">1.2.</span> <span class="nav-text">js代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%A1%88%E4%BE%8B"><span class="nav-number">2.</span> <span class="nav-text">使用案例</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2018/03/09/jQueryAjax%E4%BD%BF%E7%94%A8FormData%E5%AF%B9%E8%B1%A1%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="jQueryAjax使用FormData对象上传文件 | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          jQueryAjax使用FormData对象上传文件
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2018-03-09 10:16:39 / 修改时间：10:46:24" itemprop="dateCreated datePublished" datetime="2018-03-09T10:16:39+08:00">2018-03-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Web%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">Web前端</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;通常我们提交(使用submit button)时，会把form中的所有表单元素的name与value组成一个 <strong>queryString</strong>，提交到后台。这用jQuery的方法来说，就是 <strong>serialize</strong>。但通过Ajax方式操作post提交包含二进制文件时就会出错。</p>
+<span id="more"></span>
+<h2 id="FormData概述"><a href="#FormData概述" class="headerlink" title="FormData概述"></a>FormData概述</h2><p><strong>FormData</strong> 对象，是可以使用一系列的键值对来模拟一个完整的表单，然后使用 <strong>XMLHttpRequest</strong> 发送这个”表单”，<span style="color:red;">它的最大的优点就是我们可以异步上传二进制文件。</span></p>
+<h3 id="创建FormData对象"><a href="#创建FormData对象" class="headerlink" title="创建FormData对象"></a>创建FormData对象</h3><p>我们先创建一个空的FormData对象，然后再通过 <strong>append()</strong> 方法向该对象中添加键值对：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> sendData = <span class="keyword">new</span> <span class="title class_">FormData</span>();</span><br><span class="line">sendData.<span class="title function_">append</span>(<span class="string">&quot;num&quot;</span>,<span class="number">123456</span>);  <span class="comment">//数字会自动转化为字符串</span></span><br><span class="line">sendData.<span class="title function_">append</span>(<span class="string">&quot;username&quot;</span>,$(<span class="string">&quot;#id_username&quot;</span>).<span class="title function_">val</span>());</span><br><span class="line">sendData.<span class="title function_">append</span>(<span class="string">&quot;photo&quot;</span>,$(<span class="string">&quot;#id_photo&quot;</span>)[<span class="number">0</span>].<span class="property">files</span>[<span class="number">0</span>]);  <span class="comment">//第二个参数为文件对象</span></span><br></pre></td></tr></table></figure>
+<p>还有其他方式创建FormData对象，这里就不一一介绍了。</p>
+<h3 id="js代码"><a href="#js代码" class="headerlink" title="js代码"></a>js代码</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$.<span class="title function_">ajax</span>(</span><br><span class="line"> &#123;</span><br><span class="line">	 <span class="attr">url</span>:<span class="string">&quot;/user/register/&quot;</span>,</span><br><span class="line">	 <span class="attr">type</span>:<span class="string">&quot;POST&quot;</span>,</span><br><span class="line">	 <span class="attr">data</span>:sendData,</span><br><span class="line">	 <span class="attr">processData</span>:<span class="literal">false</span>, <span class="comment">//不进行序列化</span></span><br><span class="line">	 <span class="attr">contentType</span>:<span class="literal">false</span>, <span class="comment">//不进行类型检测</span></span><br><span class="line">	 <span class="attr">success</span>:<span class="keyword">function</span>(<span class="params">data</span>)&#123;</span><br><span class="line"></span><br><span class="line">	 &#125;,</span><br><span class="line">	 <span class="attr">error</span>:<span class="keyword">function</span> (<span class="params">error</span>) &#123;</span><br><span class="line">	 &#125;</span><br><span class="line"> &#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><span style="color:red;font-weight:bold">这里需要注意以下几点：</span><br>1、processData 设置为false。因为data值是FormData对象，不需要对数据做处理。<br>2、contentType 设置为false。设置jQuery不去设置Content-Type请求头。<br>上传后，服务器端代码需要使用从查询参数名为file获取文件输入流对象，因为&lt;input&gt;中声明的是name&#x3D;”file”。</p>
+<h2 id="使用案例"><a href="#使用案例" class="headerlink" title="使用案例"></a>使用案例</h2><p>下面是一个使用 <strong>Ajax</strong> + <strong>post</strong> + <strong>Django</strong> 来实现用户修改个人配置的案例，包括用户头像二进制文件的上传。<br><strong>html:</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;modal-body&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">form</span> <span class="attr">class</span>=<span class="string">&quot;mysettings&quot;</span> <span class="attr">id</span>=<span class="string">&quot;mysettings&quot;</span> <span class="attr">enctype</span>=<span class="string">&quot;multipart/form-data&quot;</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-group&quot;</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">label</span> <span class="attr">class</span>=<span class="string">&quot;control-label&quot;</span>&gt;</span>手机<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span> <span class="attr">id</span>=<span class="string">&quot;id_phone&quot;</span> <span class="attr">name</span>=<span class="string">&quot;phone&quot;</span> <span class="attr">placeholder</span>=<span class="string">&quot;手机号&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">value</span>=<span class="string">&quot;&#123;&#123; user.phone |default:&quot;</span>&quot; &#125;&#125;&quot;&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-group&quot;</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">label</span> <span class="attr">class</span>=<span class="string">&quot;control-label&quot;</span>&gt;</span>邮箱<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span> <span class="attr">id</span>=<span class="string">&quot;id_email&quot;</span> <span class="attr">name</span>=<span class="string">&quot;email&quot;</span> <span class="attr">placeholder</span>=<span class="string">&quot;邮箱&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">value</span>=<span class="string">&quot;&#123;&#123; user.email |default:&quot;</span>&quot;&#125;&#125;&quot;&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-group&quot;</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">label</span> <span class="attr">class</span>=<span class="string">&quot;control-label&quot;</span>&gt;</span>头像<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;id_photo&quot;</span> <span class="attr">name</span>=<span class="string">&quot;photo&quot;</span> <span class="attr">placeholder</span>=<span class="string">&quot;头像&quot;</span> <span class="attr">type</span>=<span class="string">&quot;file&quot;</span> <span class="attr">value</span>=<span class="string">&quot;&#123;&#123; user.photo&#125;&#125;&quot;</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;modal-footer&quot;</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-default&quot;</span> <span class="attr">data-dismiss</span>=<span class="string">&quot;modal&quot;</span>&gt;</span>关闭<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">&quot;userSetSubmit&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-primary&quot;</span> <span class="attr">data-dismiss</span>=<span class="string">&quot;modal&quot;</span>&gt;</span>提交<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><strong>Javascript:</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">	<span class="keyword">function</span> <span class="title function_">usersetting</span>(<span class="params"></span>) &#123;</span><br><span class="line">		<span class="keyword">var</span> sendData = <span class="keyword">new</span> <span class="title class_">FormData</span>();</span><br><span class="line">		sendData.<span class="title function_">append</span>(<span class="string">&#x27;email&#x27;</span>,$(<span class="string">&#x27;#id_email&#x27;</span>).<span class="title function_">val</span>());</span><br><span class="line">		sendData.<span class="title function_">append</span>(<span class="string">&#x27;phone&#x27;</span>,$(<span class="string">&#x27;#id_phone&#x27;</span>).<span class="title function_">val</span>());</span><br><span class="line">		sendData.<span class="title function_">append</span>(<span class="string">&#x27;photo&#x27;</span>,$(<span class="string">&#x27;#id_photo&#x27;</span>)[<span class="number">0</span>].<span class="property">files</span>[<span class="number">0</span>]);</span><br><span class="line">		sendData.<span class="title function_">append</span>(<span class="string">&#x27;csrfmiddlewaretoken&#x27;</span>,<span class="string">&#x27;&#123;&#123; csrf_token &#125;&#125;&#x27;</span>);</span><br><span class="line"></span><br><span class="line">		$.<span class="title function_">ajax</span>(&#123;</span><br><span class="line">			<span class="attr">url</span>:<span class="string">&#x27;&#123;% url &#x27;</span>user_setting<span class="string">&#x27; %&#125;&#x27;</span>,</span><br><span class="line">			<span class="attr">type</span>:<span class="string">&#x27;post&#x27;</span>,</span><br><span class="line">			<span class="attr">data</span>:sendData,</span><br><span class="line">			<span class="attr">processData</span>:<span class="literal">false</span>,  <span class="comment">//告诉jQuery不要去处理发送的数据</span></span><br><span class="line">			<span class="attr">contentType</span>:<span class="literal">false</span>,  <span class="comment">//告诉jQuery不要去处理Content-Type请求头</span></span><br><span class="line">			<span class="attr">success</span>:<span class="keyword">function</span> (<span class="params">data</span>) &#123;</span><br><span class="line">				<span class="variable language_">console</span>.<span class="title function_">log</span>(data);</span><br><span class="line">				<span class="keyword">if</span> (data.<span class="property">status</span> == <span class="string">&#x27;success&#x27;</span>) &#123;</span><br><span class="line">					$(<span class="string">&#x27;.top-right&#x27;</span>).<span class="title function_">notify</span>(&#123;</span><br><span class="line">						<span class="attr">message</span>: &#123;<span class="attr">text</span>: data.<span class="property">data</span>&#125;,</span><br><span class="line">						<span class="attr">type</span>: <span class="string">&quot;success&quot;</span></span><br><span class="line">					&#125;).<span class="title function_">show</span>();</span><br><span class="line">					<span class="comment">//清空表单值</span></span><br><span class="line">					$(<span class="string">&#x27;#id_phone&#x27;</span>).<span class="title function_">val</span>(<span class="string">&#x27;&#x27;</span>);</span><br><span class="line">					$(<span class="string">&#x27;#id_mail&#x27;</span>).<span class="title function_">val</span>(<span class="string">&#x27;&#x27;</span>);</span><br><span class="line">					$(<span class="string">&#x27;#id_photo&#x27;</span>).<span class="title function_">val</span>(<span class="string">&#x27;&#x27;</span>);</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">else</span>&#123;</span><br><span class="line">					$(<span class="string">&#x27;.top-right&#x27;</span>).<span class="title function_">notify</span>(&#123;</span><br><span class="line">						<span class="attr">message</span>: &#123;<span class="attr">text</span>: data.<span class="property">data</span>&#125;,</span><br><span class="line">						<span class="attr">type</span>: <span class="string">&quot;danger&quot;</span></span><br><span class="line">					&#125;).<span class="title function_">show</span>();</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="comment">//$(location).attr(&#x27;href&#x27;, &#x27;&#123;% url &#x27;index&#x27; %&#125;&#x27;);</span></span><br><span class="line">			&#125;,</span><br><span class="line">			<span class="attr">error</span>:<span class="keyword">function</span> (<span class="params">error</span>) &#123;</span><br><span class="line">				<span class="variable language_">console</span>.<span class="title function_">log</span>(error);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	$(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">		$(<span class="string">&#x27;#userSetSubmit&#x27;</span>).<span class="title function_">click</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">			<span class="title function_">usersetting</span>();</span><br><span class="line">		&#125;)</span><br><span class="line">	&#125;)</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p><strong>Django-views.py:</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">user_setting</span>(<span class="params">request</span>):</span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    用户个人设置</span></span><br><span class="line"><span class="string">    :param request:</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &#x27;&#x27;&#x27;</span></span><br><span class="line">    result = &#123;<span class="string">&#x27;status&#x27;</span>:<span class="string">&#x27;error&#x27;</span>,<span class="string">&#x27;data&#x27;</span>:<span class="string">&#x27;&#x27;</span>&#125;</span><br><span class="line">    <span class="keyword">if</span> request.method == <span class="string">&#x27;POST&#x27;</span>:</span><br><span class="line">        <span class="comment">#把ajax 传过来的POST和FILES传给表单去校验，这样图片文件就可以向普通字段那样直接入库，并自动保存文件到服务器</span></span><br><span class="line">        <span class="comment"># 如果不经过表单处理，则图片文件需要手动处理</span></span><br><span class="line">        <span class="comment"># 处理图片信息</span></span><br><span class="line">        <span class="comment">#from PIL import Image</span></span><br><span class="line">        <span class="comment"># photo = request.FILES.get(&#x27;photo&#x27;)</span></span><br><span class="line">        <span class="comment"># name = &#x27;static/images/&#x27; + photo.name</span></span><br><span class="line">        <span class="comment"># #保存图片</span></span><br><span class="line">        <span class="comment"># img = Image.open(photo)</span></span><br><span class="line">        <span class="comment"># img.save(name)</span></span><br><span class="line">        <span class="comment">#在cookie中获取用户id</span></span><br><span class="line">        uid = request.COOKIES.get(<span class="string">&#x27;id&#x27;</span>)</span><br><span class="line">        obj = UserSetting(request.POST,request.FILES)</span><br><span class="line">        <span class="keyword">if</span> obj.is_valid():</span><br><span class="line">            <span class="comment">#print &#x27;校验成功：&#x27;,obj.cleaned_data</span></span><br><span class="line">            phone = obj.cleaned_data[<span class="string">&#x27;phone&#x27;</span>]</span><br><span class="line">            email = obj.cleaned_data[<span class="string">&#x27;email&#x27;</span>]</span><br><span class="line">            photo = obj.cleaned_data[<span class="string">&#x27;photo&#x27;</span>]</span><br><span class="line"></span><br><span class="line">            <span class="comment">#判断电话是否已存在</span></span><br><span class="line">            user_list = CMDBUser.objects.<span class="built_in">filter</span>(phone=phone).exclude(<span class="built_in">id</span> = uid)</span><br><span class="line">            <span class="comment">#除此用户外其他用户已经存在此手机号</span></span><br><span class="line">            <span class="keyword">if</span> <span class="built_in">len</span>(user_list) &gt; <span class="number">0</span>:</span><br><span class="line">                result[<span class="string">&#x27;data&#x27;</span>] = <span class="string">&#x27;手机号已存在&#x27;</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line"></span><br><span class="line">                user_list_1 = CMDBUser.objects.<span class="built_in">filter</span>(email=email).exclude(<span class="built_in">id</span>=uid)</span><br><span class="line">                <span class="comment"># 除此用户外其他用户已经存在此邮箱</span></span><br><span class="line">                <span class="keyword">if</span> <span class="built_in">len</span>(user_list_1) &gt; <span class="number">0</span>:</span><br><span class="line">                    result[<span class="string">&#x27;data&#x27;</span>] = <span class="string">&#x27;邮箱已存在&#x27;</span></span><br><span class="line">                <span class="comment">#开始入库</span></span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    <span class="keyword">try</span>:</span><br><span class="line">                        user = CMDBUser.objects.get(<span class="built_in">id</span> = uid)</span><br><span class="line">                    <span class="keyword">except</span>:</span><br><span class="line">                        result[<span class="string">&#x27;data&#x27;</span>] = <span class="string">&#x27;提交错误&#x27;</span></span><br><span class="line">                    <span class="keyword">else</span>:</span><br><span class="line">                        user.phone = phone</span><br><span class="line">                        user.email = email</span><br><span class="line">                        user.photo = photo</span><br><span class="line">                        user.save()</span><br><span class="line">                        result[<span class="string">&#x27;status&#x27;</span>] = <span class="string">&#x27;success&#x27;</span></span><br><span class="line">                        result[<span class="string">&#x27;data&#x27;</span>] = <span class="string">&#x27;保存成功&#x27;</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">print</span> <span class="string">&#x27;校验失败：&#x27;</span>,obj.errors</span><br><span class="line">            result[<span class="string">&#x27;data&#x27;</span>] = <span class="string">&#x27;数据校验失败&#x27;</span></span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Ajax/" rel="tag"># Ajax</a>
+              <a href="/tags/jQuery/" rel="tag"># jQuery</a>
+              <a href="/tags/FormData/" rel="tag"># FormData</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/03/06/Django%E4%BB%A5Json%E7%B1%BB%E5%9E%8B%E8%BF%94%E5%9B%9E%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9F%A5%E8%AF%A2%E7%BB%93%E6%9E%9C/" rel="prev" title="Django以Json类型返回数据库查询结果">
+                  <i class="fa fa-chevron-left"></i> Django以Json类型返回数据库查询结果
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/03/14/Django-Ajax-Vue%E5%AE%9E%E7%8E%B0%E5%88%86%E9%A1%B5/" rel="next" title="Django+Ajax+Vue实现分页">
+                  Django+Ajax+Vue实现分页 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

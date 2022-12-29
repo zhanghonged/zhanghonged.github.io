@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="一、动态替换动态替换标记被放置在场景元素中，对于HTTP，这种标记可以放在基本认证(www_authenticate标签：userid 和passwd 属性)，URL（改变GET参数)和POST内容中。这些标记的格式为 %%Module:Function%% ，只有request标签有 subst&#x3D;”true” 属性时，替换才是针对每个请求执行的。当请求替换时，替换标记被调用Erlang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tsung配置文件解析-高级配置">
+<meta property="og:url" content="http://zhanghonged.github.io/2016/08/30/Tsung%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90-%E9%AB%98%E7%BA%A7%E9%85%8D%E7%BD%AE/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="一、动态替换动态替换标记被放置在场景元素中，对于HTTP，这种标记可以放在基本认证(www_authenticate标签：userid 和passwd 属性)，URL（改变GET参数)和POST内容中。这些标记的格式为 %%Module:Function%% ，只有request标签有 subst&#x3D;”true” 属性时，替换才是针对每个请求执行的。当请求替换时，替换标记被调用Erlang">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-08-30T06:59:37.000Z">
+<meta property="article:modified_time" content="2016-08-30T08:06:00.763Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="Tsung">
+<meta property="article:tag" content="测试">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2016/08/30/Tsung%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90-%E9%AB%98%E7%BA%A7%E9%85%8D%E7%BD%AE/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2016/08/30/Tsung%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90-%E9%AB%98%E7%BA%A7%E9%85%8D%E7%BD%AE/","path":"2016/08/30/Tsung配置文件解析-高级配置/","title":"Tsung配置文件解析-高级配置"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Tsung配置文件解析-高级配置 | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%8A%A8%E6%80%81%E6%9B%BF%E6%8D%A2"><span class="nav-number">1.</span> <span class="nav-text">一、动态替换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%A4%96%E9%83%A8%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96"><span class="nav-number">2.</span> <span class="nav-text">二、外部文件读取</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%8A%A8%E6%80%81%E5%8F%98%E9%87%8F"><span class="nav-number">3.</span> <span class="nav-text">三、动态变量</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1%E3%80%81%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-number">3.1.</span> <span class="nav-text">3.1、正则表达式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2%E3%80%81XPath"><span class="nav-number">3.2.</span> <span class="nav-text">3.2、XPath</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3%E3%80%81JSONpath"><span class="nav-number">3.3.</span> <span class="nav-text">3.3、JSONpath</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4%E3%80%81PostgreSQL"><span class="nav-number">3.4.</span> <span class="nav-text">3.4、PostgreSQL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5%E3%80%81-Decoding-variables"><span class="nav-number">3.5.</span> <span class="nav-text">3.5、 Decoding variables</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-6%E3%80%81set-dynvars"><span class="nav-number">3.6.</span> <span class="nav-text">3.6、set_dynvars</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-6-1%E3%80%81%E9%80%9A%E8%BF%87%E8%B0%83%E7%94%A8%E4%B8%80%E4%B8%AAErlang%E5%87%BD%E6%95%B0%E5%AE%9A%E4%B9%89%E7%9A%84%E5%8A%A8%E6%80%81%E5%8F%98%E9%87%8F%EF%BC%9A"><span class="nav-number">3.6.1.</span> <span class="nav-text">3.6.1、通过调用一个Erlang函数定义的动态变量：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-6-2%E3%80%81%E9%80%9A%E8%BF%87%E8%A7%A3%E6%9E%90%E5%A4%96%E9%83%A8%E6%96%87%E4%BB%B6%E5%AE%9A%E4%B9%89%E7%9A%84%E5%8A%A8%E6%80%81%E5%8F%98%E9%87%8F%EF%BC%9A"><span class="nav-number">3.6.2.</span> <span class="nav-text">3.6.2、通过解析外部文件定义的动态变量：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-6-3%E3%80%81%E4%B8%80%E4%B8%AA%E5%8A%A8%E6%80%81%E5%8F%98%E9%87%8F%E5%8F%AF%E4%BB%A5%E6%98%AF%E4%B8%80%E4%B8%AA%E9%9A%8F%E6%9C%BA%E6%95%B0%EF%BC%88%E5%9D%87%E5%8C%80%E5%88%86%E5%B8%83%EF%BC%89%EF%BC%9A"><span class="nav-number">3.6.3.</span> <span class="nav-text">3.6.3、一个动态变量可以是一个随机数（均匀分布）：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-6-4%E3%80%81%E4%B8%80%E4%B8%AA%E5%8A%A8%E6%80%81%E5%8F%98%E9%87%8F%E5%8F%AF%E4%BB%A5%E6%98%AF%E4%B8%80%E4%B8%AA%E9%9A%8F%E6%9C%BA%E5%AD%97%E7%AC%A6%E4%B8%B2%EF%BC%9A"><span class="nav-number">3.6.4.</span> <span class="nav-text">3.6.4、一个动态变量可以是一个随机字符串：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-6-5%E3%80%81%E4%B8%80%E4%B8%AA%E5%8A%A8%E6%80%81%E7%9A%84%E5%8F%98%E9%87%8F%E5%8F%AF%E4%BB%A5%E6%98%AF%E4%B8%80%E4%B8%AAurandom%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="nav-number">3.6.5.</span> <span class="nav-text">3.6.5、一个动态的变量可以是一个urandom字符串</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-6-6%E3%80%81%E4%B8%80%E4%B8%AA%E5%8A%A8%E6%80%81%E7%9A%84%E5%8F%98%E9%87%8F%EF%BC%8C%E5%8F%AF%E4%BB%A5%E9%80%9A%E8%BF%87%E8%BF%90%E8%A1%8Cjsonpath%E8%A7%84%E8%8C%83%E4%BA%A7%E7%94%9F%EF%BC%88%E8%A7%81JSONPath%EF%BC%89%E5%88%B0%E4%B8%80%E4%B8%AA%E7%8E%B0%E6%9C%89%E7%9A%84%E5%8A%A8%E6%80%81%E5%8F%98%E9%87%8F%EF%BC%9A"><span class="nav-number">3.6.6.</span> <span class="nav-text">3.6.6、一个动态的变量，可以通过运行jsonpath规范产生（见JSONPath）到一个现有的动态变量：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-6-7%E3%80%81%E6%82%A8%E5%8F%AF%E4%BB%A5%E5%88%9B%E5%BB%BA%E5%8A%A8%E6%80%81%E5%8F%98%E9%87%8F%E5%BD%93%E5%89%8D%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E4%B8%BB%E6%9C%BA%E5%90%8D%E5%92%8C%E7%AB%AF%E5%8F%A3%EF%BC%9A"><span class="nav-number">3.6.7.</span> <span class="nav-text">3.6.7、您可以创建动态变量当前服务器的主机名和端口：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-6-8%E3%80%81%E4%BD%A0%E5%8F%AF%E4%BB%A5%E5%AE%9A%E4%B9%89%E4%B8%80%E4%B8%AA%E5%8A%A8%E6%80%81%E5%8F%98%E4%B8%BA%E5%9B%BA%E5%AE%9A%E5%80%BC%EF%BC%8C%E4%BD%BF%E7%94%A8%E5%AE%83%E5%9C%A8%E4%B8%80%E4%B8%AA%E6%8F%92%E4%BB%B6%EF%BC%881-5-0%E7%89%88%E6%9C%AC%E5%90%8E%EF%BC%89%EF%BC%9A"><span class="nav-number">3.6.8.</span> <span class="nav-text">3.6.8、你可以定义一个动态变为固定值，使用它在一个插件（1.5.0版本后）：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%A3%80%E6%9F%A5%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%93%8D%E5%BA%94"><span class="nav-number">4.</span> <span class="nav-text">四、检查服务器响应</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81Loops-If-Foreach"><span class="nav-number">5.</span> <span class="nav-text">五、Loops, If, Foreach</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1%E3%80%81for"><span class="nav-number">5.1.</span> <span class="nav-text">5.1、for</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2%E3%80%81repeat"><span class="nav-number">5.2.</span> <span class="nav-text">5.2、repeat</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3%E3%80%81if"><span class="nav-number">5.3.</span> <span class="nav-text">5.3、if</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4%E3%80%81foreach"><span class="nav-number">5.4.</span> <span class="nav-text">5.4、foreach</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81rate-limiting"><span class="nav-number">6.</span> <span class="nav-text">六、rate limiting</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E8%AF%B7%E6%B1%82%E6%8E%92%E9%99%A4"><span class="nav-number">7.</span> <span class="nav-text">七、请求排除</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%AF%81%E4%B9%A6"><span class="nav-number">8.</span> <span class="nav-text">八、客户端证书</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2016/08/30/Tsung%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90-%E9%AB%98%E7%BA%A7%E9%85%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Tsung配置文件解析-高级配置 | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Tsung配置文件解析-高级配置
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2016-08-30 14:59:37 / 修改时间：16:06:00" itemprop="dateCreated datePublished" datetime="2016-08-30T14:59:37+08:00">2016-08-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%B5%8B%E8%AF%95%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index"><span itemprop="name">测试相关</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="一、动态替换"><a href="#一、动态替换" class="headerlink" title="一、动态替换"></a>一、动态替换</h2><p>动态替换标记被放置在场景元素中，对于HTTP，这种标记可以放在基本认证(www_authenticate标签：userid 和passwd 属性)，URL（改变GET参数)和POST内容中。<br>这些标记的格式为 <em>%%Module:Function%%</em> ，只有request标签有 subst&#x3D;”true” 属性时，替换才是针对每个请求执行的。<br>当请求替换时，替换标记被调用Erlang函数:Module:Function({Pid, DynData}) 的结果取代，前面PID是当前虚拟用户的Erlang进程ID并且DynData是所有动态变量的列表。</p>
+<span id="more"></span>
+
+<p>这个是Tsung中使用替换的例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;session name=&quot;rec20040316-08:47&quot; probability=&quot;100&quot; type=&quot;ts_http&quot;&gt;</span><br><span class="line">  &lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">    &lt;http url=&quot;/echo?symbol=%%symbol:new%%&quot; method=&quot;GET&quot;&gt;&lt;/http&gt;</span><br><span class="line">  &lt;/request&gt;</span><br><span class="line">&lt;/session&gt;</span><br></pre></td></tr></table></figure>
+<p>1.5.1版本后对于http插件，你可以使用特殊的值<em>subst&#x3D;’all_except_body’</em> 代替 <em>‘true’</em> 在HTTP响应的正文部分跳过替换。<br>这里是使用动态替换的Erlang模块代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">-module(symbol).</span><br><span class="line">-export([new/1]).</span><br><span class="line"></span><br><span class="line">new(&#123;Pid, DynData&#125;) -&gt;</span><br><span class="line">   case random:uniform(3) of</span><br><span class="line">       1 -&gt; &quot;IBM&quot;;</span><br><span class="line">       2 -&gt; &quot;MSFT&quot;;</span><br><span class="line">       3 -&gt; &quot;RHAT&quot;</span><br><span class="line">   end.</span><br></pre></td></tr></table></figure>
+<p>使用<strong>erlc</strong>编译这段代码并得到结果文件，把文件放到所有客户端机器的*$PREFIX&#x2F;lib&#x2F;erlang&#x2F;lib&#x2F;tsung-X.X.X&#x2F;ebin&#x2F;*目录。<br>正如你所看到的那样，在scenario里编写动态替换是很简单的。它还可以更简单，使用动态变量（见下文）。<br>如果你想设置唯一的ID，你可以使用内置函数<strong>ts_user_server：get_unique_id</strong>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;session name=&quot;rec20040316-08:47&quot; probability=&quot;100&quot; type=&quot;ts_http&quot;&gt;</span><br><span class="line">  &lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">    &lt;http url=&quot;/echo?id=%%ts_user_server:get_unique_id%%&quot; method=&quot;GET&quot; /&gt;</span><br><span class="line">  &lt;/request&gt;</span><br><span class="line">&lt;/session&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="二、外部文件读取"><a href="#二、外部文件读取" class="headerlink" title="二、外部文件读取"></a>二、外部文件读取</h2><p>1.0.3版本后，出现一个新的可用模块<em>ts_file_server</em>，可以使用它来读取外部文件。<br>例如，如果你需要从一个CSV文件读取用户名和密码，就可以使用它来完成(目前只能读取一个文件)。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;option name=&quot;file_server&quot;  value=&quot;/tmp/userlist.csv&quot;&gt;&lt;/option&gt;</span><br></pre></td></tr></table></figure>
+<p>1.2.2版本后你可以读取多个文件，使用<strong>id</strong>属性来辨识每一个文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;option name=&quot;file_server&quot; value=&quot;/tmp/userlist.csv&quot;&gt;&lt;/option&gt;</span><br><span class="line">&lt;option name=&quot;file_server&quot; id=&#x27;random&#x27; value=&quot;/tmp/randomnumbers.csv&quot;&gt;&lt;/option&gt;</span><br></pre></td></tr></table></figure>
+<p>现在可以构建自己的函数来使用它，例如创建一个名为<em>readcsv.erl</em>的文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">-module(readcsv).</span><br><span class="line">-export([user/1]).</span><br><span class="line"></span><br><span class="line">user(&#123;Pid,DynVar&#125;)-&gt;</span><br><span class="line">   &#123;ok,Line&#125; = ts_file_server:get_next_line(),</span><br><span class="line">   [Username, Passwd] = string:tokens(Line,&quot;;&quot;),</span><br><span class="line">   &quot;username=&quot; ++ Username ++&quot;&amp;password=&quot; ++ Passwd.</span><br></pre></td></tr></table></figure>
+<p>此函数的输出将是一个字符串<em>username&#x3D;USER&amp;password&#x3D;PASSWORD</em>。<br>使用*<em>erlc readcsv.erl *<em>命令来编译此函数，然后把</em>readcsv.beam*放到</em>$prefix&#x2F;lib&#x2F;erlang&#x2F;lib&#x2F;tsung-VERSION&#x2F;ebin<em>目录(如果这个文件有ID并且是随机的，改变上面代码</em>ts_file_server:get_next_line(random)*)。<br>然后在你的session中这样设置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">  &lt;/http&gt;</span><br><span class="line">&lt;/request&gt;</span><br></pre></td></tr></table></figure>
+<p>两个函数是可用的：<em>ts_file_server:get_next_line</em> 和 <em>ts_file_server:get_random_line</em>。对于<em>ts_file_server:get_next_line</em>函数，当到达文件末尾的时候，下一行就是文件的第一行。<br>1.3.0版本后你不需要创建一个额外函数来解析CSV文件，可以使用<em>setdynvars</em>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;setdynvars sourcetype=&quot;file&quot; fileid=&quot;userlist.csv&quot; delimiter=&quot;;&quot; order=&quot;iter&quot;&gt;</span><br><span class="line"> &lt;var name=&quot;username&quot; /&gt;</span><br><span class="line"> &lt;var name=&quot;user_password&quot; /&gt;</span><br><span class="line">&lt;/setdynvars&gt;</span><br></pre></td></tr></table></figure>
+<p>定义了两个动态变量<strong>username</strong>和<strong>user_password</strong>字段和CSV文件的入口。使用上面例子，请求现在是这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">  &lt;http url=&#x27;/login.cgi&#x27; version=&#x27;1.0&#x27;</span><br><span class="line">    contents=&#x27;username=%%_username%%&amp;amp;password=%%_user_password%%&amp;amp;op=login&#x27;</span><br><span class="line">  content_type=&#x27;application/x-www-form-urlencoded&#x27; method=&#x27;POST&#x27;&gt;</span><br><span class="line">  &lt;/http&gt;</span><br><span class="line">&lt;/request&gt;</span><br></pre></td></tr></table></figure>
+<p>比使用老方法简单多了。<br>如果有多个测试阶段并且使用文件时加入了*order&#x3D;”iter”*状态，在不同到达阶段文件不会被重置。当更改阶段时，您将不会返回到第一行。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;arrivalphase phase=&quot;1&quot; duration=&quot;10&quot; unit=&quot;minute&quot;&gt;</span><br><span class="line">  &lt;users maxnumber=&quot;10&quot; arrivalrate=&quot;100&quot; unit=&quot;second&quot; /&gt;</span><br><span class="line">&lt;/arrivalphase&gt;</span><br><span class="line">&lt;arrivalphase phase=&quot;2&quot; duration=&quot;10&quot; unit=&quot;minute&quot;&gt;</span><br><span class="line">  &lt;users maxnumber=&quot;20&quot; arrivalrate=&quot;100&quot; unit=&quot;second&quot;&gt;&lt;/users&gt;</span><br><span class="line">&lt;/arrivalphase&gt;</span><br></pre></td></tr></table></figure>
+<p>这个例子中阶段1将读取10行左右，阶段2会读取下面的20行左右。</p>
+<h2 id="三、动态变量"><a href="#三、动态变量" class="headerlink" title="三、动态变量"></a>三、动态变量</h2><p>在一些案例中，在session中你可能需要使用一个通过服务器响应给定的一个值，这个值是服务器为每个用户动态生成的。为此你可以在场景中使用*&lt;dyn_variable&gt;*。<br>举个HTTP的例子，你可以在HTML中很容易的抓取一个值：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;form action=&quot;go.cgi&quot; method=&quot;POST&quot;&gt;</span><br><span class="line">  &lt;hidden name=&quot;random_num&quot; value=&quot;42&quot;&gt;&lt;/form&gt;</span><br><span class="line">&lt;/form&gt;</span><br></pre></td></tr></table></figure>
+<p>并且：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;request&gt;</span><br><span class="line">  &lt;dyn_variable name=&quot;random_num&quot;&gt;&lt;/dyn_variable&gt;</span><br><span class="line">  &lt;http url=&quot;/testtsung.html&quot; method=&quot;GET&quot; version=&quot;1.0&quot;&gt;&lt;/http&gt;</span><br><span class="line">&lt;/request&gt;</span><br></pre></td></tr></table></figure>
+<p>在所有用户的session中<em>random_num</em>将被设置为42，这个值将被所有含有%%_random_num%%标记并且请求标签属性为*subst&#x3D;”true”*的替换，比如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">  &lt;http url=&quot;/go.cgi&quot; version=&quot;1.0&quot;</span><br><span class="line">    contents=&quot;username=nic&amp;amp;random_num=%%_random_num%%&amp;amp;op=login&quot;</span><br><span class="line">    content_type=&quot;application/x-www-form-urlencoded&quot; method=&quot;POST&quot;&gt;</span><br><span class="line">  &lt;/http&gt;</span><br><span class="line">&lt;/request&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="3-1、正则表达式"><a href="#3-1、正则表达式" class="headerlink" title="3.1、正则表达式"></a>3.1、正则表达式</h3><p>如果动态值不是一个形式变量，你可以通过手动设置一个正则表达式，例如获取一个HTML页面的标题：<br>正则表达式引擎使用<em>re</em>模块，Erlang中一个Perl形式的正则表达式模块：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;request&gt;</span><br><span class="line">  &lt;dyn_variable name=&quot;mytitlevar&quot;</span><br><span class="line">                re=&quot;&amp;lt;title&amp;gt;(.*)&amp;lt;/title&amp;gt;&quot;/&gt;</span><br><span class="line">  &lt;http url=&quot;/testtsung.html&quot; method=&quot;GET&quot; version=&quot;1.0&quot;&gt;&lt;/http&gt;</span><br><span class="line">&lt;/request&gt;</span><br></pre></td></tr></table></figure>
+<p>1.4.0版本之前Tsung从Erlang使用老的<em>regexp</em>模块，这现在是不赞成使用的，语法格式如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;request&gt;</span><br><span class="line">  &lt;dyn_variable name=&quot;mytitlevar&quot;</span><br><span class="line">                regexp=&quot;&amp;lt;title&amp;gt;\(.*\)&amp;lt;/title&amp;gt;&quot;/&gt;</span><br><span class="line">  &lt;http url=&quot;/testtsung.html&quot; method=&quot;GET&quot; version=&quot;1.0&quot;&gt;&lt;/http&gt;</span><br><span class="line">&lt;/request&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="3-2、XPath"><a href="#3-2、XPath" class="headerlink" title="3.2、XPath"></a>3.2、XPath</h3><p>在发行版本1.3.0中提出了一种新的分析服务器响应的方法。只适用于HTTP和XMPP的插件因为它是基于XML&#x2F;HTML的。这些特性使用mochiweb库并且只能工作在Erlang R12B或者更高版本上。<br>特点：</p>
+<ul>
+<li>XPath可以很简单的读写，并很好匹配的HTML &#x2F; XML页面。</li>
+<li>解析器工作在binaries()，不产生任何string()。</li>
+<li>解析HTML&#x2F;XML树和构建成它是分摊在一个给定请求的所有dyn_variables定义中。</li>
+</ul>
+<p>为了利用Xpath表达式，在定义<em>dyn_variable</em>的时候使用一个<em>xpath</em>属性，来替代<em>re</em>，例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;dyn_variable name=&quot;field1_value&quot; xpath=&quot;//input[@name=&#x27;field1&#x27;]/@value&quot;/&gt;</span><br><span class="line">&lt;dyn_variable name=&quot;title&quot; xpath=&quot;/html/head/title/text()&quot;/&gt;</span><br></pre></td></tr></table></figure>
+<p>Xpath引擎有一个bug，结果节点从“descendant-or-self”不能按顺序返回文档，这不是一个常见的问题。<br>然而这样使用*&#x2F;&#x2F;img[1]&#x2F;@src<em>是不被推荐的，顺序元素</em>&lt;img&gt;<em>将不能从</em>&#x2F;&#x2F;img<em>返回正确结果。<br>为了避免没有“descendant-or-self”特性，这样使用：</em>&#x2F;html&#x2F;body&#x2F;div[2]&#x2F;img[3]&#x2F;@src* 可以返回预期结果并可正常使用。<br>可以使用Xpath从一个html页面获取元素列表，允许对象动态检索。你可以创建嵌入式Erlang代码来分析产生的列表或使用<em>foreach</em>这个在1.4.0发行版本中有介绍。<br>对于XMPP，可以在一个动态变量中获取所有联系人列表：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">   &lt;dyn_variable name=&quot;contactJids&quot;</span><br><span class="line">     xpath=&quot;//iq[@type=&#x27;result&#x27;]/query[@xmlns=&#x27;jabber:iq:roster&#x27;]//item[string-length(@wr:type)=0]/@jid&quot; /&gt;</span><br><span class="line">   &lt;jabber type=&quot;iq:roster:get&quot; ack=&quot;local&quot;/&gt;</span><br><span class="line">&lt;/request&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="3-3、JSONpath"><a href="#3-3、JSONpath" class="headerlink" title="3.3、JSONpath"></a>3.3、JSONpath</h3><p>当服务器发送JSON数据时还可以使用另一个方法来分析服务器响应(在1.3.2发行版本中)。这个只适用于HTTP的插件。这些特性使用mochiweb库并且只能工作在Erlang R13B或者更高版本上。<br>Tsung实现一个JOSNPath有限子集在这里定义<a target="_blank" rel="noopener" href="http://goessner.net/articles/JsonPath/%E3%80%82">http://goessner.net/articles/JsonPath/。</a><br>为了利用jsonpath表达式，在定义&lt;dyn_variable&gt;时使用<strong>jsonpath</strong>来替代<strong>re</strong>，例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;dyn_variable name=&quot;array3_value&quot; jsonpath=&quot;field.array[3].value&quot;/&gt;</span><br></pre></td></tr></table></figure>
+<p>你仍然可以使用表达式<em>Key&#x3D;Val</em>, 比如:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;dyn_variable name=&quot;myvar&quot; jsonpath=&quot;field.array[?name=bar].value&quot;/&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="3-4、PostgreSQL"><a href="#3-4、PostgreSQL" class="headerlink" title="3.4、PostgreSQL"></a>3.4、PostgreSQL</h3><p>因为 PostgreSQL protocol is binary,regexp不能用来解析服务器的输出。相反，一个特定的解析可以从服务器的响应中提取内容；要这样做的话，使用<em>pgsql_expr</em>属性。使用<em>data_row[L][C]<em>提取L行C列输出数据。也可以使用该列的名称(比如表的字段名)。这个例子从服务器响应中提取3个动态变量：<br>首先提取第4行的第3列，然后从第2行提取mtime字段，最后通过</em>row_description</em>提取一些数据：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;request&gt;</span><br><span class="line">  &lt;dyn_variable name=&quot;myvar&quot; pgsql_expr=&quot;data_row[4][3]&quot;/&gt;</span><br><span class="line">  &lt;dyn_variable name=&quot;mtime&quot; pgsql_expr=&quot;data_row[2].mtime&quot;/&gt;</span><br><span class="line">  &lt;dyn_variable name=&quot;row&quot; pgsql_expr=&quot;row_description[1][3][1]&quot;/&gt;</span><br><span class="line">  &lt;pgsql type=&quot;sql&quot;&gt;SELECT * from pgbench_history LIMIT 20;&lt;/pgsql&gt;</span><br><span class="line">&lt;/request&gt;</span><br></pre></td></tr></table></figure>
+<p>行描述是这样的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">| =INFO REPORT==== 14-Apr-2010::11:03:22 ===</span><br><span class="line">|            ts_pgsql:(7:&lt;0.102.0&gt;) PGSQL: Pair=&#123;row_description,</span><br><span class="line">|                                                [&#123;&quot;tid&quot;,text,1,23,4,-1,16395&#125;,</span><br><span class="line">|                                                 &#123;&quot;bid&quot;,text,2,23,4,-1,16395&#125;,</span><br><span class="line">|                                                 &#123;&quot;aid&quot;,text,3,23,4,-1,16395&#125;,</span><br><span class="line">|                                                 &#123;&quot;delta&quot;,text,4,23,4,-1,16395&#125;,</span><br><span class="line">|                                                 &#123;&quot;mtime&quot;,text,5,1114,8,-1,16395&#125;,</span><br><span class="line">|                                                 &#123;&quot;filler&quot;,text,6,1042,-1,26,16395&#125;]&#125;</span><br></pre></td></tr></table></figure>
+<p>因此在这个例子中，<strong>row</strong>变量等于*”aid”*。</p>
+<h3 id="3-5、-Decoding-variables"><a href="#3-5、-Decoding-variables" class="headerlink" title="3.5、 Decoding variables"></a>3.5、 Decoding variables</h3><p>解码变量包含HTML实体编码是可能的, 通过设置<em>decode</em>属性为<strong>html_entities</strong>来完成：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;request&gt;</span><br><span class="line">  &lt;dyn_variable name=&quot;mytitlevar&quot;</span><br><span class="line">                re=&quot;&amp;lt;title&amp;gt;(.*)&amp;lt;/title&amp;gt;&quot;</span><br><span class="line">                decode=&quot;html_entities&quot;/&gt;</span><br><span class="line">  &lt;http url=&quot;/testtsung.html&quot; method=&quot;GET&quot; version=&quot;1.0&quot;&gt;&lt;/http&gt;</span><br><span class="line">&lt;/request&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="3-6、set-dynvars"><a href="#3-6、set-dynvars" class="headerlink" title="3.6、set_dynvars"></a>3.6、set_dynvars</h3><p>1.3.0版本后引入了许多功能强大的动态变量。<br>你可以不仅在分析服务器数据时设置动态变量，还可以使用外部文件构建，或者通过一个函数生成，或者生成随机 数字&#x2F;字符串。<br>动态变量的一些类型(<em>sourcetype</em>属性)：</p>
+<h4 id="3-6-1、通过调用一个Erlang函数定义的动态变量："><a href="#3-6-1、通过调用一个Erlang函数定义的动态变量：" class="headerlink" title="3.6.1、通过调用一个Erlang函数定义的动态变量："></a>3.6.1、通过调用一个Erlang函数定义的动态变量：</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;setdynvars sourcetype=&quot;erlang&quot; callback=&quot;ts_user_server:get_unique_id&quot;&gt;</span><br><span class="line">    &lt;var name=&quot;id1&quot; /&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="3-6-2、通过解析外部文件定义的动态变量："><a href="#3-6-2、通过解析外部文件定义的动态变量：" class="headerlink" title="3.6.2、通过解析外部文件定义的动态变量："></a>3.6.2、通过解析外部文件定义的动态变量：</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;setdynvars sourcetype=&quot;file&quot; fileid=&quot;userdb&quot; delimiter=&quot;;&quot; order=&quot;iter&quot;&gt;</span><br><span class="line">  &lt;var name=&quot;user&quot; /&gt;</span><br><span class="line">  &lt;var name=&quot;user_password&quot; /&gt;</span><br><span class="line">&lt;/setdynvars&gt;</span><br></pre></td></tr></table></figure>
+<p>分隔符可以是任何字符串, 并且<em>order</em>可设为<strong>iter</strong>或<strong>random</strong></p>
+<h4 id="3-6-3、一个动态变量可以是一个随机数（均匀分布）："><a href="#3-6-3、一个动态变量可以是一个随机数（均匀分布）：" class="headerlink" title="3.6.3、一个动态变量可以是一个随机数（均匀分布）："></a>3.6.3、一个动态变量可以是一个随机数（均匀分布）：</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;setdynvars sourcetype=&quot;random_number&quot; start=&quot;3&quot; end=&quot;32&quot;&gt;</span><br><span class="line">  &lt;var name=&quot;rndint&quot; /&gt;</span><br><span class="line">&lt;/setdynvars&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="3-6-4、一个动态变量可以是一个随机字符串："><a href="#3-6-4、一个动态变量可以是一个随机字符串：" class="headerlink" title="3.6.4、一个动态变量可以是一个随机字符串："></a>3.6.4、一个动态变量可以是一个随机字符串：</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;setdynvars sourcetype=&quot;random_string&quot; length=&quot;13&quot;&gt;</span><br><span class="line">   &lt;var name=&quot;rndstring1&quot; /&gt;</span><br><span class="line">&lt;/setdynvars&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="3-6-5、一个动态的变量可以是一个urandom字符串"><a href="#3-6-5、一个动态的变量可以是一个urandom字符串" class="headerlink" title="3.6.5、一个动态的变量可以是一个urandom字符串"></a>3.6.5、一个动态的变量可以是一个urandom字符串</h4><p>这比随机字符串要快得多，但字符串是不是真正随机的：总是使用相同的字符集。<br>一个动态的变量可以通过Erlang代码动态赋值生成：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;setdynvars sourcetype=&quot;eval&quot;</span><br><span class="line">            code=&quot;fun(&#123;Pid,DynVars&#125;)-&gt;</span><br><span class="line">                      &#123;ok,Val&#125;=ts_dynvars:lookup(md5data,DynVars),</span><br><span class="line">                      ts_digest:md5hex(Val) end.&quot;&gt;</span><br><span class="line">  &lt;var name=&quot;md5sum&quot; /&gt;</span><br><span class="line">&lt;/setdynvars&gt;</span><br></pre></td></tr></table></figure>
+<p>在上面情况下，我们使用tsung函数<em>ts_dynvars:lookup</em>取回动态变量命名<strong>md5data</strong>。这个dyn_variable <em>md5data</em>可以设置在任何描述方式在在动态变量的动态变量部分。</p>
+<h4 id="3-6-6、一个动态的变量，可以通过运行jsonpath规范产生（见JSONPath）到一个现有的动态变量："><a href="#3-6-6、一个动态的变量，可以通过运行jsonpath规范产生（见JSONPath）到一个现有的动态变量：" class="headerlink" title="3.6.6、一个动态的变量，可以通过运行jsonpath规范产生（见JSONPath）到一个现有的动态变量："></a>3.6.6、一个动态的变量，可以通过运行jsonpath规范产生（见JSONPath）到一个现有的动态变量：</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;setdynvars sourcetype=&quot;jsonpath&quot; from=&quot;notification&quot; jsonpath=&quot;result[?state=OK].node&quot;&gt;</span><br><span class="line">  &lt;var name=&quot;deployed&quot; /&gt;</span><br><span class="line">&lt;/setdynvars&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="3-6-7、您可以创建动态变量当前服务器的主机名和端口："><a href="#3-6-7、您可以创建动态变量当前服务器的主机名和端口：" class="headerlink" title="3.6.7、您可以创建动态变量当前服务器的主机名和端口："></a>3.6.7、您可以创建动态变量当前服务器的主机名和端口：</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;setdynvars sourcetype=&quot;server&quot;&gt;</span><br><span class="line">  &lt;var name=&quot;host&quot; /&gt;</span><br><span class="line">  &lt;var name=&quot;port&quot; /&gt;</span><br><span class="line">&lt;/setdynvars&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="3-6-8、你可以定义一个动态变为固定值，使用它在一个插件（1-5-0版本后）："><a href="#3-6-8、你可以定义一个动态变为固定值，使用它在一个插件（1-5-0版本后）：" class="headerlink" title="3.6.8、你可以定义一个动态变为固定值，使用它在一个插件（1.5.0版本后）："></a>3.6.8、你可以定义一个动态变为固定值，使用它在一个插件（1.5.0版本后）：</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;setdynvars sourcetype=&quot;value&quot; value=&quot;foobar&quot;&gt;</span><br><span class="line">  &lt;var name=&quot;constant&quot; /&gt;</span><br><span class="line">&lt;/setdynvars&gt;</span><br></pre></td></tr></table></figure>
+<p><strong>setdynvars</strong>可以在session的任何地方定义。</p>
+<h2 id="四、检查服务器响应"><a href="#四、检查服务器响应" class="headerlink" title="四、检查服务器响应"></a>四、检查服务器响应</h2><p>在*&lt;request&gt;<em>标签中定义</em>math<em>标签，可以检查服务器对一个给定字符串的响应，并根据结果做出一些动作。在任何情况下，如果匹配的话将增加匹配的计数器，如果不匹配的话，不匹配的技术器将增加。<br>例如，让我们说你想测试一个登录页面。如果登录成功，服务器将在HTML中响应</em>Welcome ！*，否则不响应：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;request&gt;</span><br><span class="line">   &lt;match do=&quot;continue&quot; when=&quot;match&quot;&gt;Welcome !&lt;/match&gt;</span><br><span class="line">   &lt;http url=&quot;/login.php&quot; version=&quot;1.0&quot; method=&quot;POST&quot;</span><br><span class="line">         contents=&quot;username=nic&amp;amp;user_password=sesame&quot;</span><br><span class="line">         content_type=&quot;application/x-www-form-urlencoded&quot; &gt;</span><br><span class="line">&lt;/request&gt;</span><br></pre></td></tr></table></figure>
+<p>可以使用正则表达式代替这个简单字符串。<br>可用的动作清单如下：</p>
+<ul>
+<li>continue：什么都不做，continue(只更新匹配或不匹配计数器)</li>
+<li>log：把请求id, userid, sessionid, name记录到log中(在match.log中)</li>
+<li>abort：中断这个session</li>
+<li>restart：重启这个session，默认的最大重启次数是3</li>
+<li>loop：5秒后重复这个请求，默认最大loops数量是20</li>
+<li>dump：存储响应中的内容到一个文件中，文件名是<em>match-<userid>-<sessionid>-<requestid>-<dumpid>.dump</em></li>
+</ul>
+<p>您可以在一个请求中混合多个匹配标记：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;request&gt;</span><br><span class="line">  &lt;match do=&quot;loop&quot; sleep_loop=&quot;5&quot; max_loop=&quot;10&quot; when=&quot;match&quot;&gt;Retry&lt;/match&gt;</span><br><span class="line">  &lt;match do=&quot;abort&quot; when=&quot;match&quot;&gt;Error&lt;/match&gt;</span><br><span class="line">  &lt;http url=&#x27;/index.php&#x27; method=GET&#x27;&gt;</span><br><span class="line">&lt;/request&gt;</span><br></pre></td></tr></table></figure>
+<p>你也可以指定不匹配执行动作而不是匹配。<br>如果你想要跳过HTTP headers而只匹配body，可以使用<em>skip_headers&#x3D;’http’</em>。<br>此外你也可以在匹配前对content应用一个函数；例如，下面的示例使用的特点，在一个HTTP响应body计算md5sum，并比较它和给定值：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;match do=&#x27;log&#x27; when=&#x27;nomatch&#x27; skip_headers=&#x27;http&#x27; apply_to_content=&#x27;ts_digest:md5hex&#x27;&gt;01441debe3d7cc65ba843eee1acff89d&lt;/match&gt;</span><br><span class="line">&lt;http url=&quot;/&quot; method=&quot;GET&quot; version=&quot;1.1&quot;/&gt;</span><br></pre></td></tr></table></figure>
+<p>也可以使用动态变量，使用<strong>subst</strong>属性：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;match do=&#x27;log&#x27; when=&#x27;nomatch&#x27; subst=&#x27;true&#x27; &gt;%%_myvar%%&lt;/match&gt;</span><br><span class="line">&lt;http url=&quot;/&quot; method=&quot;GET&quot;/&gt;</span><br></pre></td></tr></table></figure>
+<p>1.5.0版本后，可以在<strong>match</strong>标签中添加<strong>name</strong>属性用于在match.log中记录打印名称，如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;match do=&#x27;log&#x27; when=&#x27;match&#x27; name=&#x27;http_match_200ok&#x27;&gt;200OK&lt;/match&gt;</span><br><span class="line">&lt;http url=&quot;/&quot; method=&quot;GET&quot; version=&quot;1.1&quot;/&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="五、Loops-If-Foreach"><a href="#五、Loops-If-Foreach" class="headerlink" title="五、Loops, If, Foreach"></a>五、Loops, If, Foreach</h2><p>在1.3.0版本后，session中可以增加条件&#x2F;非条件循环。<br>在1.4.0版本后，可以通过循环列表，轮询每一个动态变量。</p>
+<h3 id="5-1、for"><a href="#5-1、for" class="headerlink" title="5.1、for"></a>5.1、for</h3><p>重复一个封闭动作的固定次数。动态变量作为一个计数器使用，所以当前的迭代可以用于请求中。属性列表：</p>
+<ul>
+<li>from：初使值</li>
+<li>to：最终值</li>
+<li>incr：增量</li>
+<li>var：保存当数值的变量名</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;for from=&quot;1&quot; to=&quot;10&quot; incr=&quot;1&quot; var=&quot;counter&quot;&gt;</span><br><span class="line">  ...</span><br><span class="line">  &lt;request&gt; &lt;http url=&quot;/page?id=%%_counter%%&quot;&gt;&lt;/http&gt; &lt;/request&gt;</span><br><span class="line">  ...</span><br><span class="line">&lt;/for&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="5-2、repeat"><a href="#5-2、repeat" class="headerlink" title="5.2、repeat"></a>5.2、repeat</h3><p>Repeat the enclosing action (while or until) some condition. This is intended to be used together with <dyn_variable> declarations. List of attributes:<br>重复一个封闭动作(while或until)一些条件。这个是和&lt;dyn_variable&gt;声明一起使用。属性列表：</p>
+<ul>
+<li>name：循环名</li>
+<li>max_repeat：循环次数(默认20)</li>
+</ul>
+<p>注意：循环的最后一个标签必须是是&lt;while&gt;或&lt;until&gt; 例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;repeat name=&quot;myloop&quot; max_repeat=&quot;40&quot;&gt;</span><br><span class="line">  ...</span><br><span class="line">  &lt;request&gt;</span><br><span class="line">    &lt;dyn_variable name=&quot;result&quot; re=&quot;Result: (.*)&quot;/&gt;</span><br><span class="line">    &lt;http url=&quot;/random&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt;</span><br><span class="line">  &lt;/request&gt;</span><br><span class="line">  ...</span><br><span class="line">  &lt;until var=&quot;result&quot; eq=&quot;5&quot;/&gt;</span><br><span class="line">&lt;/repeat&gt;</span><br></pre></td></tr></table></figure>
+<p>1.3.1版本后，也可以添加基于动态变量的语句。</p>
+<h3 id="5-3、if"><a href="#5-3、if" class="headerlink" title="5.3、if"></a>5.3、if</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;if var=&quot;tsung_userid&quot; eq=&quot;3&quot;&gt;</span><br><span class="line">  &lt;request&gt; &lt;http url=&quot;/foo&quot;/&gt; &lt;/request&gt;</span><br><span class="line">  &lt;request&gt; &lt;http url=&quot;/bar&quot;/&gt; &lt;/request&gt;</span><br><span class="line">&lt;/if&gt;</span><br></pre></td></tr></table></figure>
+<p>你可以用eq或neq来检查变量。<br>1.5.1版本后可以使用比较运算符<em>gt</em>,<em>gte</em>,<em>lt</em>和<em>lte</em>来做大于、大于等于、小于、小于等于的操作。<br>如果动态变量是一个列表(比如从XPath输出)，你可以进入这样一个列表的第n个元素：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;if var=&quot;myvar[1]&quot; eq=&quot;3&quot;&gt;</span><br></pre></td></tr></table></figure>
+<p>这里我们比较列表的第一个元素和3。</p>
+<h3 id="5-4、foreach"><a href="#5-4、foreach" class="headerlink" title="5.4、foreach"></a>5.4、foreach</h3><p>为指定的列表中包含的所有元素重复封闭的动作。基本语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;foreach name=&quot;element&quot; in=&quot;list&quot;&gt;</span><br><span class="line">  &lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">   &lt;http url=&quot;%%_element%%&quot; method=&quot;GET&quot; version=&quot;1.1&quot;/&gt;</span><br><span class="line">  &lt;/request&gt;</span><br><span class="line">&lt;/foreach&gt;</span><br></pre></td></tr></table></figure>
+<p>可以通过遍历过滤你想要的元素，在foreach语句中可以使用<em>include</em>和<em>exclude</em>属性。<br>如下例，你只想要包换一个本地路径的元素：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;foreach name=&quot;element&quot; in=&quot;list&quot; include=&quot;^/.*$&quot;&gt;</span><br></pre></td></tr></table></figure>
+<p>如果想要排除包含指定URL的所有元素，可以这样写：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;foreach name=&quot;element&quot; in=&quot;list&quot; exclude=&quot;http:\/\/.*\.tld\.com\/.*$&quot;&gt;</span><br></pre></td></tr></table></figure>
+<p>你可以结合XPath查询。例如，下面的场景将检索在网页上指定的所有图像：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">  &lt;dyn_variable name=&quot;img_list&quot; xpath=&quot;//img/@src&quot;/&gt;</span><br><span class="line">  &lt;http url=&quot;/mypage.html&quot; method=&quot;GET&quot; version=&quot;1.1&quot;/&gt;</span><br><span class="line">&lt;/request&gt;</span><br><span class="line">&lt;foreach name=&quot;img&quot; in=&quot;img_list&quot;&gt;</span><br><span class="line">  &lt;request subst=&quot;true&quot;&gt;</span><br><span class="line">    &lt;http url=&quot;%%_img%%&quot; method=&quot;GET&quot; version=&quot;1.1&quot;/&gt;</span><br><span class="line">  &lt;/request&gt;</span><br><span class="line">&lt;/foreach&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="六、rate-limiting"><a href="#六、rate-limiting" class="headerlink" title="六、rate limiting"></a>六、rate limiting</h2><p>1.4.0版本后就可以使用限速功能，无论是全局范围内（见options选项），或为每个session。<br>例如，为一个给定的会话限制速度64kb／秒：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;session name=&quot;http-example&quot; probability=&quot;70&quot; type=&quot;ts_http&quot;&gt;</span><br><span class="line">  &lt;set_option name=&quot;rate_limit&quot; value=&quot;64&quot; /&gt;</span><br><span class="line">  ...</span><br><span class="line">&lt;/session&gt;</span><br></pre></td></tr></table></figure>
+<p>当前只有进入的速率可以限制。</p>
+<h2 id="七、请求排除"><a href="#七、请求排除" class="headerlink" title="七、请求排除"></a>七、请求排除</h2><p>测试运行的时候可用来排除一些请求。要实现这个功能你必须给他们打上<em>tag</em>标签并且在启动的时候使用*-x<em>选项。<br>下面例子中，排除GET foo.png，为要排除的请求添加</em>tag*：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;request&gt;</span><br><span class="line">  &lt;http url=&quot;/&quot; method=&quot;GET&quot;&gt;&lt;/http&gt;</span><br><span class="line">&lt;/request&gt;</span><br><span class="line">&lt;request tag=&quot;image&quot;&gt;</span><br><span class="line">  &lt;http url=&quot;/foo.png&quot; method=&quot;GET&quot;&gt;&lt;/http&gt;</span><br><span class="line">&lt;/request&gt;</span><br></pre></td></tr></table></figure>
+<p>然后下面命令开启测试：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tsung -f SCENARIO.xml -x image start</span><br></pre></td></tr></table></figure>
+<p>只有GET到*&#x2F;*将被执行。<br>注意，请求标签还可以通过<strong>dumptraffic &#x3D;”protocol”</strong>写入到log中（见文件结构）。</p>
+<h2 id="八、客户端证书"><a href="#八、客户端证书" class="headerlink" title="八、客户端证书"></a>八、客户端证书</h2><p>可以通过使用客户端证书来进行ssl验证。你可以使用动态变量来设置证书的一些参数（key password是可选的）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;session name=&quot;https-with-cert&quot; probability=&quot;70&quot; type=&quot;ts_http&quot;&gt;</span><br><span class="line"></span><br><span class="line">  &lt;set_option name=&quot;certificate&quot;&gt;</span><br><span class="line">    &lt;certificate cacertfile=&quot;/etc/ssl/ca.pem&quot;</span><br><span class="line">                 keyfile=&quot;%%_keyfile%%&quot; keypass=&quot;%%_keypass%%&quot; certfile=&quot;/home/nobody/.tsung/client.pem&quot;/&gt;</span><br><span class="line">  &lt;/set_option&gt;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Tsung/" rel="tag"># Tsung</a>
+              <a href="/tags/%E6%B5%8B%E8%AF%95/" rel="tag"># 测试</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/08/25/Tsung%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90-Sessions/" rel="prev" title="Tsung配置文件解析-Sessions">
+                  <i class="fa fa-chevron-left"></i> Tsung配置文件解析-Sessions
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/09/02/Tsung%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1%E4%B8%8E%E6%8A%A5%E5%91%8A/" rel="next" title="Tsung数据统计与报告">
+                  Tsung数据统计与报告 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

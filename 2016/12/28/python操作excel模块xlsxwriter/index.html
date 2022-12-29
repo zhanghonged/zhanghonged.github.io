@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="XlsxWriter介绍XlsxWriter是一个用来创建Excel  XLSX文件的python模块。XlsxWriter官网地址: http:&#x2F;&#x2F;xlsxwriter.readthedocs.io&#x2F;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python操作excel模块xlsxwriter">
+<meta property="og:url" content="http://zhanghonged.github.io/2016/12/28/python%E6%93%8D%E4%BD%9Cexcel%E6%A8%A1%E5%9D%97xlsxwriter/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="XlsxWriter介绍XlsxWriter是一个用来创建Excel  XLSX文件的python模块。XlsxWriter官网地址: http:&#x2F;&#x2F;xlsxwriter.readthedocs.io&#x2F;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/xlsxwriter-write.png">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/xlsxwriter-x_axis.png">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/xlsxwriter-title.png">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/xlsxwriter-style.png">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/xlsxwriter-table.png">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/xlsxwriter-zonghe.png">
+<meta property="article:published_time" content="2016-12-28T06:46:58.000Z">
+<meta property="article:modified_time" content="2017-11-07T08:37:33.181Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://zhanghonged.github.io/uploads/xlsxwriter-write.png">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2016/12/28/python%E6%93%8D%E4%BD%9Cexcel%E6%A8%A1%E5%9D%97xlsxwriter/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2016/12/28/python%E6%93%8D%E4%BD%9Cexcel%E6%A8%A1%E5%9D%97xlsxwriter/","path":"2016/12/28/python操作excel模块xlsxwriter/","title":"python操作excel模块xlsxwriter"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>python操作excel模块xlsxwriter | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#XlsxWriter%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">XlsxWriter介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9D%97%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95%E8%AF%B4%E6%98%8E"><span class="nav-number">2.</span> <span class="nav-text">模块常用方法说明</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Workbook%E7%B1%BB"><span class="nav-number">2.1.</span> <span class="nav-text">Workbook类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#workbook-add-worksheet-sheetname-%E6%96%B9%E6%B3%95"><span class="nav-number">2.1.1.</span> <span class="nav-text">workbook.add_worksheet([sheetname])方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#workbook-add-format-properties-%E6%96%B9%E6%B3%95"><span class="nav-number">2.1.2.</span> <span class="nav-text">workbook.add_format([properties])方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#workbook-add-chart-options-%E6%96%B9%E6%B3%95"><span class="nav-number">2.1.3.</span> <span class="nav-text">workbook.add_chart(options)方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#workbook-close-%E6%96%B9%E6%B3%95"><span class="nav-number">2.1.4.</span> <span class="nav-text">workbook.close()方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Worksheet%E7%B1%BB"><span class="nav-number">2.2.</span> <span class="nav-text">Worksheet类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#worksheet-write-row-col-args-%E6%96%B9%E6%B3%95"><span class="nav-number">2.2.1.</span> <span class="nav-text">worksheet.write(row, col, *args)方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#worksheet-set-row-row-height-cell-format-options-%E6%96%B9%E6%B3%95"><span class="nav-number">2.2.2.</span> <span class="nav-text">worksheet.set_row(row,height,cell_format,options)方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#worksheet-set-column-first-col-last-col-width-cell-format-options-%E6%96%B9%E6%B3%95"><span class="nav-number">2.2.3.</span> <span class="nav-text">worksheet.set_column(first_col,last_col,width,cell_format,options)方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#worksheet-insert-image-row-col-image-options-%E6%96%B9%E6%B3%95"><span class="nav-number">2.2.4.</span> <span class="nav-text">worksheet.insert_image(row, col, image[, options])方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Chart%E7%B1%BB"><span class="nav-number">2.3.</span> <span class="nav-text">Chart类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#chart-add-series-options-%E6%96%B9%E6%B3%95"><span class="nav-number">2.3.1.</span> <span class="nav-text">chart.add_series(options)方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#chart-set-x-axis-options-%E6%96%B9%E6%B3%95"><span class="nav-number">2.3.2.</span> <span class="nav-text">chart.set_x_axis(options)方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#chart-set-y-axis-options-%E6%96%B9%E6%B3%95"><span class="nav-number">2.3.3.</span> <span class="nav-text">chart.set_y_axis(options)方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#chart-set-size-%E6%96%B9%E6%B3%95"><span class="nav-number">2.3.4.</span> <span class="nav-text">chart.set_size()方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#chart-set-title-options"><span class="nav-number">2.3.5.</span> <span class="nav-text">chart.set_title(options)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#chart-set-style-style-id-%E6%96%B9%E6%B3%95"><span class="nav-number">2.3.6.</span> <span class="nav-text">chart.set_style(style_id)方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#chart-set-table-options-%E6%96%B9%E6%B3%95"><span class="nav-number">2.3.7.</span> <span class="nav-text">chart.set_table(options)方法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%BC%E5%90%88%E7%A4%BA%E4%BE%8B"><span class="nav-number">3.</span> <span class="nav-text">综合示例</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2016/12/28/python%E6%93%8D%E4%BD%9Cexcel%E6%A8%A1%E5%9D%97xlsxwriter/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="python操作excel模块xlsxwriter | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          python操作excel模块xlsxwriter
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-12-28 14:46:58" itemprop="dateCreated datePublished" datetime="2016-12-28T14:46:58+08:00">2016-12-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2017-11-07 16:37:33" itemprop="dateModified" datetime="2017-11-07T16:37:33+08:00">2017-11-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="XlsxWriter介绍"><a href="#XlsxWriter介绍" class="headerlink" title="XlsxWriter介绍"></a>XlsxWriter介绍</h2><p>XlsxWriter是一个用来创建Excel  XLSX文件的python模块。<br>XlsxWriter官网地址: <a target="_blank" rel="noopener" href="http://xlsxwriter.readthedocs.io/">http://xlsxwriter.readthedocs.io/</a></p>
+<span id="more"></span>
+
+<p>下面一个小例子展示XlsxWriter模块的一些特性：</p>
+<div align=center>
+![demo](/uploads/xlsxwriter-demo.png)
+</div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">##############################################################################</span><br><span class="line">#</span><br><span class="line"># A simple example of some of the features of the XlsxWriter Python module.</span><br><span class="line">#</span><br><span class="line"># Copyright 2013-2016, John McNamara, jmcnamara@cpan.org</span><br><span class="line">#</span><br><span class="line">import xlsxwriter</span><br><span class="line"></span><br><span class="line"># 创建一个excel文件和工作表对象.</span><br><span class="line">workbook = xlsxwriter.Workbook(&#x27;demo.xlsx&#x27;)</span><br><span class="line">worksheet = workbook.add_worksheet()</span><br><span class="line"></span><br><span class="line"># 设置第一列(A)宽带为20像素.</span><br><span class="line">worksheet.set_column(&#x27;A:A&#x27;, 20)</span><br><span class="line"></span><br><span class="line"># 定义一个加粗的格式对象</span><br><span class="line">bold = workbook.add_format(&#123;&#x27;bold&#x27;: True&#125;)</span><br><span class="line"></span><br><span class="line"># A1单元格写入’Hello’.</span><br><span class="line">worksheet.write(&#x27;A1&#x27;, &#x27;Hello&#x27;)</span><br><span class="line"></span><br><span class="line"># A2单元格写入’World’并引用加粗格式对象bold.</span><br><span class="line">worksheet.write(&#x27;A2&#x27;, &#x27;World&#x27;, bold)</span><br><span class="line"></span><br><span class="line"># 用行列表示法写入数字’123’和’123.456’.</span><br><span class="line">worksheet.write(2, 0, 123)</span><br><span class="line">worksheet.write(3, 0, 123.456)</span><br><span class="line"></span><br><span class="line"># 在B5单元格插入图片.</span><br><span class="line">worksheet.insert_image(&#x27;B5&#x27;, &#x27;logo.png&#x27;)</span><br><span class="line"></span><br><span class="line">workbook.close()</span><br></pre></td></tr></table></figure>
+### 功能列表
+XlsxWriter具有以下功能：
+
+<ul>
+<li>100%兼容Excel XLSX文件，支持Excel2007及已上所有版本</li>
+<li>支持所有Excel单元格数据格式</li>
+<li>支持单元格合并、批注、自动筛选、丰富多格式字符串等</li>
+<li>支持工作表PNG&#x2F;JPEG图像，自定义图像</li>
+<li>内存优化模式支持写入大文件</li>
+</ul>
+<h2 id="模块常用方法说明"><a href="#模块常用方法说明" class="headerlink" title="模块常用方法说明"></a>模块常用方法说明</h2><h3 id="Workbook类"><a href="#Workbook类" class="headerlink" title="Workbook类"></a>Workbook类</h3><p>Workbook类定义：Workbook(filename[, options])<br>创建一个XlsxWriter的Workbook对象。Workbook代表整个Excel文件，并存储在磁盘上。<br>参数:</p>
+<ul>
+<li>filename(string) Excel:创建的文件的存储路径。</li>
+<li>optins(dict): 可选的workbook参数，一般用来初始化工作表的内容格式，具体官网上有详细的书面。</li>
+</ul>
+<h4 id="workbook-add-worksheet-sheetname-方法"><a href="#workbook-add-worksheet-sheetname-方法" class="headerlink" title="workbook.add_worksheet([sheetname])方法"></a>workbook.add_worksheet([sheetname])方法</h4><p>在workbook里添加一个新的工作表。<br>参数:</p>
+<ul>
+<li>sheetname(string):可选工作表名称，默认为sheet1。</li>
+</ul>
+<p>示例:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">worksheet1 = workbook.add_worksheet()           # Sheet1</span><br><span class="line">worksheet2 = workbook.add_worksheet(&#x27;Foglio2&#x27;)  # Foglio2</span><br><span class="line">worksheet3 = workbook.add_worksheet(&#x27;Data&#x27;)     # Data</span><br><span class="line">worksheet4 = workbook.add_worksheet()           # Sheet4</span><br></pre></td></tr></table></figure>
+<h4 id="workbook-add-format-properties-方法"><a href="#workbook-add-format-properties-方法" class="headerlink" title="workbook.add_format([properties])方法"></a>workbook.add_format([properties])方法</h4><p>在工作表中创建一个新的格式对象来格式化单元格。<br>参数:</p>
+<ul>
+<li>properties(dict):指定一个格式属性的字典。</li>
+</ul>
+<p>例如一个加粗的格式化对象</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bold=workbook.add_format(&#123;‘bold’:True&#125;)</span><br></pre></td></tr></table></figure>
+
+<h4 id="workbook-add-chart-options-方法"><a href="#workbook-add-chart-options-方法" class="headerlink" title="workbook.add_chart(options)方法"></a>workbook.add_chart(options)方法</h4><p>在工作表中创建一个图表对象，内部是通过insert_chart方法来实现。<br>参数:</p>
+<ul>
+<li>options(dict):为图表指定一个字典属性。</li>
+</ul>
+<p>例如设置一个柱行的图表对象:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chart = workbook.add_chart(&#123;&#x27;type&#x27;: &#x27;column&#x27;&#125;)</span><br></pre></td></tr></table></figure>
+<p>type类型还包括：</p>
+<ul>
+<li>area      面积样式</li>
+<li>bar       条形样式</li>
+<li>column    柱行样式</li>
+<li>doughnut  圆环样式</li>
+<li>line      线条样式</li>
+<li>pie       饼行样式</li>
+<li>radar     雷达样式</li>
+<li>scatter   散点样式</li>
+<li>stock     股票样式</li>
+</ul>
+<h4 id="workbook-close-方法"><a href="#workbook-close-方法" class="headerlink" title="workbook.close()方法"></a>workbook.close()方法</h4><p>关闭工作表文件。<br>后面还有许多方法，参见官网。</p>
+<h3 id="Worksheet类"><a href="#Worksheet类" class="headerlink" title="Worksheet类"></a>Worksheet类</h3><p>Worksheet类代表了一个Excel工作表，是XlsxWriter模块最核心的一个类，例如将数据写入单元格或工作表布局等。<br>Worksheet对象不能直接实例化，需要通过Workbook()对象使用add_worksheet()方法来创建。<br>简例:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">workbook   = xlsxwriter.Workbook(&#x27;filename.xlsx&#x27;)</span><br><span class="line"></span><br><span class="line">worksheet1 = workbook.add_worksheet()</span><br><span class="line">worksheet2 = workbook.add_worksheet()</span><br><span class="line"></span><br><span class="line">worksheet1.write(&#x27;A1&#x27;, 123)</span><br><span class="line"></span><br><span class="line">workbook.close()</span><br></pre></td></tr></table></figure>
+<h4 id="worksheet-write-row-col-args-方法"><a href="#worksheet-write-row-col-args-方法" class="headerlink" title="worksheet.write(row, col, *args)方法"></a>worksheet.write(row, col, *args)方法</h4><p>将普通数据写入工作表的单元格。<br>参数:</p>
+<ul>
+<li>row:行坐标，起始为0</li>
+<li>col:列坐标，起始为0</li>
+<li>*args:数据内容，可以为字符串、数字、公式或格式对象。</li>
+</ul>
+<p>为了简化不同类型数据的写入，write方法提供其他更为具体数据类型的方法：</p>
+<ul>
+<li>write_string()     字符串</li>
+<li>write_number()     数字</li>
+<li>write_blank()      空类型</li>
+<li>write_formula()    公式类型</li>
+<li>write_datetime()   日期类型</li>
+<li>write_boolean()    逻辑类型</li>
+<li>write_url()        超链接类型</li>
+</ul>
+<p>数据类型具体实例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">worksheet.write(0, 0, &#x27;Hello&#x27;)          # write_string()</span><br><span class="line">worksheet.write(1, 0, &#x27;World&#x27;)          # write_string()</span><br><span class="line">worksheet.write(2, 0, 2)                # write_number()</span><br><span class="line">worksheet.write(3, 0, 3.00001)          # write_number()</span><br><span class="line">worksheet.write(4, 0, &#x27;=SIN(PI()/4)&#x27;)   # write_formula()</span><br><span class="line">worksheet.write(5, 0, &#x27;&#x27;)               # write_blank()</span><br><span class="line">worksheet.write(6, 0, None)             # write_blank()</span><br></pre></td></tr></table></figure>
+<p><img src="/uploads/xlsxwriter-write.png" alt="demo"></p>
+<h4 id="worksheet-set-row-row-height-cell-format-options-方法"><a href="#worksheet-set-row-row-height-cell-format-options-方法" class="headerlink" title="worksheet.set_row(row,height,cell_format,options)方法"></a>worksheet.set_row(row,height,cell_format,options)方法</h4><p>设置行单元格属性。<br>参数:</p>
+<ul>
+<li>row(int): 指定行位置，起始下标为0</li>
+<li>height(float): 行高，单位是像素</li>
+<li>cell_format(Format): 指定格式对象</li>
+<li>options(dict): 设置行参数，hidden(隐藏),level(组合分级),collapsed(折叠)等</li>
+</ul>
+<p>示例: 设置第二行高度15像素，应用加粗格式并隐藏</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cell_format = workbook.add_format(&#123;&#x27;bold&#x27;: True&#125;)</span><br><span class="line">worksheet.set_row(1,15,cell_format,&#123;&#x27;hidden&#x27;: True&#125;) </span><br></pre></td></tr></table></figure>
+
+<h4 id="worksheet-set-column-first-col-last-col-width-cell-format-options-方法"><a href="#worksheet-set-column-first-col-last-col-width-cell-format-options-方法" class="headerlink" title="worksheet.set_column(first_col,last_col,width,cell_format,options)方法"></a>worksheet.set_column(first_col,last_col,width,cell_format,options)方法</h4><p>设置一列或多列单元格属性。<br>参数:</p>
+<ul>
+<li>first_col: 指定开始列位置，起始位0</li>
+<li>last_col: 指定结束列位置，起始位0，可与first_col相同</li>
+<li>width: 设置列宽，单位为像素</li>
+<li>cell_format: 指定格式对象</li>
+<li>options: 设置列参数，hidden(隐藏),level(组合分级),collapsed(折叠)等</li>
+</ul>
+<p>示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">worksheet.set_column(1, 3, 30)</span><br><span class="line">worksheet.set_column(&#x27;E:E&#x27;, 20)</span><br><span class="line">cell_format = workbook.add_format(&#123;&#x27;bold&#x27;: True&#125;)</span><br><span class="line">worksheet.set_column(&#x27;D:D&#x27;, 20, cell_format, &#123;&#x27;hidden&#x27;: 1&#125;)</span><br></pre></td></tr></table></figure>
+
+<h4 id="worksheet-insert-image-row-col-image-options-方法"><a href="#worksheet-insert-image-row-col-image-options-方法" class="headerlink" title="worksheet.insert_image(row, col, image[, options])方法"></a>worksheet.insert_image(row, col, image[, options])方法</h4><p>插入图片到指定单元格。<br>参数:</p>
+<ul>
+<li>row(int): 行坐标，起始为0</li>
+<li>col(int): 列坐标，起始为0</li>
+<li>image(string): 图片路径</li>
+<li>optinons(dict): 可选参数，指定图片的位置、比例、链接URL等信息</li>
+</ul>
+<p>下面是可选参数及默认值:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &#x27;x_offset&#x27;:    0,</span><br><span class="line">    &#x27;y_offset&#x27;:    0,</span><br><span class="line">    &#x27;x_scale&#x27;:     1,</span><br><span class="line">    &#x27;y_scale&#x27;:     1,</span><br><span class="line">    &#x27;url&#x27;:         None,</span><br><span class="line">    &#x27;tip&#x27;:         None,</span><br><span class="line">    &#x27;image_data&#x27;:  None,</span><br><span class="line">    &#x27;positioning&#x27;: None,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>示例,在B4单元格插入图片并设置超链接:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">worksheet.insert_image(&#x27;B4&#x27;, &#x27;python.png&#x27;, &#123;&#x27;url&#x27;: &#x27;http://python.org&#x27;&#125;)</span><br></pre></td></tr></table></figure>
+
+<h3 id="Chart类"><a href="#Chart类" class="headerlink" title="Chart类"></a>Chart类</h3><p>Chart类实现在XlsxWrite模块中图表组件的基类，支持的图标类型包括面积、条形图、柱行图、折线图、饼图、散点图、折现和雷达等。更多图表类型在workbook.add_chart(options)方法处有介绍。<br>一个图标对象通过Workbook的**add_chart()**方法来创建，通过{‘type’:’图表类型’}字典参数指定图表的类型:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chart = workbook.add_chart(&#123;&#x27;type&#x27;: &#x27;column&#x27;&#125;)</span><br></pre></td></tr></table></figure>
+<p>然后再通过Worksheet的<strong>insert_chart</strong>方法把图表插入到指定位置:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">worksheet.insert_chart(&#x27;A7&#x27;, chart)</span><br></pre></td></tr></table></figure>
+<p>Chart类的几个常用方法:</p>
+<h4 id="chart-add-series-options-方法"><a href="#chart-add-series-options-方法" class="headerlink" title="chart.add_series(options)方法"></a>chart.add_series(options)方法</h4><p>作用是添加一个数据系列到图表。<br>参数:</p>
+<ul>
+<li>options(dict): 设置图表系列选项的字典</li>
+</ul>
+<p>下面是一个操作例子:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># 标签范围是A1到A5</span><br><span class="line"># 数据范围是B1到B5</span><br><span class="line">chart.add_series(&#123;</span><br><span class="line">    &#x27;categories&#x27;: &#x27;=Sheet1!$A$1:$A$5&#x27;,</span><br><span class="line">    &#x27;values&#x27;:     &#x27;=Sheet1!$B$1:$B$5&#x27;,</span><br><span class="line">    &#x27;line&#x27;:       &#123;&#x27;color&#x27;: &#x27;red&#x27;&#125;,</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"># Or using a list of values instead of category/value formulas:</span><br><span class="line">#     [sheetname, first_row, first_col, last_row, last_col]</span><br><span class="line">chart.add_series(&#123;</span><br><span class="line">    &#x27;categories&#x27;: [&#x27;Sheet1&#x27;, 0, 0, 4, 0],</span><br><span class="line">    &#x27;values&#x27;:     [&#x27;Sheet1&#x27;, 0, 1, 4, 1],</span><br><span class="line">    &#x27;line&#x27;:       &#123;&#x27;color&#x27;: &#x27;red&#x27;&#125;,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>add_series()方法的三个最常用方法是’categories’、values’和’line’:</p>
+<ul>
+<li>categories: 设置图表类别标签范围</li>
+<li>values: 设置图表数据范围</li>
+<li>line: 图表线条属性，包括颜色、宽度等</li>
+</ul>
+<h4 id="chart-set-x-axis-options-方法"><a href="#chart-set-x-axis-options-方法" class="headerlink" title="chart.set_x_axis(options)方法"></a>chart.set_x_axis(options)方法</h4><p>设置图表X轴选项。<br>示例:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">chart.set_x_axis(&#123;</span><br><span class="line">    &#x27;name&#x27;: &#x27;Earnings per Quarter&#x27;,</span><br><span class="line">    &#x27;name_font&#x27;: &#123;&#x27;size&#x27;: 14, &#x27;bold&#x27;: True&#125;,</span><br><span class="line">    &#x27;num_font&#x27;:  &#123;&#x27;italic&#x27;: True &#125;,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p><img src="/uploads/xlsxwriter-x_axis.png" alt="demo"></p>
+<h4 id="chart-set-y-axis-options-方法"><a href="#chart-set-y-axis-options-方法" class="headerlink" title="chart.set_y_axis(options)方法"></a>chart.set_y_axis(options)方法</h4><p>设置图表Y轴选项，使用方法和set_x_axis()相同。</p>
+<h4 id="chart-set-size-方法"><a href="#chart-set-size-方法" class="headerlink" title="chart.set_size()方法"></a>chart.set_size()方法</h4><p>设置图表的尺寸规格，参数有width、height、x_scale、y_scale、x_offsety_offset。<br>示例:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># width和height的默认为:480 x 288 pixels</span><br><span class="line">chart.set_size(&#123;&#x27;width&#x27;: 720, &#x27;height&#x27;: 576&#125;)</span><br><span class="line"># Same as:</span><br><span class="line">chart.set_size(&#123;&#x27;x_scale&#x27;: 1.5, &#x27;y_scale&#x27;: 2&#125;)</span><br></pre></td></tr></table></figure>
+
+<h4 id="chart-set-title-options"><a href="#chart-set-title-options" class="headerlink" title="chart.set_title(options)"></a>chart.set_title(options)</h4><p>设置图表标题。<br>示例:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chart.set_title(&#123;&#x27;name&#x27;: &#x27;Year End Results&#x27;&#125;)</span><br></pre></td></tr></table></figure>
+<p><img src="/uploads/xlsxwriter-title.png" alt="demo"></p>
+<h4 id="chart-set-style-style-id-方法"><a href="#chart-set-style-style-id-方法" class="headerlink" title="chart.set_style(style_id)方法"></a>chart.set_style(style_id)方法</h4><p>设置图表样式，style_id不同id代表不同的样式,默认值是2。<br>示例:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chart.set_style(37)</span><br></pre></td></tr></table></figure>
+<p><img src="/uploads/xlsxwriter-style.png" alt="demo"></p>
+<h4 id="chart-set-table-options-方法"><a href="#chart-set-table-options-方法" class="headerlink" title="chart.set_table(options)方法"></a>chart.set_table(options)方法</h4><p>设置X轴为数据表格形式。<br>示例:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chart.set_table()</span><br></pre></td></tr></table></figure>
+<p><img src="/uploads/xlsxwriter-table.png" alt="demo"></p>
+<h2 id="综合示例"><a href="#综合示例" class="headerlink" title="综合示例"></a>综合示例</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/env python</span><br><span class="line">#coding: utf-8</span><br><span class="line"></span><br><span class="line">import xlsxwriter</span><br><span class="line"></span><br><span class="line">workbook = xlsxwriter.Workbook(&#x27;chart.xlsx&#x27;)</span><br><span class="line">worksheet = workbook.add_worksheet()</span><br><span class="line"></span><br><span class="line">chart = workbook.add_chart(&#123;&#x27;type&#x27;: &#x27;column&#x27;&#125;)</span><br><span class="line"></span><br><span class="line">title = [u&#x27;业务名称&#x27;,u&#x27;星期一&#x27;,u&#x27;星期二&#x27;,u&#x27;星期三&#x27;,u&#x27;星期四&#x27;,u&#x27;星期五&#x27;,u&#x27;星期六&#x27;,u&#x27;星期日&#x27;,u&#x27;平均流量&#x27;]</span><br><span class="line">buname= [u&#x27;业务官网&#x27;,u&#x27;新闻中心&#x27;,u&#x27;购物频道&#x27;,u&#x27;体育频道&#x27;,u&#x27;亲子频道&#x27;]</span><br><span class="line"></span><br><span class="line">data = [</span><br><span class="line">    [150,152,158,149,155,145,148],</span><br><span class="line">    [89,88,95,93,98,100,99],</span><br><span class="line">    [201,200,198,175,170,198,195],</span><br><span class="line">    [75,77,78,78,74,70,79],</span><br><span class="line">    [88,85,87,90,93,88,84],</span><br><span class="line">]</span><br><span class="line">format=workbook.add_format()</span><br><span class="line">format.set_border(1)</span><br><span class="line"></span><br><span class="line">format_title=workbook.add_format()</span><br><span class="line">format_title.set_border(1)</span><br><span class="line">format_title.set_bg_color(&#x27;#cccccc&#x27;)</span><br><span class="line">format_title.set_align(&#x27;center&#x27;)</span><br><span class="line">format_title.set_bold()</span><br><span class="line"></span><br><span class="line">format_ave=workbook.add_format()</span><br><span class="line">format_ave.set_border(1)</span><br><span class="line">format_ave.set_num_format(&#x27;0.00&#x27;)</span><br><span class="line"></span><br><span class="line">worksheet.write_row(&#x27;A1&#x27;,title,format_title)</span><br><span class="line">worksheet.write_column(&#x27;A2&#x27;, buname,format)</span><br><span class="line">worksheet.write_row(&#x27;B2&#x27;, data[0],format)</span><br><span class="line">worksheet.write_row(&#x27;B3&#x27;, data[1],format)</span><br><span class="line">worksheet.write_row(&#x27;B4&#x27;, data[2],format)</span><br><span class="line">worksheet.write_row(&#x27;B5&#x27;, data[3],format)</span><br><span class="line">worksheet.write_row(&#x27;B6&#x27;, data[4],format)</span><br><span class="line"></span><br><span class="line">def chart_series(cur_row):</span><br><span class="line">    worksheet.write_formula(&#x27;I&#x27;+cur_row, \</span><br><span class="line">     &#x27;=AVERAGE(B&#x27;+cur_row+&#x27;:H&#x27;+cur_row+&#x27;)&#x27;,format_ave)</span><br><span class="line">    chart.add_series(&#123;</span><br><span class="line">        &#x27;categories&#x27;: &#x27;=Sheet1!$B$1:$I$1&#x27;,</span><br><span class="line">        &#x27;values&#x27;:     &#x27;=Sheet1!$B$&#x27;+cur_row+&#x27;:$I$&#x27;+cur_row,</span><br><span class="line">        &#x27;line&#x27;:       &#123;&#x27;color&#x27;: &#x27;black&#x27;&#125;,</span><br><span class="line">        &#x27;name&#x27;:	&#x27;=Sheet1!$A$&#x27;+cur_row,</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">for row in range(2, 7):</span><br><span class="line">    chart_series(str(row))</span><br><span class="line"></span><br><span class="line">#chart.set_table()</span><br><span class="line">#chart.set_style(30)</span><br><span class="line">chart.set_size(&#123;&#x27;width&#x27;: 577, &#x27;height&#x27;: 287&#125;)</span><br><span class="line">chart.set_title (&#123;&#x27;name&#x27;: u&#x27;业务流量周报图表&#x27;&#125;)</span><br><span class="line">chart.set_y_axis(&#123;&#x27;name&#x27;: &#x27;Mb/s&#x27;&#125;)</span><br><span class="line"></span><br><span class="line">worksheet.insert_chart(&#x27;A8&#x27;, chart)</span><br><span class="line">workbook.close()</span><br></pre></td></tr></table></figure>
+<p><img src="/uploads/xlsxwriter-zonghe.png" alt="demo"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"># python</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/12/16/Jvm%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96%E4%B8%8ETomcat7%E8%B0%83%E4%BC%98/" rel="prev" title="Jvm内存优化与Tomcat7调优">
+                  <i class="fa fa-chevron-left"></i> Jvm内存优化与Tomcat7调优
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2017/01/06/Svn%E6%8F%90%E4%BA%A4%E8%87%AA%E5%8A%A8%E6%9E%84%E5%BB%BAMaven%E9%A1%B9%E7%9B%AE/" rel="next" title="Svn提交自动构建Maven项目">
+                  Svn提交自动构建Maven项目 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

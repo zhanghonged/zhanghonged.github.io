@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="socket套接字，在我们传输的数据的时候，依靠协议传输数据，协议两端的数据接口就是socket。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python基础-网络编程">
+<meta property="og:url" content="http://zhanghonged.github.io/2017/11/27/Python%E5%9F%BA%E7%A1%80-%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="socket套接字，在我们传输的数据的时候，依靠协议传输数据，协议两端的数据接口就是socket。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/socket.png">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/socketserver.png">
+<meta property="article:published_time" content="2017-11-27T02:04:07.000Z">
+<meta property="article:modified_time" content="2017-11-28T07:14:13.957Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://zhanghonged.github.io/uploads/socket.png">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2017/11/27/Python%E5%9F%BA%E7%A1%80-%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2017/11/27/Python%E5%9F%BA%E7%A1%80-%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/","path":"2017/11/27/Python基础-网络编程/","title":"Python基础-网络编程"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Python基础-网络编程 | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#socket"><span class="nav-number">1.</span> <span class="nav-text">socket</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#socket%E5%B8%B8%E7%94%A8%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.1.</span> <span class="nav-text">socket常用协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#socket%E9%80%9A%E4%BF%A1%E6%AD%A5%E9%AA%A4"><span class="nav-number">1.2.</span> <span class="nav-text">socket通信步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#socket%E7%89%B9%E7%82%B9"><span class="nav-number">1.3.</span> <span class="nav-text">socket特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F"><span class="nav-number">1.4.</span> <span class="nav-text">通信方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A5%97%E6%8E%A5%E5%AD%97%E6%A0%BC%E5%BC%8F"><span class="nav-number">1.5.</span> <span class="nav-text">套接字格式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#socket%E7%BC%96%E5%86%99"><span class="nav-number">2.</span> <span class="nav-text">socket编写</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E5%86%99%E6%80%9D%E8%B7%AF%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">编写思路：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E5%8A%9F%E8%83%BD%E4%BB%8B%E7%BB%8D"><span class="nav-number">2.2.</span> <span class="nav-text">常用功能介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP%E4%BB%A3%E7%A0%81"><span class="nav-number">2.3.</span> <span class="nav-text">TCP代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UDP%E4%BB%A3%E7%A0%81"><span class="nav-number">2.4.</span> <span class="nav-text">UDP代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SocketServer"><span class="nav-number">3.</span> <span class="nav-text">SocketServer</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2017/11/27/Python%E5%9F%BA%E7%A1%80-%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Python基础-网络编程 | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Python基础-网络编程
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2017-11-27 10:04:07" itemprop="dateCreated datePublished" datetime="2017-11-27T10:04:07+08:00">2017-11-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2017-11-28 15:14:13" itemprop="dateModified" datetime="2017-11-28T15:14:13+08:00">2017-11-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="socket"><a href="#socket" class="headerlink" title="socket"></a>socket</h2><p>套接字，在我们传输的数据的时候，依靠协议传输数据，协议两端的数据接口就是<strong>socket</strong>。</p>
+<span id="more"></span>
+<h3 id="socket常用协议"><a href="#socket常用协议" class="headerlink" title="socket常用协议"></a>socket常用协议</h3><p><strong>TCP</strong>：面向连接的协议，TCP传输安全性高，效率低<br><strong>UDP</strong>：无连接的协议，传输速度快，传输安全性低，效率高</p>
+<h3 id="socket通信步骤"><a href="#socket通信步骤" class="headerlink" title="socket通信步骤"></a>socket通信步骤</h3><p><img src="/uploads/socket.png"></p>
+<h3 id="socket特点"><a href="#socket特点" class="headerlink" title="socket特点"></a>socket特点</h3><p><strong>被动</strong>：服务器如果开启，不会自动去连接客户端，而是被动等待请求<br><strong>阻塞</strong>：如果有一个用户与服务端建立连接，此时通信通道阻塞，其他用户无法进行建立连接。</p>
+<h3 id="通信方式"><a href="#通信方式" class="headerlink" title="通信方式"></a>通信方式</h3><ul>
+<li>半双工：通信双方只有一条信道，身份可逆， 对讲机</li>
+<li>全双工：通信双方有多条信道，身份可逆， 手机</li>
+<li>单工：通信双方只有一条信道，身份不可逆，BB机</li>
+</ul>
+<h3 id="套接字格式"><a href="#套接字格式" class="headerlink" title="套接字格式"></a>套接字格式</h3><table>
+<thead>
+<tr>
+<th>套接字类型</th>
+<th>概述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>socket.AF_UNIX</td>
+<td>Unix系统间的通信</td>
+</tr>
+<tr>
+<td>socket.AF_INET</td>
+<td>ipv4</td>
+</tr>
+<tr>
+<td>socket.AF_INET6</td>
+<td>ipv6</td>
+</tr>
+<tr>
+<td>socket.SOCK_STREAM</td>
+<td>TCP协议</td>
+</tr>
+<tr>
+<td>socket.SOCK_DGRAM</td>
+<td>UDP协议</td>
+</tr>
+</tbody></table>
+<h2 id="socket编写"><a href="#socket编写" class="headerlink" title="socket编写"></a>socket编写</h2><h3 id="编写思路："><a href="#编写思路：" class="headerlink" title="编写思路："></a>编写思路：</h3><p><strong>Server端：</strong></p>
+<ol>
+<li>创建套接字</li>
+<li>绑定IP和端口</li>
+<li>开始监听</li>
+<li>接受客户端的连接请求</li>
+<li>接受和发送数据</li>
+<li>关闭套接字</li>
+</ol>
+<p><strong>Client端：</strong></p>
+<ol>
+<li>创建套接字</li>
+<li>连接服务器的地址和端口</li>
+<li>接受和发送数据</li>
+<li>关闭套接字</li>
+</ol>
+<h3 id="常用功能介绍"><a href="#常用功能介绍" class="headerlink" title="常用功能介绍"></a>常用功能介绍</h3><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>概述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>sk.bind(address)</td>
+<td>将套接字绑定到地址。address地址的格式取决于地址族。在AF_INET下，以元组（host,port）的形式表示地址。</td>
+</tr>
+<tr>
+<td>sk.listen(backlog)</td>
+<td>开始监听传入连接。backlog指定在拒绝连接之前，可以挂起的最大连接数量。</td>
+</tr>
+<tr>
+<td>sk.setblocking(bool)</td>
+<td>是否阻塞（默认True），如果设置False，那么accept和recv时一旦无数据，则报错。</td>
+</tr>
+<tr>
+<td>sk.accept()</td>
+<td>接受连接并返回（conn,address）,其中conn是新的套接字对象，可以用来接收和发送数据。address是连接客户端的地址。</td>
+</tr>
+<tr>
+<td>sk.connect(address)</td>
+<td>连接到address处的套接字。一般，address的格式为元组（hostname,port）,如果连接出错，返回socket.error错误。</td>
+</tr>
+<tr>
+<td>sk.connect_ex(address)</td>
+<td>同上，只不过会有返回值，连接成功时返回 0 ，连接失败时候返回编码，例如：10061</td>
+</tr>
+<tr>
+<td>sk.close()</td>
+<td>关闭套接字。</td>
+</tr>
+<tr>
+<td>sk.recv(bufsize[,flag])</td>
+<td>接受套接字的数据。数据以字符串形式返回，bufsize指定最多可以接收的数量。flag提供有关消息的其他信息，通常可以忽略。</td>
+</tr>
+<tr>
+<td>sk.recvfrom(bufsize[.flag])</td>
+<td>与recv()类似，但返回值是（data,address）。其中data是包含接收数据的字符串，address是发送数据的套接字地址。</td>
+</tr>
+<tr>
+<td>sk.send(string[,flag])</td>
+<td>将string中的数据发送到连接的套接字。返回值是要发送的字节数量，该数量可能小于string的字节大小。即：可能未将指定内容全部发送。</td>
+</tr>
+<tr>
+<td>sk.sendall(string[,flag])</td>
+<td>将string中的数据发送到连接的套接字，但在返回之前会尝试发送所有数据。成功返回None，失败则抛出异常。内部通过递归调用send，将所有内容发送出去。</td>
+</tr>
+<tr>
+<td>sk.sendto(string[,flag],address)</td>
+<td>将数据发送到套接字，address是形式为（ipaddr，port）的元组，指定远程地址。返回值是发送的字节数。该函数主要用于UDP协议。</td>
+</tr>
+<tr>
+<td>sk.settimeout(timeout)</td>
+<td>设置套接字操作的超时期，timeout是一个浮点数，单位是秒。值为None表示没有超时期。一般，超时期应该在刚创建套接字时设置，因为它们可能用于连接的操作（如 client 连接最多等待5s ）</td>
+</tr>
+<tr>
+<td>sk.getpeername()</td>
+<td>返回连接套接字的远程地址。返回值通常是元组（ipaddr,port）。</td>
+</tr>
+<tr>
+<td>sk.getsockname()</td>
+<td>返回套接字自己的地址。通常是一个元组(ipaddr,port)</td>
+</tr>
+<tr>
+<td>sk.fileno()</td>
+<td>套接字的文件描述符</td>
+</tr>
+</tbody></table>
+<h3 id="TCP代码"><a href="#TCP代码" class="headerlink" title="TCP代码"></a>TCP代码</h3><p>server端：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"># 创建套接字</span><br><span class="line">sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)</span><br><span class="line"># 绑定套接字(IP,Port)</span><br><span class="line"># bind为双元素的元组</span><br><span class="line"># 第一个元素为IP地址，如果为空代表本机的所有IP</span><br><span class="line"># 第二个参数是Port，0-65535</span><br><span class="line">sock.bind((&#x27;&#x27;,10078))</span><br><span class="line"># 监听队列的最大长度</span><br><span class="line">sock.listen(5)</span><br><span class="line"># 接收连接请求</span><br><span class="line"># content用来接受用户的消息和发送对该用户的消息</span><br><span class="line"># address是请求用户的IP和Port</span><br><span class="line">content,address = sock.accept()</span><br><span class="line">print &#x27;%s:%s 已建立连接...&#x27;%address</span><br><span class="line">while True:</span><br><span class="line">    # 1024指的是当前最多接受的字节，多余部分下次接收</span><br><span class="line">    recv = content.recv(1024)</span><br><span class="line">    print recv</span><br><span class="line">    if recv == &#x27;quit&#x27;:</span><br><span class="line">        break</span><br><span class="line">    input_send = raw_input(&#x27;Please Input Message:&#x27;)</span><br><span class="line">    content.send(input_send)</span><br><span class="line">    if input_send == &#x27;quit&#x27;:</span><br><span class="line">        break</span><br><span class="line"># 关闭连接</span><br><span class="line">sock.close()</span><br></pre></td></tr></table></figure>
+<p>client端：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)</span><br><span class="line"># 连接服务端</span><br><span class="line">sock.connect((&#x27;127.0.0.1&#x27;,10078))</span><br><span class="line">while True:</span><br><span class="line">    input_send = raw_input(&#x27;Please Input Message:&#x27;)</span><br><span class="line">    sock.send(input_send)</span><br><span class="line">    if input_send == &#x27;quit&#x27;:</span><br><span class="line">        break</span><br><span class="line">    recv = sock.recv(1024)</span><br><span class="line">    print recv</span><br><span class="line">    if recv == &#x27;quit&#x27;:</span><br><span class="line">        break</span><br><span class="line">sock.close()</span><br></pre></td></tr></table></figure>
+<h3 id="UDP代码"><a href="#UDP代码" class="headerlink" title="UDP代码"></a>UDP代码</h3><p>UDP协议则不需要事先建立连接，直接互相发送数据即可。<br>server端：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)</span><br><span class="line">sock.bind((&#x27;&#x27;,10021))</span><br><span class="line">print &#x27;Bound UDP on 10021&#x27;</span><br><span class="line">while True:</span><br><span class="line">    data,addr = sock.recvfrom(1024)</span><br><span class="line">    print &#x27;connect from %s:%s&#x27; %addr</span><br><span class="line">    if data == &#x27;quit&#x27;:</span><br><span class="line">        break</span><br><span class="line">    print data</span><br><span class="line">    input_send=raw_input(&#x27;server send message:&#x27;)</span><br><span class="line">    sock.sendto(input_send,addr)</span><br><span class="line">    if input_send == &#x27;quit&#x27;:</span><br><span class="line">        break</span><br><span class="line">sock.close()</span><br></pre></td></tr></table></figure>
+<p>client端：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)</span><br><span class="line">addr = (&#x27;127.0.0.1&#x27;,10021)</span><br><span class="line">while True:</span><br><span class="line">    data = raw_input(&#x27;input message:&#x27;)</span><br><span class="line">    sock.sendto(data, addr)</span><br><span class="line">    if not data or data == &#x27;quit&#x27;:</span><br><span class="line">        break</span><br><span class="line">    recevdata,addr = sock.recvfrom(1024)</span><br><span class="line">    print recevdata</span><br><span class="line">    if recevdata == &#x27;quit&#x27;:</span><br><span class="line">        break</span><br><span class="line">sock.close()</span><br></pre></td></tr></table></figure>
+<p>无论是tcp还是udp方式，client端也可以绑定一个固定地址去连接服务器，下面是一个udp的示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)</span><br><span class="line">sock.bind((&#x27;&#x27;,10022))</span><br><span class="line">while True:</span><br><span class="line">    data = raw_input(&#x27;input message:&#x27;)</span><br><span class="line">    sock.sendto(data,(&#x27;127.0.0.1&#x27;,10021))</span><br><span class="line">    if not data or data == &#x27;quit&#x27;:</span><br><span class="line">        break</span><br><span class="line">    recevdata,addr = sock.recvfrom(1024)</span><br><span class="line">    print recevdata</span><br><span class="line">    if recevdata == &#x27;quit&#x27;:</span><br><span class="line">        break</span><br><span class="line">sock.close()</span><br></pre></td></tr></table></figure>
+
+<h2 id="SocketServer"><a href="#SocketServer" class="headerlink" title="SocketServer"></a>SocketServer</h2><p>SocketServer是对socket的一个再封装。<br>SocketServer内部使用IO多路复用，以及 “多线程” 和 “多进程” ，从而实现并发处理多个客户端请求的Socket服务端。即：每个客户端请求连接到服务器时，Socket服务端都会在服务器是创建一个 “线程” 或者 “进程”,专门负责处理当前客户端的所有请求。<br><span style="font-size:80%;"><b>注：导入模块的时候 3.x版本是socketserver;2.x版本是SocketServer。</b></span><br><img src="/uploads/socketserver.png"></p>
+<p><span style="font-size:150%;"><strong>SocketServer</strong>中类分为三种类型：</span></p>
+<p><span style="font-size:120%;color:red;"><strong>Server</strong></span><br><strong>UDPServer</strong></p>
+<ul>
+<li>ForkingUDPServer    多进程</li>
+<li>ThreadingUDPServer 多线程</li>
+</ul>
+<p><strong>TCPServer</strong></p>
+<ul>
+<li>ForkingTCPServer    多进程</li>
+<li>ThreadingTCPServer 多线程</li>
+</ul>
+<p><span style="font-size:120%;color:red;"><strong>Handler</strong>(句柄)</span><br><strong>BaseRequestHandler</strong> 用来处理用户请求<br><strong>setup</strong>   类似__init__<br><strong>handle</strong> 处理请求</p>
+<ul>
+<li>self.request    当前请求</li>
+<li>self.client_address  请求用户的IP个Port</li>
+<li>self.server    当前服务</li>
+</ul>
+<p><strong>finish</strong>  类似__del___<br><span style="font-size:120%;color:red;"><strong>Mixln</strong></span><br>实现核心的进程化或线程化的功能</p>
+<p>实例：<br><strong>ThreadingTCPServer</strong> 实现的Soket服务器内部会为每个client创建一个 “线程”，该线程用来和客户端进行交互。<br>创建一个继承自 <strong>SocketServer.BaseRequestHandler</strong> 的类<br>类中必须定义一个名称为 <strong>handle</strong> 的方法<br>启动 <strong>ThreadingTCPServer</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">import SocketServer</span><br><span class="line">class MyHandler(SocketServer.BaseRequestHandler):</span><br><span class="line">    def setup(self):</span><br><span class="line">        print &#x27;MyHandler start ...&#x27;</span><br><span class="line">    def handle(self):</span><br><span class="line">        # self.request 处理用户请求</span><br><span class="line">        # self.client_address  请求用户的IP和Port</span><br><span class="line">        # self.server 当前服务</span><br><span class="line">        print &#x27;%s:%s 已建立连接&#x27; % self.client_address</span><br><span class="line">        while True:</span><br><span class="line">            recv = self.request.recv(1024)</span><br><span class="line">            if recv == &#x27;quit&#x27;:</span><br><span class="line">                break</span><br><span class="line">            print recv</span><br><span class="line">            send_data = raw_input(&#x27;input message:&#x27;)</span><br><span class="line">            self.request.send(send_data)</span><br><span class="line">            if send_data == &#x27;quit&#x27;:</span><br><span class="line">                break</span><br><span class="line">    def finish(self):</span><br><span class="line">        print &#x27;MyHandler stop ...&#x27;</span><br><span class="line"></span><br><span class="line">if __name__ == &#x27;__main__&#x27;:</span><br><span class="line">    server = SocketServer.ThreadingTCPServer((&#x27;&#x27;,10021),MyHandler)</span><br><span class="line">    server.serve_forever()</span><br></pre></td></tr></table></figure>
+<p><strong>内部调用流程为：</strong></p>
+<ol>
+<li>启动服务端程序。</li>
+<li>执行 <strong>TCPServer.init</strong> 方法，创建服务端Socket对象并绑定 IP 和 端口。</li>
+<li>执行 <strong>BaseServer.init</strong> 方法，将自定义的继承自 <strong>SocketServer.BaseRequestHandler</strong> 的类 - MyRequestHandle赋值给 self.RequestHandlerClass。</li>
+<li>执行 <strong>BaseServer.server_forever</strong> 方法，While 循环一直监听是否有客户端请求到达 …。</li>
+</ol>
+<p>当客户端连接到达服务器</p>
+<ol>
+<li>执行 <strong>ThreadingMixIn.process_request</strong> 方法，创建一个 “线程” 用来处理请求。</li>
+<li>执行 <strong>ThreadingMixIn.process_request_thread</strong> 方法。</li>
+<li>执行 <strong>BaseServer.finish_request</strong> 方法，执行 self.RequestHandlerClass() 即：执行自定义 <strong>MyRequestHandler</strong> 的构造方法。<br>(自动调用基类BaseRequestHandler的构造方法，在该构造方法中又会调用 MyRequestHandler的handle方法)</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"># python</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2017/11/24/Python%E5%9F%BA%E7%A1%80-%E5%9B%BE%E5%BD%A2%E5%8C%96/" rel="prev" title="Python基础-图形化">
+                  <i class="fa fa-chevron-left"></i> Python基础-图形化
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2017/11/28/Python%E5%9F%BA%E7%A1%80-%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="next" title="Python基础-多线程">
+                  Python基础-多线程 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

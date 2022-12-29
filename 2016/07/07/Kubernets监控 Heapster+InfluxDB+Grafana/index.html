@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="介绍Docker要在生产环境上使用，监控工具必不可少。传统物理机或着虚拟机通常可以通过部署一些agent收集数据，上报到中心节点进行数据聚合和存储，再通过一些UI工具进行可视化展现。与之相比，容器因为它的轻量级特性，一个容器内部通常只包含一个服务进程，通过在容器内部部署额外的性能数据采集agent非常不优雅；另一个原因，top、free、sysstat等常用性能诊断命令在容器中往往拿到的是宿主机的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernets监控 Heapster+InfluxDB+Grafana">
+<meta property="og:url" content="http://zhanghonged.github.io/2016/07/07/Kubernets%E7%9B%91%E6%8E%A7%20Heapster+InfluxDB+Grafana/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="介绍Docker要在生产环境上使用，监控工具必不可少。传统物理机或着虚拟机通常可以通过部署一些agent收集数据，上报到中心节点进行数据聚合和存储，再通过一些UI工具进行可视化展现。与之相比，容器因为它的轻量级特性，一个容器内部通常只包含一个服务进程，通过在容器内部部署额外的性能数据采集agent非常不优雅；另一个原因，top、free、sysstat等常用性能诊断命令在容器中往往拿到的是宿主机的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/heapster.png">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/grafana.png">
+<meta property="article:published_time" content="2016-07-07T03:38:05.000Z">
+<meta property="article:modified_time" content="2016-08-10T09:00:25.109Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="k8s">
+<meta property="article:tag" content="grafana">
+<meta property="article:tag" content="heapster">
+<meta property="article:tag" content="influxdb">
+<meta property="article:tag" content="监控">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://zhanghonged.github.io/uploads/heapster.png">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2016/07/07/Kubernets%E7%9B%91%E6%8E%A7%20Heapster+InfluxDB+Grafana/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2016/07/07/Kubernets%E7%9B%91%E6%8E%A7%20Heapster+InfluxDB+Grafana/","path":"2016/07/07/Kubernets监控 Heapster+InfluxDB+Grafana/","title":"Kubernets监控 Heapster+InfluxDB+Grafana"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Kubernets监控 Heapster+InfluxDB+Grafana | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-Kubernetes%E9%9B%86%E7%BE%A4%E7%9A%84ServiceAccount%E5%92%8CSecret"><span class="nav-number">2.</span> <span class="nav-text">配置 Kubernetes集群的ServiceAccount和Secret</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E5%88%9B%E5%BB%BA%E8%AF%81%E4%B9%A6%E5%92%8C%E7%A7%81%E9%92%A5"><span class="nav-number">2.1.</span> <span class="nav-text">1、创建证书和私钥</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E9%85%8D%E7%BD%AEk8s%E4%BD%BF%E7%94%A8%E8%AF%81%E4%B9%A6"><span class="nav-number">2.2.</span> <span class="nav-text">2、配置k8s使用证书</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2-Heapster%E3%80%81InfluxDB%E3%80%81Grafana"><span class="nav-number">3.</span> <span class="nav-text">部署 Heapster、InfluxDB、Grafana</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E5%87%86%E5%A4%87yaml%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">3.1.</span> <span class="nav-text">1、准备yaml配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E5%88%9B%E5%BB%BA%E6%89%80%E6%9C%89-Service-%E5%92%8C-rc%EF%BC%9A"><span class="nav-number">3.2.</span> <span class="nav-text">2、创建所有 Service 和 rc：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E9%AA%8C%E8%AF%81"><span class="nav-number">3.3.</span> <span class="nav-text">3、验证</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2016/07/07/Kubernets%E7%9B%91%E6%8E%A7%20Heapster+InfluxDB+Grafana/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Kubernets监控 Heapster+InfluxDB+Grafana | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Kubernets监控 Heapster+InfluxDB+Grafana
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-07-07 11:38:05" itemprop="dateCreated datePublished" datetime="2016-07-07T11:38:05+08:00">2016-07-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2016-08-10 17:00:25" itemprop="dateModified" datetime="2016-08-10T17:00:25+08:00">2016-08-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>Docker要在生产环境上使用，监控工具必不可少。传统物理机或着虚拟机通常可以通过部署一些agent收集数据，上报到中心节点进行数据聚合和存储，再通过一些UI工具进行可视化展现。与之相比，容器因为它的轻量级特性，一个容器内部通常只包含一个服务进程，通过在容器内部部署额外的性能数据采集agent非常不优雅；另一个原因，top、free、sysstat等常用性能诊断命令在容器中往往拿到的是宿主机的数据，无法准确获取容器数据。因此各种在宿主机上采集容器数据的工具(链)冒了出来。</p>
+<span id="more"></span>
+
+<p>在 Kubernetes 系统中，使用 cAdvisor 对 Node 所在主机资源和在该 Node 上运行的容器进行监控和性能数据采样。由于 cAdvisor 集成在 Kubelet 中，即运行在每个 Node 上，所以一个 cAdvisor 仅能对一台 Node 进行监控。在大规模容器集群中，我们需要对所有 Node 和全部容器进行性能监控，Kubernetes 使用一套工具来实现集群性能数据的采集、存储和展示：Heapster、InfluxDB 和 Grafana。</p>
+<p><strong>Heapster</strong>：是对集群中各 Node、Pod 的资源使用数据进行采集的系统，通过访问每个 Node 上 Kubelet 的 API，再通过 Kubelet 调用 cAdvisor 的 API 来采集该节点上所有容器的性能数据。之后 Heapster 进行数据聚合，并将结果保存到后端存储系统中。Heapster 支持多种后端存储系统，包括 memory、InfluxDB、BigQuery、谷歌云平台提供的 Google Cloud Monitoring 和 Google Cloud Logging等。</p>
+<p><strong>InfluxDB</strong>：是分布式时序数据库（每条记录都带有时间戳属性），主要用于实时数据采集、事件跟踪记录、存储时间图标、原始数据等。InfluxDB 提供 REST API 用于数据的存储和查询。</p>
+<p><strong>Grafana</strong>：通过 Dashboard 将 InfluxDB 中的时序数据展现成图标或曲线等形式，便于运维人员查看集群的运行状态。<br>下图是Kubernete中监控的逻辑设计图：<br><img src="/uploads/heapster.png" alt="heapster"></p>
+<h2 id="配置-Kubernetes集群的ServiceAccount和Secret"><a href="#配置-Kubernetes集群的ServiceAccount和Secret" class="headerlink" title="配置 Kubernetes集群的ServiceAccount和Secret"></a>配置 Kubernetes集群的ServiceAccount和Secret</h2><p>Heapster 当前版本需要使用 HTTPS 的安全方式与 Kubernetes Master 进行连接，所以需要先进行 ServiceAccount 和 Secret 的创建。如果不使用 Secret，则 Heapster 启动时将会报错，然后 Heapster 容器会被 ReplicationController 反复销毁、创建，无法正常工作。</p>
+<h3 id="1、创建证书和私钥"><a href="#1、创建证书和私钥" class="headerlink" title="1、创建证书和私钥"></a>1、创建证书和私钥</h3><p>使用 OpenSSL 工具在 Master 服务器上创建一些证书和私钥相关的文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@master ~]# openssl genrsa -out ca.key 2048</span><br><span class="line">[root@master ~]# openssl req -x509 -new -nodes -key ca.key -subj &quot;/CN=master.k8s.com&quot; -days 5000 -out ca.crt</span><br><span class="line">[root@master ~]# openssl genrsa -out server.key 2048</span><br><span class="line">[root@master ~]# openssl req -new -key server.key -subj &quot;/CN=master&quot; -out server.csr</span><br><span class="line">[root@master ~]# openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -d</span><br><span class="line">[root@master ~]# cat /etc/hostname </span><br><span class="line">[root@master ~]# maste</span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong>，在生成 server.csr 时 -subj 参数中 &#x2F;CN 指定的名字需为 Master 的主机名。另外，在生成 ca.crt 时 -subj 参数中 &#x2F;CN 的名字最好与主机名不同，设为相同可能导致对普通 Master 的 HTTPS 访问认证失败。</p>
+<p>执行完成后会生成 6 个文件：ca.crt、ca.key、ca.srl、server.crt、server.csr、server.key。将这些文件复制到 &#x2F;var&#x2F;run&#x2F;kubernetes目录中</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@master ~]# cd /var/run/kubernetes/</span><br><span class="line">[root@master kubernetes]# ll</span><br><span class="line">总用量 32</span><br><span class="line">-rw-r--r--. 1 kube kube 1192 7月   4 16:55 apiserver.crt</span><br><span class="line">-rw-------. 1 kube kube 1675 7月   4 16:55 apiserver.key</span><br><span class="line">-rw-r--r--. 1 root root 1107 7月   4 16:56 ca.crt</span><br><span class="line">-rw-r--r--. 1 root root 1675 7月   4 16:56 ca.key</span><br><span class="line">-rw-r--r--. 1 root root   17 7月   4 16:56 ca.srl</span><br><span class="line">-rw-r--r--. 1 root root  981 7月   4 16:56 server.crt</span><br><span class="line">-rw-r--r--. 1 root root  887 7月   4 16:56 server.csr</span><br><span class="line">-rw-r--r--. 1 root root 1675 7月   4 16:56 server.key</span><br></pre></td></tr></table></figure>
+
+<h3 id="2、配置k8s使用证书"><a href="#2、配置k8s使用证书" class="headerlink" title="2、配置k8s使用证书"></a>2、配置k8s使用证书</h3><p>修改配置文件：<strong>apiserver</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># Add your own!</span><br><span class="line">KUBE_API_ARGS=&quot;--client-ca-file=/var/run/kubernetes/ca.crt \</span><br><span class="line">               --tls-private-key-file=/var/run/kubernetes/server.key \</span><br><span class="line">               --tls-cert-file=/var/run/kubernetes/server.crt&quot;</span><br><span class="line"></span><br><span class="line">##注释</span><br><span class="line">#--client-ca-file：根证书文件</span><br><span class="line">#--tls-cert-file：服务端证书文件</span><br><span class="line">#--tls-private-key-file：服务端私钥文件</span><br></pre></td></tr></table></figure>
+<p>然后重启kube-apiserver服务</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@master ~]# systemctl restart kube-apiserver</span><br></pre></td></tr></table></figure>
+<p>修改配置文件：<strong>kube-controller-manager</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># Add your own!</span><br><span class="line">KUBE_CONTROLLER_MANAGER_ARGS=&quot;--service-account-private-key-file=/var/run/kubernetes/apiserver.key --root-ca-file=/var/run/kubernetes/ca.crt&quot;</span><br></pre></td></tr></table></figure>
+<p>重启controller-manager服务</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@master ~]# systemctl restart kube-controller-manager</span><br></pre></td></tr></table></figure>
+<p>在 kube-apiserver 服务成功启动后，系统会自动为每个命名空间创建一个 ServiceAccount 和一个 Secret（包含一个 ca.crt 和一个 token）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">[root@master ~]# kubectl get serviceaccounts --all-namespaces</span><br><span class="line">NAMESPACE   NAME      SECRETS   AGE</span><br><span class="line">default     default   1         2d</span><br><span class="line">[root@master ~]# </span><br><span class="line">[root@master ~]# kubectl get secrets --all-namespaces</span><br><span class="line">NAMESPACE   NAME                  TYPE                                  DATA      AGE</span><br><span class="line">default     default-token-bh3tl   kubernetes.io/service-account-token   3         2d</span><br><span class="line">[root@master ~]# </span><br><span class="line">[root@master ~]# kubectl describe secret default</span><br><span class="line">Name:		default-token-bh3tl</span><br><span class="line">Namespace:	default</span><br><span class="line">Labels:		&amp;lt;none&amp;gt;</span><br><span class="line">Annotations:	kubernetes.io/service-account.name=default,kubernetes.io/service-account.uid=c7026354-4204-11e6-8d54-002564a3b1d6</span><br><span class="line"></span><br><span class="line">Type:	kubernetes.io/service-account-token</span><br><span class="line"></span><br><span class="line">Data</span><br><span class="line">====</span><br><span class="line">token:		eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImRlZmF1bHQtdG9rZW4tYmgzdGwiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZGVmYXVsdCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6ImM3MDI2MzU0LTQyMDQtMTFlNi04ZDU0LTAwMjU2NGEzYjFkNiIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpkZWZhdWx0OmRlZmF1bHQifQ.lpXXG2MX3pzPuWadv8-f8q0ftqSwTXyAe5tBOsaiJggrnJNNWA5Disn9ryvWgrEKonRgkjOF6pMoZcGL2mG52MVL0LOXHEwBK0i1xBZ_sUnNZSekrc_BMiLzZOFTbWiHICScvrPcQMvTzp0DbgTmcA1nizaVCnPGAt4rOsaUp0rCS2JtkaWkJ0XeoS2AHlk38zaK1DYHUDQ4iSqIeOti3cpb5VpsJQuYv3ZR_LZ3RmkjbfSG96h18fhRhcqCVzgLA5q83eGFVv22qxXWXOKgMfXocSaevodJLPsta995MnBlpYhbR7iK9MkuXSq7QqnI6255HZGKDf270u7pY3NP9A</span><br><span class="line">ca.crt:		1107 bytes</span><br><span class="line">namespace:	7 bytes</span><br><span class="line"></span><br><span class="line">[root@master ~]#</span><br></pre></td></tr></table></figure>
+<p>之后 ReplicationController 在创建 Pod 时，会生成类型为 Secret 的 Volume 存储卷，并将该 Volume 挂载到 Pod 内的如下目录中：&#x2F;var&#x2F;run&#x2F;secrets&#x2F;kubernetes.io&#x2F;serviceaccount。然后，容器内的应用程序就可以使用该 Secret 与 Master 建立 HTTPS 连接了。Pod 的 Volumes 设置和挂载操作由 ReplicationController 和 Kubelet 自动完成，可以通过查看 Pod 的详细信息了解到。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@master ~]# kubectl get po curlpod -o yaml</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">  volumes:</span><br><span class="line">  - name: default-token-bh3tl</span><br><span class="line">    secret:</span><br><span class="line">      secretName: default-token-bh3tl</span><br></pre></td></tr></table></figure>
+<p>进入容器，查看&#x2F;var&#x2F;run&#x2F;secrets&#x2F;kubernetes.io&#x2F;serviceaccount 目录，可以看到两个文件 ca.crt 和 token，这两个文件就是与 Master 通信时所需的证书和秘钥信息。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@master ~]# kubectl exec -it curlpod ls /var/run/secrets/kubernetes.io/serviceaccount</span><br><span class="line">ca.crt     namespace  token</span><br></pre></td></tr></table></figure>
+
+<h2 id="部署-Heapster、InfluxDB、Grafana"><a href="#部署-Heapster、InfluxDB、Grafana" class="headerlink" title="部署 Heapster、InfluxDB、Grafana"></a>部署 Heapster、InfluxDB、Grafana</h2><p>这里我们就通过配置文件来创建Heapster、InfluxDB、Grafana的rc和service</p>
+<h3 id="1、准备yaml配置文件"><a href="#1、准备yaml配置文件" class="headerlink" title="1、准备yaml配置文件"></a>1、准备yaml配置文件</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@master k16]# ll</span><br><span class="line">总用量 24</span><br><span class="line">-rw-r--r--. 1 root root 510 7月   6 14:10 grafana-controller.yaml</span><br><span class="line">-rw-r--r--. 1 root root 263 7月   5 16:36 grafana-service.yaml</span><br><span class="line">-rw-r--r--. 1 root root 589 7月   6 14:53 heapster-controller.yaml</span><br><span class="line">-rw-r--r--. 1 root root 225 7月   5 16:28 heapster-service.yaml</span><br><span class="line">-rw-r--r--. 1 root root 527 7月   5 14:08 influxdb-controller.yaml</span><br><span class="line">-rw-r--r--. 1 root root 311 7月   6 14:02 influxdb-service.yaml</span><br><span class="line">[root@master k16]#</span><br></pre></td></tr></table></figure>
+<p><strong>influxdb-controller.yaml</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: ReplicationController</span><br><span class="line">metadata:</span><br><span class="line">  labels:</span><br><span class="line">    name: influxdb</span><br><span class="line">  name: influxdb</span><br><span class="line">spec:</span><br><span class="line">  replicas: 1</span><br><span class="line">  selector:</span><br><span class="line">    name: influxdb</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        name: influxdb</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">        - name: influxdb</span><br><span class="line">          image: index.tenxcloud.com/tenxcloud/influxdb:latest</span><br><span class="line">          ports:</span><br><span class="line">            - containerPort: 8083</span><br><span class="line">              hostPort: 8083</span><br><span class="line">            - containerPort: 8086</span><br><span class="line">              hostPort: 8086</span><br><span class="line">          env:</span><br><span class="line">            - name: INFLUXDB_HOST</span><br><span class="line">              value: monitoring-influxdb</span><br></pre></td></tr></table></figure>
+<p><strong>influxdb-service.yaml</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  labels:</span><br><span class="line">    name: monitoring-influxdb</span><br><span class="line">  name: monitoring-influxdb</span><br><span class="line">spec:</span><br><span class="line">  type: NodePort</span><br><span class="line">  ports:</span><br><span class="line">  - name: http</span><br><span class="line">    port: 8083</span><br><span class="line">    targetPort: 8083</span><br><span class="line">    nodePort: 30083</span><br><span class="line">  - name: api</span><br><span class="line">    port: 8086</span><br><span class="line">    targetPort: 8086</span><br><span class="line">    nodePort: 30086</span><br><span class="line">  selector:</span><br><span class="line">    name: influxdb</span><br></pre></td></tr></table></figure>
+<p><strong>heapster-controller.yaml</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: ReplicationController</span><br><span class="line">metadata:</span><br><span class="line">  labels:</span><br><span class="line">    name: heapster</span><br><span class="line">  name: heapster</span><br><span class="line">spec:</span><br><span class="line">  replicas: 1</span><br><span class="line">  selector:</span><br><span class="line">    name: heapster</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        name: heapster</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">        - name: heapster</span><br><span class="line">          image: index.tenxcloud.com/google_containers/heapster:v0.19.0</span><br><span class="line">          command:</span><br><span class="line">            - /heapster</span><br><span class="line">            - --source=kubernetes:http://192.168.1.94:8080?inClusterConfig=false&amp;amp;kubeletHttps=true&amp;amp;kubeletPort=10250&amp;amp;useServiceAccount=true&amp;amp;auth=</span><br><span class="line">            - --sink=influxdb:http://monitoring-influxdb:8086</span><br></pre></td></tr></table></figure>
+<p>Heapster 需要设置的参数如下：</p>
+<p><strong>–source：</strong>为配置监控来源。在本例中使用 kubernetes:表示从 Kubernetes Master 获取各 Node 的信息。在 URL 后面的参数部分，修改 kubeletHttps、inClusterConfig、useServiceAccount 的值，并设置 auth 的值为空。URL中可配置的参数如下：</p>
+<ul>
+<li>IP 地址和端口号：为 Kubernetes Master 的地址。</li>
+<li>kubeletPort：默认为 10255（Kubelet 服务的只读端口号）。</li>
+<li>kubeletHttps：是否通过 HTTPS 方式连接 Kubelet，默认为 false。</li>
+<li>apiVersion： API 版本号，默认为 Kubernetes 系统的版本号，当前为 v1.</li>
+<li>inClusterConfig：是否使用 Heapster 命名空间中的 ServiceAccount，默认为 true。</li>
+<li>insecure：是否信任 Kubernetes 证书，默认为 false。</li>
+<li>auth：客户端认证授权文件，当 ServiceAccount 不可用时对其进行设置。</li>
+<li>useServiceAccount：是否使用 ServiceAccount，默认为 false。</li>
+</ul>
+<p><strong>–sink：</strong>为配置后端的存储系统，在本例中使用 InfluxDB 系统。</p>
+<p><strong>heapster-service.yaml</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  labels:</span><br><span class="line">    kubernetes.io/cluster-service: &quot;true&quot;</span><br><span class="line">    kubernetes.io/name: heapster</span><br><span class="line">  name: heapster</span><br><span class="line">spec:</span><br><span class="line">  ports:</span><br><span class="line">    - port: 80</span><br><span class="line">      targetPort: 8082</span><br><span class="line">  selector:</span><br><span class="line">    name: heapster</span><br></pre></td></tr></table></figure>
+<p><strong>grafana-controller.yaml</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: ReplicationController</span><br><span class="line">metadata:</span><br><span class="line">  labels:</span><br><span class="line">    name: grafana</span><br><span class="line">  name: grafana</span><br><span class="line">spec:</span><br><span class="line">  replicas: 1</span><br><span class="line">  selector:</span><br><span class="line">    name: grafana</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        name: grafana</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">        - name: grafana</span><br><span class="line">          image: index.tenxcloud.com/google_containers/heapster_grafana:v2.6.0</span><br><span class="line">          ports:</span><br><span class="line">            - containerPort: 3000</span><br><span class="line">              hostPort: 3000</span><br><span class="line">          env:</span><br><span class="line">            - name: INFLUXDB_HOST</span><br><span class="line">              value: monitoring-influxdb</span><br></pre></td></tr></table></figure>
+<p><strong>grafana-service.yaml</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  labels:</span><br><span class="line">    kubernetes.io/name: grafana</span><br><span class="line">    kubernetes.io/cluster-service: &quot;true&quot;</span><br><span class="line">  name: grafana</span><br><span class="line">spec:</span><br><span class="line">  type: NodePort</span><br><span class="line">  ports:</span><br><span class="line">    - port: 3000</span><br><span class="line">      targetPort: 3000</span><br><span class="line">      nodePort: 30080</span><br><span class="line">  selector:</span><br><span class="line">    name: grafana</span><br></pre></td></tr></table></figure>
+<h3 id="2、创建所有-Service-和-rc："><a href="#2、创建所有-Service-和-rc：" class="headerlink" title="2、创建所有 Service 和 rc："></a>2、创建所有 Service 和 rc：</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">kubectl create -f influxdb-service.yaml</span><br><span class="line">kubectl create -f heapster-service.yaml</span><br><span class="line">kubectl create -f grafana-service.yaml</span><br><span class="line">kubectl create -f influxdb-controller.yaml</span><br><span class="line">kubectl create -f heapster-controller.yaml</span><br><span class="line">kubectl create -f grafana-controller.yaml</span><br></pre></td></tr></table></figure>
+<h3 id="3、验证"><a href="#3、验证" class="headerlink" title="3、验证"></a>3、验证</h3><p>登陆查看：<a href="http://nodeip:30080，默认密码是admin----admin">http://nodeip:30080，默认密码是admin----admin</a><br><img src="/uploads/grafana.png" alt="grafana"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/k8s/" rel="tag"># k8s</a>
+              <a href="/tags/grafana/" rel="tag"># grafana</a>
+              <a href="/tags/heapster/" rel="tag"># heapster</a>
+              <a href="/tags/influxdb/" rel="tag"># influxdb</a>
+              <a href="/tags/%E7%9B%91%E6%8E%A7/" rel="tag"># 监控</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/06/30/Kubernetes%E5%B7%A5%E4%BD%9C%E4%B8%AD%E9%83%A8%E7%BD%B2%E5%92%8C%E7%AE%A1%E7%90%86(%E4%B8%89)%20%E7%AE%A1%E7%90%86Resources/" rel="prev" title="Kubernetes工作中部署和管理(三) 管理Resources">
+                  <i class="fa fa-chevron-left"></i> Kubernetes工作中部署和管理(三) 管理Resources
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/07/14/Docker%E7%BD%91%E7%BB%9C%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-Flannel/" rel="next" title="Docker网络解决方案-Flannel">
+                  Docker网络解决方案-Flannel <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

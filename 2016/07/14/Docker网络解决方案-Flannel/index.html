@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Flannel介绍Flannel是CoreOS团队针对Kubernetes设计的一个网络规划服务，简单来说，它的功能是让集群中的不同节点主机创建的Docker容器都具有全集群唯一的虚拟IP地址。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker网络解决方案-Flannel">
+<meta property="og:url" content="http://zhanghonged.github.io/2016/07/14/Docker%E7%BD%91%E7%BB%9C%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-Flannel/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="Flannel介绍Flannel是CoreOS团队针对Kubernetes设计的一个网络规划服务，简单来说，它的功能是让集群中的不同节点主机创建的Docker容器都具有全集群唯一的虚拟IP地址。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/flannel-1.png">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/flannel-2.png">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/flannel-3.png">
+<meta property="article:published_time" content="2016-07-14T08:57:27.000Z">
+<meta property="article:modified_time" content="2016-08-09T07:48:10.857Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="flannel">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://zhanghonged.github.io/uploads/flannel-1.png">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2016/07/14/Docker%E7%BD%91%E7%BB%9C%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-Flannel/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2016/07/14/Docker%E7%BD%91%E7%BB%9C%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-Flannel/","path":"2016/07/14/Docker网络解决方案-Flannel/","title":"Docker网络解决方案-Flannel"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Docker网络解决方案-Flannel | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Flannel%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">Flannel介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Flannel%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">Flannel的工作原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Flannel%E7%9A%84%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text">Flannel的安装和配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E5%AE%89%E8%A3%85Etcd%E6%9C%8D%E5%8A%A1"><span class="nav-number">3.1.</span> <span class="nav-text">1、安装Etcd服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E5%AE%89%E8%A3%85flannel"><span class="nav-number">3.2.</span> <span class="nav-text">2、安装flannel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E9%85%8D%E7%BD%AEdocker%E5%B9%B6%E5%90%AF%E5%8A%A8"><span class="nav-number">3.3.</span> <span class="nav-text">3、配置docker并启动</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98"><span class="nav-number">4.</span> <span class="nav-text">问题</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2016/07/14/Docker%E7%BD%91%E7%BB%9C%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-Flannel/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Docker网络解决方案-Flannel | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Docker网络解决方案-Flannel
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-07-14 16:57:27" itemprop="dateCreated datePublished" datetime="2016-07-14T16:57:27+08:00">2016-07-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2016-08-09 15:48:10" itemprop="dateModified" datetime="2016-08-09T15:48:10+08:00">2016-08-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/docker%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">docker学习</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="Flannel介绍"><a href="#Flannel介绍" class="headerlink" title="Flannel介绍"></a>Flannel介绍</h2><p>Flannel是CoreOS团队针对Kubernetes设计的一个网络规划服务，简单来说，它的功能是让集群中的不同节点主机创建的Docker容器都具有全集群唯一的虚拟IP地址。</p>
+<span id="more"></span>
+
+<p>在Kubernetes的网络模型中，假设了每个物理节点应该具备一段“属于同一个内网IP段内”的“专用的子网IP”。例如：<br>节点A：10.0.1.0&#x2F;24<br>节点B：10.0.2.0&#x2F;24<br>节点C：10.0.3.0&#x2F;24</p>
+<p>但在默认的Docker配置中，每个节点上的Docker服务会分别负责所在节点容器的IP分配。这样导致的一个问题是，不同节点上容器可能获得相同的内外IP地址。并使这些容器之间能够之间通过IP地址相互找到，也就是相互ping通。</p>
+<p>Flannel的设计目的就是为集群中的所有节点重新规划IP地址的使用规则，从而使得不同节点上的容器能够获得“同属一个内网”且”不重复的”IP地址，并让属于不同节点上的容器能够直接通过内网IP通信。</p>
+<h2 id="Flannel的工作原理"><a href="#Flannel的工作原理" class="headerlink" title="Flannel的工作原理"></a>Flannel的工作原理</h2><p>Flannel实质上是一种“覆盖网络(overlay network)”，也就是将TCP数据包装在另一种网络包里面进行路由转发和通信，目前已经支持UDP、VxLAN、AWS VPC和GCE路由等数据转发方式。<br>原理是每个主机配置一个ip段和子网个数。例如，可以配置一个覆盖网络使用 10.100.0.0&#x2F;16段，每个主机&#x2F;24个子网。因此主机a可以接受10.100.5.0&#x2F;24，主机B可以接受10.100.18.0&#x2F;24的包。flannel使用etcd来维护分配的子网到实际的ip地址之间的映射。对于数据路径，flannel 使用udp来封装ip数据报，转发到远程主机。选择UDP作为转发协议是因为他能穿透防火墙。例如，AWS Classic无法转发IPoIP or GRE 网络包，是因为它的安全组仅仅支持TCP&#x2F;UDP&#x2F;ICMP。</p>
+<p>flannel 使用etcd存储配置数据和子网分配信息。flannel 启动之后，后台进程首先检索配置和正在使用的子网列表，然后选择一个可用的子网，然后尝试去注册它。<br>etcd也存储这个每个主机对应的ip。flannel 使用etcd的watch机制监视&#x2F;coreos.com&#x2F;network&#x2F;subnets下面所有元素的变化信息，并且根据他来维护一个路由表。为了提高性能，flannel优化了Universal TAP&#x2F;TUN设备，对TUN和UDP之间的ip分片做了代理。</p>
+<p>下图解释了数据报通过覆盖网络转发的路线：<br><img src="/uploads/flannel-1.png" alt="flannel-1"><br>这张图的信息量很全，下面简单的解读一下。<br>数据从源容器中发出后，经由所在主机的docker0虚拟网卡转发到flannel0虚拟网卡，这是个P2P的虚拟网卡，flanneld服务监听在网卡的另外一端。</p>
+<p>源主机的flanneld服务将原本的数据内容UDP封装后根据自己的路由表投递给目的节点的flanneld服务，数据到达以后被解包，然后直接进入目的节点的flannel0虚拟网卡，然后被转发到目的主机的docker0虚拟网卡，最后就像本机容器通信一下的有docker0路由到达目标容器。</p>
+<p>为什么在发送节点上的数据会从docker0路由到flannel0虚拟网卡，在目的节点会从flannel0路由到docker0虚拟网卡？<br>我们来看一眼安装了Flannel的节点上的路由表。<br>下面是数据发送节点的路由表：<br><img src="/uploads/flannel-2.png" alt="flannel-2"></p>
+<p>这个是数据接收节点的路由表：<br><img src="/uploads/flannel-3.png" alt="flannel-3"></p>
+<p>例如现在有一个数据包要从IP为172.16.87.2的容器发到IP为172.16.61.2的容器。根据数据发送节点的路由表，它只与172.16.0.0&#x2F;16匹配这条记录匹配，因此数据从docker0出来以后就被投递到了flannel0。同理在目标节点，由于投递的地址是一个容器，因此目的地址一定会落在docker0对于的172.16.61.0&#x2F;24这个记录上，自然的被投递到了docker0网卡。</p>
+<h2 id="Flannel的安装和配置"><a href="#Flannel的安装和配置" class="headerlink" title="Flannel的安装和配置"></a>Flannel的安装和配置</h2><p>系统环境：centos7</p>
+<h3 id="1、安装Etcd服务"><a href="#1、安装Etcd服务" class="headerlink" title="1、安装Etcd服务"></a>1、安装Etcd服务</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install etcd -y</span><br></pre></td></tr></table></figure>
+<p>在任意节点安装都行,这里我们安装在kube-master节点上，和k8s共用一套etcd。<br>配置conf文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/etcd/etcd.conf</span><br><span class="line">#主要配置下面两项</span><br><span class="line">ETCD_LISTEN_CLIENT_URLS=&quot;http://0.0.0.0:4001&quot;</span><br><span class="line">ETCD_ADVERTISE_CLIENT_URLS=&quot;http://0.0.0.0:4001&quot;</span><br></pre></td></tr></table></figure>
+<p>启动服务并指定Flannel能用来分配给每个Docker节点的拟IP地址段：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl start etcd</span><br><span class="line">etcdctl set /coreos.com/network/config &#x27;&#123; &quot;Network&quot;: &quot;172.16.0.0/16&quot; &#125;&#x27;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2、安装flannel"><a href="#2、安装flannel" class="headerlink" title="2、安装flannel"></a>2、安装flannel</h3><p>flannel安装在k8s-minion的每个节点上，这里只演示一个<br>从<a target="_blank" rel="noopener" href="https://github.com/coreos/flannel/releases%E4%B8%8B%E8%BD%BD%E6%9C%80%E6%96%B0%E7%9A%84flannel%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%8C%85%EF%BC%8C%E5%B9%B6%E5%AE%89%E8%A3%85%E5%90%AF%E5%8A%A8%EF%BC%9A">https://github.com/coreos/flannel/releases下载最新的flannel二进制包，并安装启动：</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">curl -L -O https://github.com/coreos/flannel/releases/download/v0.5.5/flannel-0.5.5-linux-amd64.tar.gz</span><br><span class="line">tar zxvf flannel-0.5.1-linux-amd64.tar.gz </span><br><span class="line">cd flannel-0.5.5</span><br><span class="line">cp flanneld /usr/bin/</span><br><span class="line">mkdir -p /var/log/k8s/</span><br><span class="line">ifconfig docker0 down</span><br><span class="line">brctl delbr docker0</span><br><span class="line">flanneld  --v=0 \</span><br><span class="line">          --logtostderr=false \</span><br><span class="line">          --log_dir=/var/log/k8s  \</span><br><span class="line">          --etcd-endpoints=http://k8s-master:4001 &amp;</span><br></pre></td></tr></table></figure>
+
+<p>centos机器上直接yaml安装</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">yum install flannel</span><br><span class="line">已安装:</span><br><span class="line">  flannel.x86_64 0:0.5.3-9.el7  </span><br></pre></td></tr></table></figure>
+<p>修改配置文件为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@minion sysconfig]# cat /etc/sysconfig/flanneld </span><br><span class="line"># Flanneld configuration options  </span><br><span class="line"></span><br><span class="line"># etcd url location.  Point this to the server where etcd runs</span><br><span class="line">FLANNEL_ETCD=&quot;http://192.168.1.94:4001&quot;</span><br><span class="line"></span><br><span class="line"># etcd config key.  This is the configuration key that flannel queries</span><br><span class="line"># For address range assignment</span><br><span class="line">FLANNEL_ETCD_KEY=&quot;/coreos.com/network&quot;</span><br><span class="line"></span><br><span class="line"># Any additional options that you want to pass</span><br><span class="line">FLANNEL_OPTIONS=&quot;--v=0 --logtostderr=false --log_dir=/var/logs/k8s&quot;</span><br></pre></td></tr></table></figure>
+<p>启动flanneld服务</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@minion sysconfig]# systemctl enable flanneld</span><br><span class="line">Created symlink from /etc/systemd/system/multi-user.target.wants/flanneld.service to /usr/lib/systemd/system/flanneld.service</span><br><span class="line">Created symlink from /etc/systemd/system/docker.service.requires/flanneld.service to /usr/lib/systemd/system/flanneld.service</span><br><span class="line">[root@minion sysconfig]# systemctl start flanneld</span><br></pre></td></tr></table></figure>
+
+<h3 id="3、配置docker并启动"><a href="#3、配置docker并启动" class="headerlink" title="3、配置docker并启动"></a>3、配置docker并启动</h3><p>此环境docker版本为1.10.3，这里只介绍一个minion节点的配置<br>查看flannel节点分配的地址段，次文件flannel启动后自动生成</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@minion ~]# cat /run/flannel/subnet.env </span><br><span class="line">FLANNEL_NETWORK=172.16.0.0/16</span><br><span class="line">FLANNEL_SUBNET=172.16.87.1/24</span><br><span class="line">FLANNEL_MTU=1472</span><br><span class="line">FLANNEL_IPMASQ=false</span><br></pre></td></tr></table></figure>
+<p>修改docker配置文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/sysconfig/docker</span><br><span class="line"></span><br><span class="line">#根据/run/flannel/subnet.env的内容变更相应配置即可</span><br><span class="line">OPTIONS=&#x27;--selinux-enabled --log-driver=journald --bip=172.16.87.1/24 --mtu=1472 --iptables=false&#x27;</span><br><span class="line"></span><br><span class="line">#如果有自己的docker私有仓库并没有配置https的，需要取消注释这个选项，并修改相应的仓库地址</span><br><span class="line">INSECURE_REGISTRY=&#x27;--insecure-registry docker.myself&#x27;</span><br></pre></td></tr></table></figure>
+<p>启动docker，此节点配置完成，并依次配置其他minion节点。</p>
+<p>rpm安装的falnnel，不需要修改docker配置文件，直接启动docker即可。</p>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>如果cat &#x2F;run&#x2F;flannel&#x2F;subnet.env 你发现flannel子网变更了的话，你需要删除 docker0 网卡，然后把新flannel子网的信息相应变更到&#x2F;etc&#x2F;sysconfig&#x2F;docker，才能重启docker成功。<br>rpm包安装的flanneld应该不会出现此问题。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/flannel/" rel="tag"># flannel</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/07/07/Kubernets%E7%9B%91%E6%8E%A7%20Heapster+InfluxDB+Grafana/" rel="prev" title="Kubernets监控 Heapster+InfluxDB+Grafana">
+                  <i class="fa fa-chevron-left"></i> Kubernets监控 Heapster+InfluxDB+Grafana
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/07/29/kubelet%E6%8A%A5%E9%94%99%EF%BC%9A%20failed%20to%20detect%20process%20id%20for%20docker%20%E2%80%93%20failed%20to%20find%20pid%20of%20docker%20exit%20status%201/" rel="next" title="kubelet报错： failed to detect process id for ">
+                  kubelet报错： failed to detect process id for  <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

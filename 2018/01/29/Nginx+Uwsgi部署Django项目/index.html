@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Django 首要的部署平台是WSGI，它是Python Web 服务器和应用的标准。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nginx+Uwsgi部署Django项目">
+<meta property="og:url" content="http://zhanghonged.github.io/2018/01/29/Nginx+Uwsgi%E9%83%A8%E7%BD%B2Django%E9%A1%B9%E7%9B%AE/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="Django 首要的部署平台是WSGI，它是Python Web 服务器和应用的标准。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-01-29T06:35:20.000Z">
+<meta property="article:modified_time" content="2018-01-29T09:14:55.364Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="Django">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2018/01/29/Nginx+Uwsgi%E9%83%A8%E7%BD%B2Django%E9%A1%B9%E7%9B%AE/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2018/01/29/Nginx+Uwsgi%E9%83%A8%E7%BD%B2Django%E9%A1%B9%E7%9B%AE/","path":"2018/01/29/Nginx+Uwsgi部署Django项目/","title":"Nginx+Uwsgi部署Django项目"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Nginx+Uwsgi部署Django项目 | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81Centos%E4%B8%8B%E8%BF%90%E8%A1%8CDjango%E5%BA%94%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">一、Centos下运行Django应用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E5%AE%89%E8%A3%85sqlite-devel%E5%8C%85"><span class="nav-number">1.1.</span> <span class="nav-text">1、安装sqlite-devel包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85python2-7"><span class="nav-number">1.2.</span> <span class="nav-text">2、编译安装python2.7</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E5%BB%BA%E7%AB%8B%E8%BD%AF%E9%93%BE%E6%8E%A5%EF%BC%8C%E4%BD%BF%E7%B3%BB%E7%BB%9F%E9%BB%98%E8%AE%A4%E7%9A%84python%E6%8C%87%E5%90%91python2-7"><span class="nav-number">1.3.</span> <span class="nav-text">3、建立软链接，使系统默认的python指向python2.7</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81%E6%8C%87%E5%AE%9Ayum%E7%9A%84python%E7%89%88%E6%9C%AC"><span class="nav-number">1.4.</span> <span class="nav-text">4、指定yum的python版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5%E3%80%81%E5%AE%89%E8%A3%85pip"><span class="nav-number">1.5.</span> <span class="nav-text">5、安装pip</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6%E3%80%81%E5%AE%89%E8%A3%85Django1-8-2"><span class="nav-number">1.6.</span> <span class="nav-text">6、安装Django1.8.2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7%E3%80%81%E8%BF%90%E8%A1%8Cdjango%E9%A1%B9%E7%9B%AE"><span class="nav-number">1.7.</span> <span class="nav-text">7、运行django项目</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E4%BD%BF%E7%94%A8uwsgi%E8%BF%90%E8%A1%8C%E9%A1%B9%E7%9B%AE"><span class="nav-number">2.</span> <span class="nav-text">二、使用uwsgi运行项目</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E5%AE%89%E8%A3%85uwsgi"><span class="nav-number">2.1.</span> <span class="nav-text">1、安装uwsgi</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81uwsgi%E8%BF%90%E8%A1%8Cdjango%E9%A1%B9%E7%9B%AE"><span class="nav-number">2.2.</span> <span class="nav-text">2、uwsgi运行django项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E4%BD%BF%E7%94%A8%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E5%90%AF%E5%8A%A8uwsgi"><span class="nav-number">2.3.</span> <span class="nav-text">3、使用配置文件启动uwsgi</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E9%83%A8%E7%BD%B2%E5%88%B0nginx"><span class="nav-number">3.</span> <span class="nav-text">三、部署到nginx</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E8%AE%BE%E7%BD%AEnginx%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">3.1.</span> <span class="nav-text">1、设置nginx配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E5%90%8C%E6%AD%A5%E9%9D%99%E6%80%81%E6%96%87%E4%BB%B6%E5%88%B0nginx%E8%AE%BE%E7%BD%AE%E7%9A%84%E7%9B%AE%E5%BD%95%E4%B8%8B"><span class="nav-number">3.2.</span> <span class="nav-text">2、同步静态文件到nginx设置的目录下</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E5%90%AF%E5%8A%A8%E9%A1%B9%E7%9B%AE"><span class="nav-number">3.3.</span> <span class="nav-text">3、启动项目</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2018/01/29/Nginx+Uwsgi%E9%83%A8%E7%BD%B2Django%E9%A1%B9%E7%9B%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Nginx+Uwsgi部署Django项目 | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Nginx+Uwsgi部署Django项目
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2018-01-29 14:35:20 / 修改时间：17:14:55" itemprop="dateCreated datePublished" datetime="2018-01-29T14:35:20+08:00">2018-01-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Django/" itemprop="url" rel="index"><span itemprop="name">Django</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>Django 首要的部署平台是WSGI，它是Python Web 服务器和应用的标准。</p>
+<span id="more"></span>
+<p>对于生产环境的web应用部署，应该采用 <strong>web应用</strong> + <strong>web应用服务器软件</strong> + <strong>web服务器软件</strong> 的组合操作。<br><span style="font-weight:bold;font-size:18px">web应用:</span>顾名思义就是你的web project，这可以是java web项目，django项目或者php项目；<br><span style="font-weight:bold;font-size:18px">web应用服务器软件:</span>就是运行web应用的地方，例如java用的tomcat服务器，django用的uwsgi服务器;<br><span style="font-weight:bold;font-size:18px">web服务器软件:</span>常见的当然就是著名的apache和nginx了;<br>本文主要介绍的是<strong>nginx</strong> + <strong>uwsgi</strong> 来为<strong>django</strong>应用提供服务。<br>本文测试环境为Centos6.8 + python2.7.14 + Django1.8.2，下面介绍将在此环境下进行。</p>
+<h2 id="一、Centos下运行Django应用"><a href="#一、Centos下运行Django应用" class="headerlink" title="一、Centos下运行Django应用"></a>一、Centos下运行Django应用</h2><h3 id="1、安装sqlite-devel包"><a href="#1、安装sqlite-devel包" class="headerlink" title="1、安装sqlite-devel包"></a>1、安装sqlite-devel包</h3><p>centos6.8 自带的是python2.6，但是至少pyhton2.7才能满足我的需要，因此先从升级python2.7开始。<br>这里有个坑先填一下，这里务必先安装<strong>sqlite-devel</strong> 包，要不后面运行项目会报错：<br><span style="color:red;">No module named _sqlite3</span><br>然后还得重新编译安装python2.7</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install sqlite-devel</span><br></pre></td></tr></table></figure>
+
+<h3 id="2、编译安装python2-7"><a href="#2、编译安装python2-7" class="headerlink" title="2、编译安装python2.7"></a>2、编译安装python2.7</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">tar xvf Python-2.7.14.tgz</span><br><span class="line">cd Python-2.7.14</span><br><span class="line">./configure</span><br><span class="line">make -j 4</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+<h3 id="3、建立软链接，使系统默认的python指向python2-7"><a href="#3、建立软链接，使系统默认的python指向python2-7" class="headerlink" title="3、建立软链接，使系统默认的python指向python2.7"></a>3、建立软链接，使系统默认的python指向python2.7</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mv /usr/bin/python /usr/bin/python2.6.6</span><br><span class="line">ln -s /usr/local/bin/python2.7 /usr/bin/python</span><br></pre></td></tr></table></figure>
+<h3 id="4、指定yum的python版本"><a href="#4、指定yum的python版本" class="headerlink" title="4、指定yum的python版本"></a>4、指定yum的python版本</h3><p>由于系统python软连接指向python2.7之后，yum将无法正常工作，出现“No module named yum”的报错。<br>解决方式如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /usr/bin/yum</span><br></pre></td></tr></table></figure>
+<p>将头部修改为:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/usr/bin/python2.6.6</span></span><br></pre></td></tr></table></figure>
+<h3 id="5、安装pip"><a href="#5、安装pip" class="headerlink" title="5、安装pip"></a>5、安装pip</h3><p>下载脚本方式安装</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget --no-check-certificate https://bootstrap.pypa.io/get-pip.py</span><br><span class="line">python get-pip.py</span><br></pre></td></tr></table></figure>
+<p>安装完成后命令路径为 <strong>&#x2F;usr&#x2F;local&#x2F;bin&#x2F;pip2.7</strong> ，后面我们就使用<strong>pip2.7</strong> 来安装python2.7的模块。</p>
+<h3 id="6、安装Django1-8-2"><a href="#6、安装Django1-8-2" class="headerlink" title="6、安装Django1.8.2"></a>6、安装Django1.8.2</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip2.7 install django==1.8.2</span><br></pre></td></tr></table></figure>
+<h3 id="7、运行django项目"><a href="#7、运行django项目" class="headerlink" title="7、运行django项目"></a>7、运行django项目</h3><p>切换到django项目所在目录，运行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python manage.py runserver 127.0.0.1:8085</span><br></pre></td></tr></table></figure>
+<p>然后在浏览器中输入127.0.0.1:8085 ，如果访问成功说明django运行环境正常。</p>
+<h2 id="二、使用uwsgi运行项目"><a href="#二、使用uwsgi运行项目" class="headerlink" title="二、使用uwsgi运行项目"></a>二、使用uwsgi运行项目</h2><p><strong>Wsgi</strong>：web服务器网关接口，英文叫 Python Web Server Gateway Interface 缩写叫WSGI，是Python应用程序或框架和web服务器之间的一种接口。</p>
+<h3 id="1、安装uwsgi"><a href="#1、安装uwsgi" class="headerlink" title="1、安装uwsgi"></a>1、安装uwsgi</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip2.7 install uwsgi</span><br></pre></td></tr></table></figure>
+
+<h3 id="2、uwsgi运行django项目"><a href="#2、uwsgi运行django项目" class="headerlink" title="2、uwsgi运行django项目"></a>2、uwsgi运行django项目</h3><p>切换到django项目的主目录下，运行命令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uwsgi --http 192.168.1.5:8085 --file myblog/wsgi.py --static-map=/static=static</span><br></pre></td></tr></table></figure>
+<p>就可以运行你的web项目了，这时如果在浏览其中输入192.168.1.5:8085 能够成功访问，说明你的应用服务器部署成功，已经可以对外提供服务。<br><strong>–http</strong> 这个就是runserver一样指定我们的ip和端口<br><strong>–file</strong> 这个文件其实就是一个反射<br><strong>–static</strong> 做一个映射，指定静态文件</p>
+<h3 id="3、使用配置文件启动uwsgi"><a href="#3、使用配置文件启动uwsgi" class="headerlink" title="3、使用配置文件启动uwsgi"></a>3、使用配置文件启动uwsgi</h3><p>对于uWSGI服务器的配置，如上命令加上很多参数非常麻烦，可以写成配置文件的方式。<br>创建配置文件 <strong>mysite_uwsgi.ini</strong>:</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[uwsgi]</span></span><br><span class="line"><span class="attr">chdir</span>=/usr/local/src/deploy/myblog/</span><br><span class="line"><span class="attr">module</span>=myblog.wsgi:application</span><br><span class="line"><span class="attr">socket</span>=/usr/local/src/deploy/uwsgi.sock</span><br><span class="line"><span class="comment">#socket=127.0.0.1:8077</span></span><br><span class="line"><span class="attr">workers</span>=<span class="number">5</span></span><br><span class="line"><span class="attr">pidfile</span>=/usr/local/src/deploy/uwsgi.pid</span><br><span class="line"><span class="attr">http</span>=<span class="number">192.168</span>.<span class="number">1.5</span>:<span class="number">8082</span></span><br><span class="line"><span class="attr">static-map</span>=/static=/usr/local/src/deploy/myblog/static</span><br><span class="line"><span class="attr">uid</span>=root</span><br><span class="line"><span class="attr">gid</span>=root</span><br><span class="line"><span class="attr">master</span>=<span class="literal">true</span></span><br><span class="line"><span class="attr">vacuum</span>=<span class="literal">true</span></span><br><span class="line"><span class="attr">thunder-lock</span>=<span class="literal">true</span></span><br><span class="line"><span class="attr">enable-htreads</span>=<span class="literal">true</span></span><br><span class="line"><span class="attr">post-buffering</span>=<span class="number">4096</span></span><br><span class="line"><span class="attr">daemonize</span>=/usr/local/src/deploy/uwsgi.log</span><br></pre></td></tr></table></figure>
+<p>其中<span style="color:red;font-weight:bold;">http参数</span>用于以上测试，而与Nginx交互需要使用<span style="color:red;font-weight:bold;">socket参数</span>，即使用TCP协议，WSGI和uwsgi协议都在TCP协议之上。<br><span style="color:red;font-weight:bold;">socket参数</span>也可以配置为网络地址，如<strong>socket&#x3D;127.0.0.1:7070</strong>，但如果Nginx和uWSGI同在一个服务器上，可以使用<strong>socket文件</strong>的形式。<br>通过下面命令同样可以启动uWSGI加载Djiango项目</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uwsgi --ini mysite_uwsgi.ini</span><br></pre></td></tr></table></figure>
+<h2 id="三、部署到nginx"><a href="#三、部署到nginx" class="headerlink" title="三、部署到nginx"></a>三、部署到nginx</h2><h3 id="1、设置nginx配置文件"><a href="#1、设置nginx配置文件" class="headerlink" title="1、设置nginx配置文件"></a>1、设置nginx配置文件</h3><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span>  &#123;</span><br><span class="line">        <span class="attribute">listen</span> <span class="number">8080</span>;</span><br><span class="line">        <span class="attribute">index</span> index.html;</span><br><span class="line">        <span class="attribute">charset</span> utf-<span class="number">8</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="section">location</span> / &#123;</span><br><span class="line">                <span class="attribute">include</span> uwsgi_params; </span><br><span class="line">                <span class="attribute">uwsgi_connect_timeout</span> <span class="number">30</span>;</span><br><span class="line">                <span class="comment">#uwsgi_pass unix:/usr/local/src/deploy/uwsgi.sock;</span></span><br><span class="line">                <span class="attribute">uwsgi_pass</span> <span class="number">127.0.0.1:8077</span>;     <span class="comment">#对于动态请求，转发到本机的9090端口，也就是uwsgi监听的端口</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">#设定静态文件所在目录</span></span><br><span class="line">		<span class="comment">#后面会报错修改此处</span></span><br><span class="line">        <span class="section">location</span> /static/ &#123;</span><br><span class="line">                <span class="attribute">alias</span> /usr/local/src/deploy/myblog/static/;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">#同样自行设置，要保证目录已经建好</span></span><br><span class="line">        <span class="section">location</span> /media/ &#123;</span><br><span class="line">                <span class="attribute">alias</span> /usr/local/src/deploy/myblog/media/;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2、同步静态文件到nginx设置的目录下"><a href="#2、同步静态文件到nginx设置的目录下" class="headerlink" title="2、同步静态文件到nginx设置的目录下"></a>2、同步静态文件到nginx设置的目录下</h3><p>在利用 <strong>Nginx+uwsgi</strong> 部署Django项目之后，发现 <strong>admin</strong> 模块的CSS样式、JS等文件访问全部404，丢失找不到原始资源。<br><span style="color:#00D0D0;font-size:20px;font-weight:bold;">解析:</span><br>在Django项目开发过程中， <strong>setting.py</strong> 中配置如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">STATIC_URL = <span class="string">&#x27;/static/&#x27;</span></span><br><span class="line">STATICFILES_DIRS=(</span><br><span class="line">    os.path.join(BASE_DIR, <span class="string">&#x27;static&#x27;</span>).replace(<span class="string">&#x27;\\&#x27;</span>,<span class="string">&#x27;/&#x27;</span>),</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">MEDIA_URL = <span class="string">&#x27;/media/&#x27;</span> <span class="comment">#绝对不可用和STATIC_URL-一致</span></span><br><span class="line">MEDIA_ROOT = os.path.join(BASE_DIR, <span class="string">&#x27;media&#x27;</span>).replace(<span class="string">&#x27;\\&#x27;</span>,<span class="string">&#x27;/&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#ckeditor上传文件位置</span></span><br><span class="line"><span class="comment"># 这是一个相对路径，它相对与你设置的的MEDIA_ROOT</span></span><br><span class="line">CKEDITOR_UPLOAD_PATH = <span class="string">&#x27;upload&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#ckeditor用到的jq文件路径</span></span><br><span class="line">CKEDITOR_JQUERY_URL = <span class="string">&#x27;/static/js/jquery-2.0.2.js&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#ckeditor使用的图片模块</span></span><br><span class="line">CKEDITOR_IMAGE_BACKEND = <span class="string">&#x27;pillow&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>在 <strong>template</strong> 中使用 <strong>load staticfiles</strong> 可以通过 <strong>static ‘js&#x2F;jquery-2.0.2.js’</strong> 等访问静态资源，admin 模块直接注册之后就可以正常使用。<br>但配置 <strong>Nginx+Uwsgi</strong> 后admin的样式和js就找不到了。<br><span style="color:#00D0D0;font-size:20px;font-weight:bold;">解决之道:</span><br>首先修改django项目setting.py增加STATIC_ROOT:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">STATIC_ROOT = <span class="string">&#x27;/usr/local/src/deploy/static&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>然后执行命令:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python manage.py collectstatic  </span><br></pre></td></tr></table></figure>
+<p>可以看到上面命令的作用是收集Django项目中所有涉及到的静态资源，统一放到 <strong>STATIC_ROOT</strong> 目录管理访问。<br><span style="color:red;">并且 <strong>STATIC_ROOT</strong> 只有在部署的时候才发挥作用。</span><br>此时，修改 Nginx中关于Django项目的static配置为：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">location</span> /static/ &#123;</span><br><span class="line">		<span class="attribute">alias</span> /usr/local/src/deploy/static/;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后访问admin模块发现可以带样式的正常访问!</p>
+<p><span style="color:#00D0D0;font-size:20px;font-weight:bold;">增加内容:</span><br>由于我的项目用到了 <strong>CKEDITOR</strong> 富文本，因此在 <strong>settings.py</strong> 文件中配置了下面路径:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">MEDIA_URL = <span class="string">&#x27;/media/&#x27;</span> <span class="comment">#绝对不可用和STATIC_URL-一致</span></span><br><span class="line">MEDIA_ROOT = os.path.join(BASE_DIR, <span class="string">&#x27;media&#x27;</span>).replace(<span class="string">&#x27;\\&#x27;</span>,<span class="string">&#x27;/&#x27;</span>)</span><br><span class="line"><span class="comment">#ckeditor上传文件位置</span></span><br><span class="line"><span class="comment"># 这是一个相对路径，它相对与你设置的的MEDIA_ROOT</span></span><br><span class="line">CKEDITOR_UPLOAD_PATH = <span class="string">&#x27;upload&#x27;</span></span><br><span class="line"><span class="comment">#ckeditor用到的jq文件路径</span></span><br><span class="line">CKEDITOR_JQUERY_URL = <span class="string">&#x27;/static/js/jquery-2.0.2.js&#x27;</span></span><br><span class="line"><span class="comment">#ckeditor使用的图片模块</span></span><br><span class="line">CKEDITOR_IMAGE_BACKEND = <span class="string">&#x27;pillow&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>ckeditor上传的文件就在media 的 upload目录里。项目里其他自定义的文件上传也会到media目录里。<br>因此在nginx中需要制定media的路径保证正常读取:</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">location</span> /media/ &#123;</span><br><span class="line">		<span class="attribute">alias</span> /usr/local/src/deploy/myblog/media/;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3、启动项目"><a href="#3、启动项目" class="headerlink" title="3、启动项目"></a>3、启动项目</h3><p>启动 <strong>uwsgi</strong> 和 <strong>nginx</strong> 后就可以通过访问 <strong>服务器ip:8080</strong> 来进行项目访问了。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"># python</a>
+              <a href="/tags/Django/" rel="tag"># Django</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/01/23/Django%E5%88%86%E9%A1%B5%E7%9A%84%E5%AE%9E%E7%8E%B0/" rel="prev" title="Django分页的实现">
+                  <i class="fa fa-chevron-left"></i> Django分页的实现
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/01/31/Saltstackgrains/" rel="next" title="Saltstack grains">
+                  Saltstack grains <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

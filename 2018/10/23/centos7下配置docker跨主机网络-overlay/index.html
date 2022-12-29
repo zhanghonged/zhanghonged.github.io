@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="docker 跨主机容器通讯有多重实现方式，之前介绍过 Flannel，本节内容我们来介绍下 overlay 实现方式。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="centos7下配置docker跨主机网络-overlay">
+<meta property="og:url" content="http://zhanghonged.github.io/2018/10/23/centos7%E4%B8%8B%E9%85%8D%E7%BD%AEdocker%E8%B7%A8%E4%B8%BB%E6%9C%BA%E7%BD%91%E7%BB%9C-overlay/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="docker 跨主机容器通讯有多重实现方式，之前介绍过 Flannel，本节内容我们来介绍下 overlay 实现方式。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-10-23T06:01:56.000Z">
+<meta property="article:modified_time" content="2018-10-23T07:09:56.555Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="docker">
+<meta property="article:tag" content="overlay">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2018/10/23/centos7%E4%B8%8B%E9%85%8D%E7%BD%AEdocker%E8%B7%A8%E4%B8%BB%E6%9C%BA%E7%BD%91%E7%BB%9C-overlay/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2018/10/23/centos7%E4%B8%8B%E9%85%8D%E7%BD%AEdocker%E8%B7%A8%E4%B8%BB%E6%9C%BA%E7%BD%91%E7%BB%9C-overlay/","path":"2018/10/23/centos7下配置docker跨主机网络-overlay/","title":"centos7下配置docker跨主机网络-overlay"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>centos7下配置docker跨主机网络-overlay | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E7%8E%AF%E5%A2%83%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">一、环境介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E9%85%8D%E7%BD%AEETCD%E9%9B%86%E7%BE%A4"><span class="nav-number">2.</span> <span class="nav-text">二、配置ETCD集群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E9%85%8D%E7%BD%AEdocker"><span class="nav-number">3.</span> <span class="nav-text">三、配置docker</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%E3%80%81%E4%BF%AE%E6%94%B9docker%E5%90%AF%E5%8A%A8%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0"><span class="nav-number">3.1.</span> <span class="nav-text">1、修改docker启动配置参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%E3%80%81%E5%88%9B%E5%BB%BAoverlay-network"><span class="nav-number">3.2.</span> <span class="nav-text">2、创建overlay network</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%B5%8B%E8%AF%95%E8%B7%A8%E4%B8%BB%E6%9C%BA%E5%AE%B9%E5%99%A8%E8%BF%9E%E9%80%9A%E6%80%A7"><span class="nav-number">4.</span> <span class="nav-text">四、测试跨主机容器连通性</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2018/10/23/centos7%E4%B8%8B%E9%85%8D%E7%BD%AEdocker%E8%B7%A8%E4%B8%BB%E6%9C%BA%E7%BD%91%E7%BB%9C-overlay/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="centos7下配置docker跨主机网络-overlay | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          centos7下配置docker跨主机网络-overlay
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2018-10-23 14:01:56 / 修改时间：15:09:56" itemprop="dateCreated datePublished" datetime="2018-10-23T14:01:56+08:00">2018-10-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/docker%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">docker学习</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><strong>docker</strong> 跨主机容器通讯有多重实现方式，之前介绍过 <strong>Flannel</strong>，本节内容我们来介绍下 <strong>overlay</strong> 实现方式。</p>
+<span id="more"></span>
+<p>Docker提供了 <strong>overlay driver</strong>，用户可以创建基于 <strong>VxLAN</strong> 的 <strong>overlay</strong> 网络。<strong>VxLAN</strong> 可将二层数据封装到 <strong>UDP</strong> 进行传输。</p>
+<h3 id="一、环境介绍"><a href="#一、环境介绍" class="headerlink" title="一、环境介绍"></a>一、环境介绍</h3><table>
+<thead>
+<tr>
+<th>节点</th>
+<th>IP</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>docker-node1</td>
+<td>192.168.1.10</td>
+</tr>
+<tr>
+<td>docker-node2</td>
+<td>192.168.1.11</td>
+</tr>
+<tr>
+<td>docker-node3</td>
+<td>192.168.1.12</td>
+</tr>
+<tr>
+<td>1、Docker overlay网络需要一个 <strong>key-value</strong> 数据库用于保存网络信息状态，包括Network，Endpoint，IP等。<strong>Consul</strong>，<strong>Etcd</strong> 和 <strong>Zookeeper</strong> 都是docker支持的 <strong>key-value</strong> 软件。</td>
+<td></td>
+</tr>
+<tr>
+<td>由于对 <strong>etcd</strong> 比较熟悉，这里我们使用 <strong>etcd</strong> 来实现此功能。在上面3个节点中配置 <strong>etcd</strong> 集群。</td>
+<td></td>
+</tr>
+<tr>
+<td>2、上面3个节点上均安装 <strong>docker</strong> 服务，最后实现 <strong>container</strong> 的跨主机互通功能。</td>
+<td></td>
+</tr>
+</tbody></table>
+<h3 id="二、配置ETCD集群"><a href="#二、配置ETCD集群" class="headerlink" title="二、配置ETCD集群"></a>二、配置ETCD集群</h3><p>1、安装etcd</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install etcd</span><br></pre></td></tr></table></figure>
+<p>2、修改配置文件 <em>&#x2F;etc&#x2F;etcd&#x2F;etcd.conf</em><br><strong>docker-node1</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"># [member]</span><br><span class="line"># 节点名称</span><br><span class="line">ETCD_NAME=&quot;docker-node1&quot;</span><br><span class="line"># 数据存放位置</span><br><span class="line">ETCD_DATA_DIR=&quot;/var/lib/etcd/default.etcd&quot;</span><br><span class="line"># 监听其他 Etcd 实例的地址</span><br><span class="line">ETCD_LISTEN_PEER_URLS=&quot;http://192.168.1.10:2380&quot;</span><br><span class="line"># 监听客户端地址</span><br><span class="line">ETCD_LISTEN_CLIENT_URLS=&quot;http://0.0.0.0:2379,http://0.0.0.0:4001&quot;</span><br><span class="line"></span><br><span class="line">#[Clustering]</span><br><span class="line"># 通知其他 Etcd 实例地址</span><br><span class="line">ETCD_INITIAL_ADVERTISE_PEER_URLS=&quot;http://192.168.1.10:2380&quot;</span><br><span class="line"># 通知客户端地址</span><br><span class="line">ETCD_ADVERTISE_CLIENT_URLS=&quot;http://192.168.1.10:2379&quot;</span><br><span class="line"># 初始化集群内节点地址</span><br><span class="line">ETCD_INITIAL_CLUSTER=&quot;docker-node1=http://192.168.1.10:2380,docker-node2=http://192.168.1.11:2380;docker-node2=http://192.168.1.12:2380&quot;</span><br><span class="line"># 初始化集群 token</span><br><span class="line">ETCD_INITIAL_CLUSTER_TOKEN=&quot;etcd-cluster&quot;</span><br><span class="line"># 初始化集群状态，new 表示新建</span><br><span class="line">ETCD_INITIAL_CLUSTER_STATE=&quot;new&quot;</span><br></pre></td></tr></table></figure>
+<p>另外两个节点配置相同，注意需要修改的地方。<br>3、在3个节点中分别启动etcd服务</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start etcd.service</span><br></pre></td></tr></table></figure>
+<p>4、查询集群健康状态，在任意节点下操作都行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">etcdctl cluster-health</span><br><span class="line"></span><br><span class="line">member a3330a6a071bfd27 is healthy: got healthy result from http://192.168.1.10:2379</span><br><span class="line">member d38b84af8836a104 is healthy: got healthy result from http://192.168.1.12:2379</span><br><span class="line">member ff3afdb92f5c1db7 is healthy: got healthy result from http://192.168.1.11:2379</span><br><span class="line">cluster is healthy</span><br></pre></td></tr></table></figure>
+<p>5、查询节点列表</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">etcdctl member list</span><br><span class="line"></span><br><span class="line">a3330a6a071bfd27: name=docker-node1 peerURLs=http://192.168.1.10:2380 clientURLs=http://192.168.1.10:2379 isLeader=false</span><br><span class="line">d38b84af8836a104: name=docker-node3 peerURLs=http://192.168.1.12:2380 clientURLs=http://192.168.1.12:2379 isLeader=true</span><br><span class="line">ff3afdb92f5c1db7: name=docker-node2 peerURLs=http://192.168.1.11:2380 clientURLs=http://192.168.1.11:2379 isLeader=false</span><br></pre></td></tr></table></figure>
+
+<h3 id="三、配置docker"><a href="#三、配置docker" class="headerlink" title="三、配置docker"></a>三、配置docker</h3><h4 id="1、修改docker启动配置参数"><a href="#1、修改docker启动配置参数" class="headerlink" title="1、修改docker启动配置参数"></a>1、修改docker启动配置参数</h4><p>docker-node1上修改 <strong>docker daemon</strong>的配置文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/systemd/system/multi-user.target.wants/docker.service</span><br><span class="line"></span><br><span class="line">ExecStart=/usr/bin/dockerd -H tcp://0.0.0.0:2376 -H unix:///var/run/docker.sock --cluster-store=etcd://192.168.1.10:2379 --cluster-advertise=eth0:2376</span><br></pre></td></tr></table></figure>
+<p>配置docker要连接的etcd地址<br><strong>--cluster-store&#x3D;etcd:&#x2F;&#x2F;192.168.1.10:2379</strong><br>告知etcd自己的连接地址<br><strong>--cluster-advertise&#x3D;eth0:2376</strong><br>重启docker服务</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl daemon-reload</span><br><span class="line">systemctl restart docker.service</span><br></pre></td></tr></table></figure>
+<p><span style="color:blue;font-weight:bold;">以上步骤docker-node2和docker-node3上配置相同。</span></p>
+<h4 id="2、创建overlay-network"><a href="#2、创建overlay-network" class="headerlink" title="2、创建overlay network"></a>2、创建overlay network</h4><p>此步骤在docker-node1上创建一个 <strong>overlay network</strong> 网络。<br>查看创建之前的docker网络:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">docker network ls</span><br><span class="line"></span><br><span class="line">NETWORK ID          NAME                DRIVER              SCOPE</span><br><span class="line">5c7e54daa1ff        bridge              bridge              local</span><br><span class="line">8fb277c469e1        docker_gwbridge     bridge              local</span><br><span class="line">fb13863ef80c        host                host                local</span><br><span class="line">23bab817ac94        none                null                local</span><br></pre></td></tr></table></figure>
+<p>创建一个名词叫 <strong>demo</strong> 的 <strong>overlay</strong> 网络:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker network crate -d overlay demo</span><br></pre></td></tr></table></figure>
+<p>查看创建后的docker网络:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">docker network ls</span><br><span class="line"></span><br><span class="line">NETWORK ID          NAME                DRIVER              SCOPE</span><br><span class="line">5c7e54daa1ff        bridge              bridge              local</span><br><span class="line">b1dd7731cec1        demo                overlay             global</span><br><span class="line">8fb277c469e1        docker_gwbridge     bridge              local</span><br><span class="line">fb13863ef80c        host                host                local</span><br><span class="line">23bab817ac94        none                null                local</span><br></pre></td></tr></table></figure>
+<p>可以使用下面命令查看新建的 <strong>demo</strong> 网络详细信息:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">docker network inspect demo</span><br><span class="line"></span><br><span class="line">[</span><br><span class="line">    &#123;</span><br><span class="line">        &quot;Name&quot;: &quot;demo&quot;,</span><br><span class="line">        &quot;Id&quot;: &quot;b1dd7731cec1cb07386bb3d69c9bd31661096ba0a1f7aaeb8764c8c20342d224&quot;,</span><br><span class="line">        &quot;Created&quot;: &quot;2018-10-23T11:51:47.097147743+08:00&quot;,</span><br><span class="line">        &quot;Scope&quot;: &quot;global&quot;,</span><br><span class="line">        &quot;Driver&quot;: &quot;overlay&quot;,</span><br><span class="line">        &quot;EnableIPv6&quot;: false,</span><br><span class="line">        &quot;IPAM&quot;: &#123;</span><br><span class="line">            &quot;Driver&quot;: &quot;default&quot;,</span><br><span class="line">            &quot;Options&quot;: &#123;&#125;,</span><br><span class="line">            &quot;Config&quot;: [</span><br><span class="line">                &#123;</span><br><span class="line">                    &quot;Subnet&quot;: &quot;10.0.0.0/24&quot;,</span><br><span class="line">                    &quot;Gateway&quot;: &quot;10.0.0.1&quot;</span><br><span class="line">                &#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;Internal&quot;: false,</span><br><span class="line">        &quot;Attachable&quot;: false,</span><br><span class="line">        &quot;Ingress&quot;: false,</span><br><span class="line">        &quot;ConfigFrom&quot;: &#123;</span><br><span class="line">            &quot;Network&quot;: &quot;&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;ConfigOnly&quot;: false,</span><br><span class="line">        &quot;Containers&quot;: &#123;&#125;,</span><br><span class="line">        &quot;Options&quot;: &#123;&#125;,</span><br><span class="line">        &quot;Labels&quot;: &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p><span style=color:#DA9521;font-weight:bold;>在docker-node2和docker-node3上查看，这个demo的overlay netowrk已经被同步创建。因为他们共享一个Etcd集群，这个网络信息保存在Etcd中。</span></p>
+<h3 id="四、测试跨主机容器连通性"><a href="#四、测试跨主机容器连通性" class="headerlink" title="四、测试跨主机容器连通性"></a>四、测试跨主机容器连通性</h3><p>在node1、node2、node3 三个节点上分别创建3个容器，名词分别为：app1、app2、app3<br><strong>docker-node1</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name app1 --network demo busybox /bin/sh -c &quot;while true; do sleep 3600; done&quot;</span><br></pre></td></tr></table></figure>
+<p><strong>docker-node2</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name app2 --network demo busybox /bin/sh -c &quot;while true; do sleep 3600; done&quot;</span><br></pre></td></tr></table></figure>
+<p><strong>docker-node3</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name app3 --network demo busybox /bin/sh -c &quot;while true; do sleep 3600; done&quot;</span><br></pre></td></tr></table></figure>
+<p>进入容器 <strong>app1</strong> 中查看网络信息:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it app1 /bin/sh</span><br><span class="line"></span><br><span class="line"># 查看IP信息</span><br><span class="line">ip a</span><br><span class="line"></span><br><span class="line">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue qlen 1000</span><br><span class="line">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span><br><span class="line">    inet 127.0.0.1/8 scope host lo</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">15: eth0@if16: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1450 qdisc noqueue </span><br><span class="line">    link/ether 02:42:0a:00:00:02 brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet 10.0.0.2/24 brd 10.0.0.255 scope global eth0</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">17: eth1@if18: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1500 qdisc noqueue </span><br><span class="line">    link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet 172.17.0.2/16 brd 172.17.255.255 scope global eth1</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">	   </span><br><span class="line"># 查看路由信息</span><br><span class="line">ip route</span><br><span class="line"></span><br><span class="line">default via 172.17.0.1 dev eth1 </span><br><span class="line">10.0.0.0/24 dev eth0 scope link  src 10.0.0.2 </span><br><span class="line">172.17.0.0/16 dev eth1 scope link  src 172.17.0.2</span><br></pre></td></tr></table></figure>
+<p>可以看出有2个网卡，其中 <strong>eth0 10.0.0.2</strong> 是专门进行跨主机通讯用的网卡。<br>通过ping测试检查，3个container可以互相通讯，配置完成。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/docker/" rel="tag"># docker</a>
+              <a href="/tags/overlay/" rel="tag"># overlay</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/10/12/jenkins-ansible%E5%8F%91%E5%B8%83mvn%E9%A1%B9%E7%9B%AE%E5%88%B0tomcat/" rel="prev" title="jenkins+ansible发布mvn项目到tomcat">
+                  <i class="fa fa-chevron-left"></i> jenkins+ansible发布mvn项目到tomcat
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/11/01/Centos7%E5%BC%82%E5%B8%B8%E6%96%AD%E7%94%B5%E5%AE%95%E6%9C%BA%E6%97%A0%E6%B3%95%E5%90%AF%E5%8A%A8%E4%BF%AE%E5%A4%8D%E8%AE%B0/" rel="next" title="Centos7异常断电宕机无法启动修复记">
+                  Centos7异常断电宕机无法启动修复记 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本节主要介绍pillar和state的相关用法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Saltstack之Pillar、State">
+<meta property="og:url" content="http://zhanghonged.github.io/2018/02/02/Saltstack%E4%B9%8BPillar%E3%80%81State/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="本节主要介绍pillar和state的相关用法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-02-02T08:45:34.000Z">
+<meta property="article:modified_time" content="2018-02-05T08:20:29.173Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="saltstack">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2018/02/02/Saltstack%E4%B9%8BPillar%E3%80%81State/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2018/02/02/Saltstack%E4%B9%8BPillar%E3%80%81State/","path":"2018/02/02/Saltstack之Pillar、State/","title":"Saltstack之Pillar、State"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Saltstack之Pillar、State | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Pillar"><span class="nav-number">1.</span> <span class="nav-text">Pillar</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81master%E7%AB%AF%E5%90%AF%E7%94%A8pillar"><span class="nav-number">1.1.</span> <span class="nav-text">一、master端启用pillar</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E8%87%AA%E5%AE%9A%E4%B9%89pillar"><span class="nav-number">1.2.</span> <span class="nav-text">二、自定义pillar</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%E3%80%81%E5%88%9B%E5%BB%BA%E8%84%9A%E6%9C%AC"><span class="nav-number">1.2.1.</span> <span class="nav-text">1、创建脚本</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#State"><span class="nav-number">2.</span> <span class="nav-text">State</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%B8%8B%E9%9D%A2%E4%BB%8B%E7%BB%8D%E4%B8%89%E4%B8%AA%E6%A8%A1%E5%9D%97%E7%9A%84%E7%94%A8%E6%B3%95"><span class="nav-number">2.1.</span> <span class="nav-text">一、下面介绍三个模块的用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81master%E7%AB%AF%E5%90%AF%E7%94%A8state"><span class="nav-number">2.2.</span> <span class="nav-text">二、master端启用state</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E8%87%AA%E5%AE%9A%E4%B9%89state%E5%AE%89%E8%A3%85nginx"><span class="nav-number">2.3.</span> <span class="nav-text">三、自定义state安装nginx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%BB%99%E4%B8%8D%E5%90%8C%E4%B8%BB%E6%9C%BA%E5%AE%89%E8%A3%85nginx%E5%92%8Cmysql"><span class="nav-number">2.4.</span> <span class="nav-text">四、给不同主机安装nginx和mysql</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E4%BD%BF%E7%94%A8state%E5%A4%8D%E5%88%B6%E6%96%87%E4%BB%B6"><span class="nav-number">2.5.</span> <span class="nav-text">五、使用state复制文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E4%BD%BF%E7%94%A8state%E9%83%A8%E7%BD%B2django"><span class="nav-number">2.6.</span> <span class="nav-text">六、使用state部署django</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2018/02/02/Saltstack%E4%B9%8BPillar%E3%80%81State/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Saltstack之Pillar、State | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Saltstack之Pillar、State
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-02-02 16:45:34" itemprop="dateCreated datePublished" datetime="2018-02-02T16:45:34+08:00">2018-02-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2018-02-05 16:20:29" itemprop="dateModified" datetime="2018-02-05T16:20:29+08:00">2018-02-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Saltstack/" itemprop="url" rel="index"><span itemprop="name">Saltstack</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>本节主要介绍pillar和state的相关用法。</p>
+<span id="more"></span>
+
+<h2 id="Pillar"><a href="#Pillar" class="headerlink" title="Pillar"></a>Pillar</h2><p>Pillar 是 Salt 非常重要的一个组件，它用于给特定的 minion 定义任何你需要的数据， 这些数据可以被 Salt 的其他组件使用。Pillar 在解析完成 后，是一个嵌套的 dict 结构；最上层的 key 是 minion ID，其 value 是该 minion 所拥有的 Pillar 数据；每一个 value 也都是 key&#x2F;value。<br>这里可以看出 Pillar 的一个特点，Pillar 数据是与特定 minion 关联的，也就是说每一个minion 都只能看到自己的数据， 所以 Pillar 可以用来传递敏感数据 （在 Salt 的设计中， Pillar 使用独立的加密 session，也是为了保证敏感数据的安全性） 。<br>grains用于储存静态不易变更的数据，pillar一般用于存储动态的、敏感的数据；我们可以通过master和minion端配置，设置或获取grains信息，而pillar信息只能在master端配置，然后minion执行。</p>
+<h3 id="一、master端启用pillar"><a href="#一、master端启用pillar" class="headerlink" title="一、master端启用pillar"></a>一、master端启用pillar</h3><p>1、在master端编辑配置文件: <strong>&#x2F;etc&#x2F;salt&#x2F;master</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 开启pillar</span><br><span class="line">pillar_opts: True</span><br><span class="line"></span><br><span class="line"># 配置pillar脚本的存放路径</span><br><span class="line">pillar_roots:</span><br><span class="line">  base:</span><br><span class="line">    - /srv/pillar</span><br></pre></td></tr></table></figure>
+<p>2、在文件系统中建立pillar脚本存放路径</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /srv/pillar</span><br></pre></td></tr></table></figure>
+<p>3、重启master服务</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart salt-master</span><br></pre></td></tr></table></figure>
+<h3 id="二、自定义pillar"><a href="#二、自定义pillar" class="headerlink" title="二、自定义pillar"></a>二、自定义pillar</h3><h4 id="1、创建脚本"><a href="#1、创建脚本" class="headerlink" title="1、创建脚本"></a>1、创建脚本</h4><p><span style="color:red;font-weight:bold;">根据yaml格式编写脚本</span><br><span style="font-weight:bold;">①<strong>top.sls</strong> 入口文件</span></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">base:</span></span><br><span class="line">  <span class="string">&#x27;*&#x27;</span><span class="string">:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">t1</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">t2</span></span><br></pre></td></tr></table></figure>
+<p><span style="font-weight:bold;">base</span>&amp;nbsp;&amp;nbsp;表示入口文件<br><span style="font-weight:bold;">“*”</span>&amp;nbsp;&amp;nbsp;表示目标<br><span style="font-weight:bold;">- t1</span>&amp;nbsp;&amp;nbsp;自定义的脚本</p>
+<p><span style="font-weight:bold;">②自定义的脚本</span></p>
+<p>脚本名称一定要跟 top.sls 里 - 后面的内容一样<br><strong>t2.sls</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">ip:</span> &#123;&#123; <span class="string">grains.ip4_interfaces.ens33</span> &#125;&#125;</span><br><span class="line"><span class="attr">os:</span> &#123;&#123; <span class="string">grains.os</span> &#125;&#125;</span><br><span class="line">&#123;<span class="string">%</span> <span class="string">if</span> <span class="string">grains.fqdn</span> <span class="string">==</span> <span class="string">&#x27;centos-7-2&#x27;</span> <span class="string">%</span>&#125;</span><br><span class="line"><span class="attr">package:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">start:</span> <span class="string">nginx</span></span><br><span class="line">&#123;<span class="string">%</span> <span class="string">elif</span> <span class="string">grains.fqdn</span> <span class="string">==</span> <span class="string">&#x27;centos-7-3&#x27;</span> <span class="string">%</span>&#125;</span><br><span class="line"><span class="attr">package:</span> <span class="string">mariadb-server</span></span><br><span class="line"><span class="attr">start:</span> <span class="string">mariadb</span></span><br><span class="line">&#123;<span class="string">%</span> <span class="string">endif</span> <span class="string">%</span>&#125;</span><br></pre></td></tr></table></figure>
+<p><span style="font-weight:bold;">③刷新pillar</span></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">salt &quot;*&quot; saltutil.refresh_pillar</span><br></pre></td></tr></table></figure>
+<p><span style="font-weight:bold;">④执行查看结果</span></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">salt &#x27;*&#x27; pillar.items</span><br></pre></td></tr></table></figure>
+<p>结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">os:</span><br><span class="line">	CentOS</span><br><span class="line">package:</span><br><span class="line">	mariadb-server</span><br><span class="line">start:</span><br><span class="line">	mariadb</span><br></pre></td></tr></table></figure>
+<h2 id="State"><a href="#State" class="headerlink" title="State"></a>State</h2><p>state可以实现通过预先指定好的sls脚本进行minion端的状态管理，主要包括：</p>
+<ul>
+<li>软件包管理</li>
+<li>服务管理</li>
+<li>文件管理</li>
+</ul>
+<h3 id="一、下面介绍三个模块的用法"><a href="#一、下面介绍三个模块的用法" class="headerlink" title="一、下面介绍三个模块的用法"></a>一、下面介绍三个模块的用法</h3><p>更多模块用法请参考官网 <a target="_blank" rel="noopener" href="https://docs.saltstack.com/en/latest/ref/states/all/">https://docs.saltstack.com/en/latest/ref/states/all/</a><br><strong>软件包状态管理模块：</strong><br>模块名：pkg<br>功能：管理软件包状态，会根据操作系统不同，选择对应安装方式<br>基本操作：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pkg.installed:     #确保软件包已安装，如果没有安装进行安装</span><br><span class="line">pkg.latest:        #确保软件包是最新版本，如果不是，进行升级</span><br><span class="line">pkg.remove:        #确保软件包已卸载，如果之前已安装，进行卸载</span><br><span class="line">pkg.purge:         #除remove外，也会删除其配置文件</span><br></pre></td></tr></table></figure>
+
+<p><strong>文件状态管理模块：</strong><br>模块名：file<br>功能：管理文件状态<br>基本用法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">file.managed：   　　#保证文件存在并且为对应的状态</span><br><span class="line">file.recurse:   　　 #保证目录存在并且为对应的状态</span><br><span class="line">file.absent:   　　  #确保文件不存在，如果存在则进行删除操作</span><br></pre></td></tr></table></figure>
+
+<p><strong>服务状态管理模块：</strong><br>模块名：service<br>功能： 管理服务状态<br>基本用法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">service.running        #确保服务处于运行状态</span><br><span class="line">service.enabled        #确保服务会开机自动启动</span><br><span class="line">service.disabled    #确保服务不会开机自启动</span><br><span class="line">service.dead        #确保服务当前没有运行</span><br></pre></td></tr></table></figure>
+<h3 id="二、master端启用state"><a href="#二、master端启用state" class="headerlink" title="二、master端启用state"></a>二、master端启用state</h3><p>1、在master端编辑配置文件: <strong>&#x2F;etc&#x2F;salt&#x2F;master</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">file_roots:</span><br><span class="line">  base:</span><br><span class="line">    - /srv/salt</span><br></pre></td></tr></table></figure>
+<p>2、在文件系统中建立state脚本存放路径</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /srv/salt</span><br></pre></td></tr></table></figure>
+<h3 id="三、自定义state安装nginx"><a href="#三、自定义state安装nginx" class="headerlink" title="三、自定义state安装nginx"></a>三、自定义state安装nginx</h3><p>1、设置入口文件 <strong>top.sls</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">base:</span></span><br><span class="line">  <span class="string">&#x27;*&#x27;</span><span class="string">:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">nginx</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">mysql</span></span><br></pre></td></tr></table></figure>
+<p>2、设置nginx脚本 <strong>nginx.sls</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">nginx-service:</span></span><br><span class="line">  <span class="attr">pkg.installed:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">names:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">nginx</span></span><br><span class="line">  <span class="attr">service.running:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">enable:</span> <span class="literal">True</span></span><br></pre></td></tr></table></figure>
+<p>第一行：一般写脚本的作用<br>第二行：pkg.installed表示安装<br>第三行：names表示安装包的名称<br>第四行：nginx 安装包<br>第五行：service.running表示服务运行<br>第六行：要运行的名称<br>第七行：开启自启<br>3、执行脚本</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">salt &quot;*&quot; state.highstate</span><br></pre></td></tr></table></figure>
+<p>下面是一个停止服务然后删除包的脚本:</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">nginx-stop:</span></span><br><span class="line">  <span class="attr">service.dead:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">nginx</span></span><br><span class="line">  <span class="attr">pkg.purged:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">names:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">nginx</span></span><br></pre></td></tr></table></figure>
+<h3 id="四、给不同主机安装nginx和mysql"><a href="#四、给不同主机安装nginx和mysql" class="headerlink" title="四、给不同主机安装nginx和mysql"></a>四、给不同主机安装nginx和mysql</h3><p>这里根据不同主机的fqdn名称来判断<br>1、设置pillar，这里根据主机不同的fqdn名称来配置 <strong>package</strong> 和 <strong>start</strong> 。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">ip:</span> &#123;&#123; <span class="string">grains.ip4_interfaces.ens33</span> &#125;&#125;</span><br><span class="line"><span class="attr">os:</span> &#123;&#123; <span class="string">grains.os</span> &#125;&#125;</span><br><span class="line">&#123;<span class="string">%</span> <span class="string">if</span> <span class="string">grains.fqdn</span> <span class="string">==</span> <span class="string">&#x27;centos-7-2&#x27;</span> <span class="string">%</span>&#125;</span><br><span class="line"><span class="attr">package:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">start:</span> <span class="string">nginx</span></span><br><span class="line">&#123;<span class="string">%</span> <span class="string">elif</span> <span class="string">grains.fqdn</span> <span class="string">==</span> <span class="string">&#x27;centos-7-3&#x27;</span> <span class="string">%</span>&#125;</span><br><span class="line"><span class="attr">package:</span> <span class="string">mariadb-server</span></span><br><span class="line"><span class="attr">start:</span> <span class="string">mariadb</span></span><br><span class="line">&#123;<span class="string">%</span> <span class="string">endif</span> <span class="string">%</span>&#125;</span><br></pre></td></tr></table></figure>
+<p>2、配置state</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">myservice:</span></span><br><span class="line">  <span class="attr">pkg.installed:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> &#123;&#123; <span class="string">pillar.package</span> &#125;&#125;</span><br><span class="line">  <span class="attr">service.running:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> &#123;&#123; <span class="string">pillar.start</span> &#125;&#125;</span><br><span class="line">    <span class="bullet">-</span> <span class="attr">enable:</span> <span class="literal">True</span></span><br></pre></td></tr></table></figure>
+<p>3、执行脚本</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">salt &quot;*&quot; state.highstate</span><br></pre></td></tr></table></figure>
+<h3 id="五、使用state复制文件"><a href="#五、使用state复制文件" class="headerlink" title="五、使用state复制文件"></a>五、使用state复制文件</h3><p>1、创建state使用的脚本 <strong>file1.sls</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">file_1:</span></span><br><span class="line">  <span class="attr">file.managed:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">/usr/local/src/test.txt</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">source:</span> <span class="string">salt://files/test.txt</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">user:</span> <span class="string">root</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">group:</span> <span class="string">root</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">mode:</span> <span class="number">644</span></span><br></pre></td></tr></table></figure>
+<p>第一行表示脚本的内容<br>第二行表示文件管理<br>第三行表示复制的目标路径<br>第四行表示master端的文件 <strong>salt:&#x2F;&#x2F;test&#x2F;cmd.php  &#x3D;&#x3D;  &#x2F;srv&#x2F;salt&#x2F;test&#x2F;cmd.php</strong><br>第五行表示用户root<br>第六行表示组root<br>第七行表示权限</p>
+<p>2、执行脚本</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">salt &quot;*&quot; state.highstate</span><br></pre></td></tr></table></figure>
+<h3 id="六、使用state部署django"><a href="#六、使用state部署django" class="headerlink" title="六、使用state部署django"></a>六、使用state部署django</h3><p><strong>top.sls</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">base:</span></span><br><span class="line">  <span class="string">&#x27;*&#x27;</span><span class="string">:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">files-uwsgi</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">nginx</span></span><br></pre></td></tr></table></figure>
+<p><strong>files-uwsgi.sls</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">/opt/nginx/blog:</span></span><br><span class="line">  <span class="attr">file.directory:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">user:</span> <span class="string">root</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">group:</span> <span class="string">root</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">dir_mode:</span> <span class="number">755</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">file_mode:</span> <span class="number">644</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">makedirs:</span> <span class="literal">True</span></span><br><span class="line"><span class="attr">copyfiles-service:</span></span><br><span class="line">  <span class="attr">file.recurse:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">/opt/nginx/blog</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">source:</span> <span class="string">salt://files/blog</span></span><br><span class="line">  <span class="attr">cmd.run:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">uwsgi</span> <span class="string">--ini</span> <span class="string">/opt/nginx/blog/uwsgi.ini</span></span><br><span class="line"><span class="comment">#    - require:</span></span><br><span class="line"><span class="comment">#      - file: /opt/nginx/blog/uwsgi.ini</span></span><br></pre></td></tr></table></figure>
+<p><strong>nginx.sls</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">nginxBlog:</span></span><br><span class="line">  <span class="attr">pkg.installed:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">names:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">nginx</span></span><br><span class="line">  <span class="attr">file.managed:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">/etc/nginx/nginx.conf</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">source:</span> <span class="string">salt://files/nginx.conf</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">require:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">pkg:</span> <span class="string">nginx</span></span><br><span class="line">  <span class="attr">service.running:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">enable:</span> <span class="literal">True</span></span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/saltstack/" rel="tag"># saltstack</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/01/31/Saltstackgrains/" rel="prev" title="Saltstack grains">
+                  <i class="fa fa-chevron-left"></i> Saltstack grains
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/02/09/Django%E4%B9%8BAjax/" rel="next" title="Django之Ajax">
+                  Django之Ajax <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

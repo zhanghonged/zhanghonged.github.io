@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="这里介绍下编码类型的概念和之间的关系。如ASCII，IOS-8859-1，GB2312，GBK，Unicode，UTF-8等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="字符编码">
+<meta property="og:url" content="http://zhanghonged.github.io/2017/11/13/%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="这里介绍下编码类型的概念和之间的关系。如ASCII，IOS-8859-1，GB2312，GBK，Unicode，UTF-8等。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/GB2312.png">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/utf8.png">
+<meta property="article:published_time" content="2017-11-13T02:50:58.000Z">
+<meta property="article:modified_time" content="2017-11-21T09:41:57.176Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="编码">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://zhanghonged.github.io/uploads/GB2312.png">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2017/11/13/%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2017/11/13/%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81/","path":"2017/11/13/字符编码/","title":"字符编码"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>字符编码 | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#ASCII"><span class="nav-number">1.</span> <span class="nav-text">ASCII</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ISO-8859-1"><span class="nav-number">2.</span> <span class="nav-text">ISO-8859-1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GB2312"><span class="nav-number">3.</span> <span class="nav-text">GB2312</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BIG5"><span class="nav-number">4.</span> <span class="nav-text">BIG5</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GBK"><span class="nav-number">5.</span> <span class="nav-text">GBK</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Unicode"><span class="nav-number">6.</span> <span class="nav-text">Unicode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UTF"><span class="nav-number">7.</span> <span class="nav-text">UTF</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#UTF-8"><span class="nav-number">7.1.</span> <span class="nav-text">UTF-8</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#UTF-16-UTF-32"><span class="nav-number">7.2.</span> <span class="nav-text">UTF-16 UTF-32</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UCS"><span class="nav-number">8.</span> <span class="nav-text">UCS</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#UCS-2"><span class="nav-number">8.1.</span> <span class="nav-text">UCS-2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#UCS-4"><span class="nav-number">8.2.</span> <span class="nav-text">UCS-4</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GBK%E5%92%8CUTF-8%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">9.</span> <span class="nav-text">GBK和UTF-8的区别</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2017/11/13/%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="字符编码 | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          字符编码
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2017-11-13 10:50:58" itemprop="dateCreated datePublished" datetime="2017-11-13T10:50:58+08:00">2017-11-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2017-11-21 17:41:57" itemprop="dateModified" datetime="2017-11-21T17:41:57+08:00">2017-11-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%97%A5%E5%B8%B8%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index"><span itemprop="name">日常运维</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>这里介绍下编码类型的概念和之间的关系。如ASCII，IOS-8859-1，GB2312，GBK，Unicode，UTF-8等。</p>
+<span id="more"></span>
+<p>&amp;emsp;所有的信息最终都表示为一个二进制的字符串，每一个二进制位（bit）有0和1两种状态。<br>我们需要把字符’A’存入计算机时,就是需要一个规则。这个规则可以将字符映射到唯一的一种状态(二进制字符串)，这就是编码。在ASCII编码规则中，字符’A’对应的是01000001。</p>
+<h3 id="ASCII"><a href="#ASCII" class="headerlink" title="ASCII"></a>ASCII</h3><blockquote>
+<p>&amp;emsp;这套编码规则是由美国定制，一共规定了128个字符的编码，这128个符号，只占用了一个字节（8 bit）的后面7位，最前面的1位统一规定为0。总共才有128个字符编码，一个字节都没有用完，这好像似乎有点太少了。<br>于是乎，就开始压榨最高位，对其为1时也进行编码，利用最高位进行编码的方式就称为非ASCII编码，如ISO-8859-1编码。</p>
+</blockquote>
+<h3 id="ISO-8859-1"><a href="#ISO-8859-1" class="headerlink" title="ISO-8859-1"></a>ISO-8859-1</h3><blockquote>
+<p>&amp;emsp;ISO-8859-1编码由ISO组织指定，是在ASCII码基础上又制定了一些标准用来扩展ASCII编码。其中 <strong>00000000(0) ~ 01111111(127)</strong> 与ASCII的编码一样，并对 <strong>10000000(128) ~ 11111111(255)</strong> 这一段进行了编码。<br><span style="color:red;background:yellow">ISO-8859-1编码也是单字节编码，最多能够表示256个字符。</span>Latin1是ISO-8859-1的别名，有些环境下写作Latin-1。<br>但即使能够表示256个字符，对中文而言还是太少了，一个字节肯定不够，必须用多个字节表示。但是，由于是单字节编码，和计算机最基础的表示单位一致，所以很多时候仍旧使用 ISO8859-1编码来表示。而且在很多协议上，默认使用该编码。</p>
+</blockquote>
+<h3 id="GB2312"><a href="#GB2312" class="headerlink" title="GB2312"></a>GB2312</h3><blockquote>
+<p>&amp;emsp;GB2312编码是第一个汉字编码国家标准。GB2312编码共收录汉字6763个，其中一级汉字3755个，二级汉字3008个。同时，GB2312编码收录了包括拉丁字母、希腊字母、日文平假名及片假名字母、俄语西里尔字母在内的682个全角字符。<br><span style="color:red;background:yellow">GB2312是双字节编码，其中高字节表示区，低字节表示位。</span><br>GB2312其对所收录字符进行了”分区”处理，共94个区，区从1（十进制）开始，一直到94（十进制），每区含有94个位，位从1（十进制）开始，一直到94（十进制），共8836（94 * 94）个码位，这种表示方式也称为区位码。各区具体说明如下：</p>
+</blockquote>
+<ul>
+<li>01-09区收录除汉字外的682个字符，有164个空位（9 * 94 - 682）。</li>
+<li>10-15区为空白区，没有使用</li>
+<li>16-55区收录3755个一级汉字(简体)，按拼音排序。</li>
+<li>56-87区收录3008个二级汉字(简体)，按部首&#x2F;笔画排序。</li>
+<li>88-94区为空白区，没有使用。</li>
+</ul>
+<p>举例来说，“啊”字是GB2312编码中的第一个汉字，它位于16区的01位，所以它的区位码就是1601。</p>
+<blockquote>
+<p>&amp;emsp;<span style="color:red;background:yellow">GB2312规定对收录的每个字符采用两个字节表示</span>，第一个字节为“高字节”，对应94个区；第二个字节为“低字节”，对应94个位。所以它的区位码范围是：0101－9494。<br>区号和位号分别加上0xA0就是GB2312编码。例如最后一个码位是9494，区号和位号分别转换成十六进制是5E5E，0x5E+0xA0＝0xFE，所以该码位的GB2312编码是FEFE。<br>GB2312编码范围：A1A1－FEFE，其中汉字的编码范围为B0A1-F7FE，第一字节0xB0-0xF7（对应区号：16－87），第二个字节0xA1-0xFE（对应位号：01－94）。</p>
+</blockquote>
+<p><strong>区位码转换为GB2312编码规范</strong>：<br><img src="/uploads/GB2312.png"><br>还有一些汉字在GB2312中没有被编码，这样就导致了问题，随之就出现了主流的GBK编码。在讲解GBK编码之前，我们另外讲解一下BIG5编码。</p>
+<h3 id="BIG5"><a href="#BIG5" class="headerlink" title="BIG5"></a>BIG5</h3><blockquote>
+<p>&amp;emsp;BIG5编码又称大五码，是繁体中文字符集编码标准，共收录13060个中文字，其中有二字为重复编码。<br>BIG5采用双字节编码，使用两个字节来表示一个字符。高位字节使用了0x81-0xFE，低位字节使用了0x40-0x7E，及0xA1-0xFE。</p>
+</blockquote>
+<h3 id="GBK"><a href="#GBK" class="headerlink" title="GBK"></a>GBK</h3><blockquote>
+<p>&amp;emsp;是对GB2312编码的扩充，完全兼容GB2312编码。但其不兼容BIG5编码。<span style="color:red;background:yellow">GBK对汉字采用双字节编码</span>。GBK字符集共收录21003个汉字，包含国家标准GB13000-1中的全部中日韩汉字，和BIG5编码中的所有汉字。<br>相比于GB2312编码，GBK编码了更多汉字，如’镕’字。<br>GBK 亦采用双字节表示，总体编码范围为 8140-FEFE，首字节在 81-FE 之间，尾字节在 40-FE 之间，剔除 xx7F 码位。总计 23940 个码位，共收入 21886 个汉字和图形符号，其中汉字（包括部首和构件）21003 个，图形符号 883 个。</p>
+</blockquote>
+<h3 id="Unicode"><a href="#Unicode" class="headerlink" title="Unicode"></a>Unicode</h3><blockquote>
+<p>&amp;emsp;国际标准字符集，它将世界各种语言的每个字符定义一个唯一的编码，以满足跨语言、跨平台的文本信息转换。<br>Unicode是指一张表，里面包含了可能出现的所有字符，每个字符对应一个数字，这个数字称为码点(Code Point)，如字符’H’的码点为72（十进制），字符’李’的码点为26446（十进制）。Unicode表包含了1114112个码点，即从000000（十六进制） - 10FFFF（十六进制）。地球上所有字符都可以在Unicode表中找到对应的唯一码点。<br>&amp;emsp;<span style="color:red;">Unicode将码空间划分为17个平面，从00 - 10（十六进制，最高两位），即从0 - 16（十进制），每个平面有65536个码点（2^16），其中最重要的是第一个Unicode平面(码位从0000 - FFFF)，包含了最常用的字符，该平面被称为基本多语言平面（Basic Multilingual Plane），缩写为BMP，其他平面称为辅助平面(Supplementary Planes)，在基本多文种平面內， 从D800到DFFF之间的码位区段是永久保留不映射到字符的， 因此UTF-16编码巧妙的利用了这保留下来的码位来对辅助平面内的字符进行编码。</span><br>&amp;emsp;Unicode只是一个符号集，只规定的字符所对应的码点，并没有指定如何存储，如何进行存储出现了不同的编码方案，关于Unicode编码方案主要有两条主线：UCS和UTF。UTF主线由Unicode Consortium进行维护管理，UCS主线由ISO&#x2F;IEC进行维护管理。</p>
+</blockquote>
+<h3 id="UTF"><a href="#UTF" class="headerlink" title="UTF"></a>UTF</h3><p>UTF全称为”Unicode Transformation Format”，在UTF中主要有UTF-8，UTF-16和UTF-32。</p>
+<h4 id="UTF-8"><a href="#UTF-8" class="headerlink" title="UTF-8"></a>UTF-8</h4><blockquote>
+<p>&amp;emsp;UTF-8是一种变长编码方式，使用1-4个字节进行编码。UTF-8完全兼容ASCII，对于ASCII中的字符，UTF-8采用的编码值跟ASCII完全一致。<span style="color:red;background:yellow;">UTF-8是Unicode一种具体的编码实现。</span>UTF-8是在互联网上使用最广的一种Unicode的编码规则，因为这种编码有利于节约网络流量（因为变长编码，而非统一长度编码）。</p>
+</blockquote>
+<p><strong>Unicode码点转化为UTF-8编码的规则如下:</strong></p>
+<ol>
+<li>对于单字节的符号，字节的第一位设为0，后面7位为这个符号的unicode码。因此对于英语字母，UTF-8编码和ASCII码是相同的。</li>
+<li>对于n字节的符号（n&gt;1），第一个字节的前n位都设为1，第n+1位设为0，后面字节的前两位一律设为10。剩下的没有提及的二进制位，全部为这个符号的unicode码。</li>
+</ol>
+<p>如图:<br><img src="/uploads/utf8.png"></p>
+<blockquote>
+<p>示例：<br>字符’A’的Unicode码点为65（十进制），根据上表，在第一行范围，则字符’A’的UTF-8编码为01000001。<br>中文字符’李’的Unicode码点为26446（十进制），二进制为01100111 01001110，十六进制为674E。根据上表，在第三行范围，则将’李’二进制代码从低位到高位依次填入x中，不足的填入0。得到UTF-8编码为11100110 10011101 10001110，即E69D8E（十六进制）。</p>
+</blockquote>
+<p>由上述编码规则可知，0000 0000 - 0000 FFFF（第一行到第三行）为Unicode第一个平面（基本多语言平面），而0001 0000 - 10 FFFF（第四行）为Unicode其他平面（辅助平面）。在基本多语言平面对应了绝大多数常用的字符。对于大于65535（十进制）的码点，即在辅助平面上的码点，需要使用4个字节来进行UTF-8编码。<br><span style="color:red;"><strong>UTF-8编码不需要BOM机制</strong></span>，<br>因为在UTF-8编码中，其自身已经带了控制信息，如1110xxxx 10xxxxxx 10xxxxxx 10xxxxxx，其中1110就起到了控制作用，所以不需要额外的BOM机制。</p>
+<h4 id="UTF-16-UTF-32"><a href="#UTF-16-UTF-32" class="headerlink" title="UTF-16 UTF-32"></a>UTF-16 UTF-32</h4><p>UTF-8是不定长的编码，使用1、2、3、4个字节编码，而UTF-16则只使用2或4个字节编码。UTF-16也是Unicode一种具体的编码实现。<br>UTF-32是使用4个字节表示，也采用BOM机制。</p>
+<h3 id="UCS"><a href="#UCS" class="headerlink" title="UCS"></a>UCS</h3><p>UCS全称为”Universal Character Set”，在UCS中主要有UCS-2和UCS-4。</p>
+<h4 id="UCS-2"><a href="#UCS-2" class="headerlink" title="UCS-2"></a>UCS-2</h4><p>UCS-2是定长字节的，固定使用2个字节进行编码，从0000（十六进制）- FFFF（十六进制）的码位范围，对应第一个Unicode平面。采用BOM(Byte Order Mark)机制，该机制作用如下：1. 确定字节流采用的是大端序还是小端序。2. 确定字节流的Unicode编码方案。</p>
+<h4 id="UCS-4"><a href="#UCS-4" class="headerlink" title="UCS-4"></a>UCS-4</h4><p>UCS-4是定长字节的，固定使用4个字节进行编码。也采用了BOM机制。</p>
+<h3 id="GBK和UTF-8的区别"><a href="#GBK和UTF-8的区别" class="headerlink" title="GBK和UTF-8的区别"></a>GBK和UTF-8的区别</h3><ol>
+<li>GBK编码专门用来解决中文编码的，是双字节的。不论中英文都是双字节的。外国人看会出现乱码，此为我中华为自己汉字编码而形成之解决方案。</li>
+<li>UTF-8 编码是用以解决国际上字符的一种多字节编码，它对英文使用8位（即一个字节），中文使用24位（三个字节）来编码。但是外国人看的话不会乱码，此为西人为了解决多字节字符而形成之解决方案。</li>
+<li>GBK包含全部中文字符，UTF-8则包含全世界所有国家需要用到的字符。</li>
+<li>UTF-8编码的文字可以在各国各种支持UTF8字符集的浏览器上显示。比如，如果是UTF8编码，则在外国人的英文IE上也能显示中文，而无需他们下载IE的中文语言支持包。</li>
+<li>UTF8是国际编码，它的通用性比较好，外国人也可以浏览论坛，GBK是国家编码，通用性比UTF8差，不过UTF8占用的数据库比GBK大。</li>
+<li>如果你主要做中文程序的开发，客户也主要是中国人的话就用GBK吧，因为UTF-8编码的中文使用了三个字节，用GBK节省了空间。</li>
+<li>如果做英文网站开发，还是用utf-8吧，因为utf-8中英文只占一个字节。GBK中英文也是两个字节的，并且国外客户访问GBK要下载语言包。</li>
+<li>如果你的网站是中文的，但国外用户也不少，最好也用UTF-8的吧。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%BC%96%E7%A0%81/" rel="tag"># 编码</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2017/11/07/Python%E5%9F%BA%E7%A1%80-%E9%97%AD%E5%8C%85%E3%80%81%E8%A3%85%E9%A5%B0%E5%99%A8/" rel="prev" title="Python基础-闭包、装饰器">
+                  <i class="fa fa-chevron-left"></i> Python基础-闭包、装饰器
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2017/11/13/Python%E5%9F%BA%E7%A1%80-%E7%BC%96%E7%A0%81%E5%B0%8F%E7%BB%93python2/" rel="next" title="Python基础-编码小结python2">
+                  Python基础-编码小结python2 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

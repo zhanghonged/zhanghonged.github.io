@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="HTTP协议 是短连接、且无状态的。在一次请求和下一次请求之间没有任何状态保持，我们无法根据请求的任何方面(IP地址，用户代理等)来识别来自同一人的连续请求。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Django之Cookie和Session">
+<meta property="og:url" content="http://zhanghonged.github.io/2018/01/21/Django%E4%B9%8BCookie%E5%92%8CSession/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="HTTP协议 是短连接、且无状态的。在一次请求和下一次请求之间没有任何状态保持，我们无法根据请求的任何方面(IP地址，用户代理等)来识别来自同一人的连续请求。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/cookie.jpg">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/cookie-session.jpg">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/sessionid.png">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/sessiondb.jpg">
+<meta property="article:published_time" content="2018-01-21T08:52:51.000Z">
+<meta property="article:modified_time" content="2018-01-22T03:29:32.736Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="Django">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://zhanghonged.github.io/uploads/cookie.jpg">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2018/01/21/Django%E4%B9%8BCookie%E5%92%8CSession/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2018/01/21/Django%E4%B9%8BCookie%E5%92%8CSession/","path":"2018/01/21/Django之Cookie和Session/","title":"Django之Cookie和Session"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Django之Cookie和Session | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81Cookie"><span class="nav-number">1.</span> <span class="nav-text">一、Cookie</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81Cookie%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.1.</span> <span class="nav-text">1、Cookie介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81Django%E7%9A%84Cookie%E9%AA%8C%E8%AF%81%E5%8E%9F%E7%90%86"><span class="nav-number">1.2.</span> <span class="nav-text">2、Django的Cookie验证原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81Django-Cookie%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C"><span class="nav-number">1.3.</span> <span class="nav-text">3、Django-Cookie相关操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81Cookie%E9%AA%8C%E8%AF%81%E7%99%BB%E5%BD%95%E5%AE%9E%E4%BE%8B"><span class="nav-number">1.4.</span> <span class="nav-text">4、Cookie验证登录实例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5%E3%80%81Cookie%E7%9A%84%E7%BC%BA%E7%82%B9%E5%92%8C%E9%97%AE%E9%A2%98"><span class="nav-number">1.5.</span> <span class="nav-text">5、Cookie的缺点和问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81Session"><span class="nav-number">2.</span> <span class="nav-text">二、Session</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81Django%E4%B8%ADSession%E4%BB%8B%E7%BB%8D"><span class="nav-number">2.1.</span> <span class="nav-text">1、Django中Session介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81Django%E4%B8%ADSession%E6%93%8D%E4%BD%9C"><span class="nav-number">2.2.</span> <span class="nav-text">2、Django中Session操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81Cookie%E4%B8%8ESession%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">三、Cookie与Session实现原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%99%BB%E5%BD%95%E5%AE%9E%E4%BE%8B"><span class="nav-number">3.1.</span> <span class="nav-text">登录实例</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2018/01/21/Django%E4%B9%8BCookie%E5%92%8CSession/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Django之Cookie和Session | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Django之Cookie和Session
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-01-21 16:52:51" itemprop="dateCreated datePublished" datetime="2018-01-21T16:52:51+08:00">2018-01-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2018-01-22 11:29:32" itemprop="dateModified" datetime="2018-01-22T11:29:32+08:00">2018-01-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Django/" itemprop="url" rel="index"><span itemprop="name">Django</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>HTTP协议 是短连接、且无状态的。在一次请求和下一次请求之间没有任何状态保持，我们无法根据请求的任何方面(IP地址，用户代理等)来识别来自同一人的连续请求。</p>
+<span id="more"></span>
+
+<h2 id="一、Cookie"><a href="#一、Cookie" class="headerlink" title="一、Cookie"></a>一、Cookie</h2><h3 id="1、Cookie介绍"><a href="#1、Cookie介绍" class="headerlink" title="1、Cookie介绍"></a>1、Cookie介绍</h3><p><strong>Cookie</strong> 是浏览器为 Web 服务器存储的一小段信息。 每次浏览器从某个服务器请求页面时，它向服务器回送之前收到的 <strong>cookie</strong>。它保存在浏览器下的某个文件夹下。<br><img src="/uploads/cookie.jpg"></p>
+<h3 id="2、Django的Cookie验证原理"><a href="#2、Django的Cookie验证原理" class="headerlink" title="2、Django的Cookie验证原理"></a>2、Django的Cookie验证原理</h3><p>1、当浏览器第一次登陆网站的时候，无论登陆那个页面，都会被跳转拦截到 <strong>login</strong> 界面去进行登录动作，因为此时的 <strong>cookie</strong> 信息还没有生成，代表着不可以登陆。如果输入正确的账号密码登陆成功以后，服务端会写 <strong>cookie</strong> 并发到客户端，而且客户端的一些操作也会被记录在 <strong>cookie</strong> 里，再次登陆的时候，服务端去验证 <strong>cookie</strong> 的时候，此时 <strong>cookie</strong> 信息已经生成，即为验证成功。<br>2、<strong>Cookie</strong> 的工作原理是：由服务器产生内容，浏览器收到请求后保存到本地；当浏览器再次访问的时候，浏览器会自动带上 <strong>cookie</strong>，这样服务器就可以通过 <strong>cookie</strong> 的内容来判断客户的身份了。</p>
+<h3 id="3、Django-Cookie相关操作"><a href="#3、Django-Cookie相关操作" class="headerlink" title="3、Django-Cookie相关操作"></a>3、Django-Cookie相关操作</h3><p><strong>设置Cookie</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">res = HttpResponse(&#x27;xxx&#x27;)</span><br><span class="line">#res = render(request,&#x27;xxx.html&#x27;)</span><br><span class="line">#res = redirect(&#x27;xxx&#x27;)</span><br><span class="line"># 设置cookie，参数对应键名与指</span><br><span class="line">res.set_cookie(&#x27;name&#x27;,&#x27;zhangsan&#x27;)</span><br><span class="line">res.set_cookie(&#x27;password&#x27;,123456)</span><br></pre></td></tr></table></figure>
+<p><strong>获取Cookie</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 根据键名获取Cookie值</span><br><span class="line">request.COOKIES.get(&#x27;name&#x27;)</span><br></pre></td></tr></table></figure>
+<p><strong>Cookie常用参数</strong></p>
+<ul>
+<li>key：键</li>
+<li>value：值</li>
+<li>max_age：多久后过期，时间单位为秒</li>
+<li>expires：过期时间，为具体时间</li>
+<li>path：生效路径</li>
+<li>domain：生效域名</li>
+<li>secure：HTTPS传输时应设置为True</li>
+<li>httponly：只应用于http传输，JavaScript无法获取</li>
+</ul>
+<p><strong>Cookie加密解密</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># salt:加密盐，内容可自定义</span><br><span class="line">res.set_signed_cookie(&#x27;key&#x27;,&#x27;value&#x27;,salt=&#x27;zidingyi&#x27;)</span><br><span class="line"></span><br><span class="line"># 解密，加密盐的内容与加密时应保持一致</span><br><span class="line">request.get_signed_cookie(&#x27;key&#x27;,salt=&#x27;zidingyi&#x27;)</span><br></pre></td></tr></table></figure>
+<p><strong>Jquery设置与获取</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// 设置Cookie，参数对应键名与值</span><br><span class="line">$.cookie(&#x27;name&#x27;,&#x27;xxx&#x27;)</span><br><span class="line"></span><br><span class="line">//获取Cookie值</span><br><span class="line">$.cookie(&#x27;name&#x27;)</span><br></pre></td></tr></table></figure>
+<h3 id="4、Cookie验证登录实例"><a href="#4、Cookie验证登录实例" class="headerlink" title="4、Cookie验证登录实例"></a>4、Cookie验证登录实例</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">def login(request):</span><br><span class="line">  if request.method == &#x27;POST&#x27;:</span><br><span class="line">    name = request.POST.get(&#x27;user&#x27;)</span><br><span class="line">    pwd = request.POST.get(&#x27;pwd&#x27;)</span><br><span class="line">    # 简单演示匹配用户名密码</span><br><span class="line">    if name == &#x27;django&#x27; and pwd == &#x27;123456&#x27;:</span><br><span class="line">      res = redirect(&#x27;/index/&#x27;)</span><br><span class="line">      res.set_cookie(&#x27;username&#x27;,name)</span><br><span class="line">      return res</span><br><span class="line"></span><br><span class="line">def index(request):</span><br><span class="line">  if request.COOKIES.get(&#x27;username&#x27;,None):</span><br><span class="line">    name = request.COOKIES.get(&#x27;username&#x27;)</span><br><span class="line">    return render(request,&#x27;index.html&#x27;,locals())</span><br><span class="line">  else:</span><br><span class="line">    redirect(&#x27;/login&#x27;)</span><br></pre></td></tr></table></figure>
+<p>首次登录成功后写入 <strong>cookie</strong>，然后跳转到index页面，下次就可携带 <strong>cookie</strong> 直接访问index页面。</p>
+<h3 id="5、Cookie的缺点和问题"><a href="#5、Cookie的缺点和问题" class="headerlink" title="5、Cookie的缺点和问题"></a>5、Cookie的缺点和问题</h3><p><span style="text-shadow:1px 1px 1px #C0645F;">1、因为cookie存储的位置是在客户端，所以客户端可以被盗取cookie信息和伪造cookie信息，容易被不法人员利用，所以不建议单独使用cookie去验证。</span><br><span style="text-shadow:1px 1px 1px #DF40D8;">2、cookie弥补了http无状态的不足，让服务器知道来的人是谁；但是cookie以文本的形式保存在本地，自身安全性较差；所以我们就通过cookie识别不同的用户，对应的在session里保存私密的信息以及超过4096字节的文本。</span></p>
+<h2 id="二、Session"><a href="#二、Session" class="headerlink" title="二、Session"></a>二、Session</h2><p><strong>session</strong> 是一种服务端的机制，服务端使用一种类似散列表的结构来保存信息，当程序需要为某个客户端的请求创建一个 <strong>session</strong> 时，服务端首先会检查这个客户端的请求里是否包含了一个 <strong>session</strong> 标识(唯一的)，如果检测出来有，就说明以前已经为此用户创建过 <strong>session</strong>，服务端就按照 <strong>session id</strong> 把这个 <strong>session</strong> 检索出来，如果监测不到就会新建一个 <strong>session id</strong> 。</p>
+<h3 id="1、Django中Session介绍"><a href="#1、Django中Session介绍" class="headerlink" title="1、Django中Session介绍"></a>1、Django中Session介绍</h3><p>默认情况下，Django会将 <strong>session</strong> 保存在 <span style="color:red;font-weight:bold;">django_session</span>这个表中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE &quot;django_session&quot; (</span><br><span class="line">    &quot;session_key&quot; varchar(40) NOT NULL PRIMARY KEY,</span><br><span class="line">    &quot;session_data&quot; text NOT NULL,</span><br><span class="line">    &quot;expire_date&quot; datetime NOT NULL</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>其中的<span style="color:red;font-weight:bold;">session_key</span>就相当于 <strong>cookie</strong> 中保存的 <strong>sessionid</strong>，而<span style="color:red;font-weight:bold;">session_data</span>就包含了当前 <strong>session</strong> 中的属性。</p>
+<p><span style="font-size:16px;font-weight:bold;color:#3AACC0">Session中间件</span><br>视图方法接受一个 <strong>httpRequest</strong> 后，对它进行一系列的操作，然后返回一个 <strong>httpResponse</strong>。而中间件增加一些额外的操作：<br>&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Django的中间件框架就是一些所谓的hook类，它设置在Django项目中的 <strong>settings</strong> 中的 <strong>MIDDLEWARE_CLASSES</strong> 内。当然您也可以添加自己的 <strong>MIDDLEWARE_CLASSES</strong>。<br>默认情况下，<span style="color:red;">django.contrib.sessions.middleware.SessionMiddleware</span> 是自动添加的。查看它的源代码，我们可以发现它实际上就是实现了2个hooks：<strong>process_request和process_response</strong>。</p>
+<ul>
+<li><strong>process_request</strong> 提取当前 <strong>cookie</strong> 中的 <strong>session KEY</strong>(也就是sessionid)，其中 <strong>SESSION_COOKIE_NAME</strong> 就是我们说的 <strong>sessionid</strong>。而 <strong>request.session</strong> 则包含了 <strong>“session store”</strong> 对象。</li>
+<li><strong>process_response</strong> 负责保存 <strong>“session store”</strong> 对象并将它返回给客户端。</li>
+</ul>
+<h3 id="2、Django中Session操作"><a href="#2、Django中Session操作" class="headerlink" title="2、Django中Session操作"></a>2、Django中Session操作</h3><p><strong>获取session</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">request.session[key]</span><br><span class="line">request.session.get(key)</span><br></pre></td></tr></table></figure>
+<p><strong>设置session</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reqeust.session[key] = value</span><br></pre></td></tr></table></figure>
+<p><strong>删除session</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">del request[key]</span><br></pre></td></tr></table></figure>
+<p><strong>session会话保持时间</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">request.session.set_expiry(value)</span><br></pre></td></tr></table></figure>
+<p>如果value是个整数，session会在数秒后失效。<br>如果value是0，用户关闭浏览器session就会失效。<br>如果value是None，session会依赖全局session失效策略。</p>
+<h2 id="三、Cookie与Session实现原理"><a href="#三、Cookie与Session实现原理" class="headerlink" title="三、Cookie与Session实现原理"></a>三、Cookie与Session实现原理</h2><p><strong>Session</strong> 依赖于 <strong>Cookie</strong>，如果浏览器不能保存 <strong>cookie</strong> 那么 <strong>session</strong> 就失效了。因为它需要浏览器的 <strong>cookie</strong> 值去 <strong>session</strong> 里做对比。<span style="color:red;font-weight:bold;">session就是用来在服务器端保存用户的会话状态。</span></p>
+<p><img src="/uploads/cookie-session.jpg"><br>1、服务器会生成两份相同的 <strong>cookie</strong> 字符串，一份保存在本地，一份发向请求的浏览器。<br>2、浏览器将收到的 <strong>cookie</strong> 字符串保存下来，当下次再发请求时，会将发送信息与这段 <strong>cookie</strong> 一同发送到服务器。<br>3、服务器得到这段 <strong>cookie</strong> 会与本地保存的那份判断是否相同，如果相同就表示用户已经登录成功，保存用户登录成功的状态。<br>4、<strong>Django</strong> 的 <strong>session</strong> 默认保存在数据库中，其数据相当于一个大字典，<strong>key</strong> 为 <strong>cookie</strong> 的字符串，<strong>value</strong> 仍是一个字典，字典的 <strong>key</strong> 和 <strong>value</strong> 为用户设置的相关信息。这样就可以方便的存取 <strong>session</strong> 里面的信息。</p>
+<h3 id="登录实例"><a href="#登录实例" class="headerlink" title="登录实例"></a>登录实例</h3><p>Django中实现session的代码，判断用户是否已经成功登录:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">def login(request):</span><br><span class="line">    if request.method == &#x27;POST&#x27;:</span><br><span class="line">        name = request.POST.get(&#x27;user&#x27;)</span><br><span class="line">        pwd = request.POST.get(&#x27;pwd&#x27;)</span><br><span class="line">        if name == &#x27;django&#x27; and pwd == &#x27;123456&#x27;:</span><br><span class="line">            request.session[&#x27;IS_LOGIN&#x27;] = True    ##设置session</span><br><span class="line">            return redirect(index)</span><br><span class="line">    return render(request,&#x27;login.html&#x27;)</span><br><span class="line"></span><br><span class="line">def index(request):</span><br><span class="line">    is_login = request.session.get(&#x27;IS_LOGIN&#x27;,False)  #获取session判断</span><br><span class="line">    if is_login:</span><br><span class="line">        return render(request,&#x27;index.html&#x27;)</span><br><span class="line">    else:</span><br><span class="line">        return redirect(login)</span><br><span class="line"></span><br><span class="line">def logout(request):</span><br><span class="line">    del request.session[&#x27;IS_LOGIN&#x27;] # 删除session</span><br><span class="line">    return redirect(login)</span><br></pre></td></tr></table></figure>
+
+<p><strong>登录成功后在浏览器查看 sesssion_id</strong><br><img src="/uploads/sessionid.png"></p>
+<p><strong>再查看数据库</strong><br><img src="/uploads/sessiondb.jpg"><br><span style="color:red">通过上面验证得知：<strong>session</strong> 是用户登录成功后的状态信息保存在服务器端的数据库中，而客户端(浏览器)产生的只是一个<strong>sessionid</strong>。<br>程序通过读取客户端的 <strong>sessionid</strong> 来查找登录状态信息，并返回给客户端。<br>在服务器数据库中并没有看到刚才的登录状态，只是对其进行了加密，所以会看到一串很长的大小写字符串。<br> </span></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"># python</a>
+              <a href="/tags/Django/" rel="tag"># Django</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/01/12/Django%E4%B9%8BORM%E5%A4%9A%E8%A1%A8%E5%88%9B%E5%BB%BA%E5%8F%8A%E4%BD%BF%E7%94%A8/" rel="prev" title="Django之ORM多表创建及使用">
+                  <i class="fa fa-chevron-left"></i> Django之ORM多表创建及使用
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/01/22/Django%E4%B9%8BForm%E8%A1%A8%E5%8D%95/" rel="next" title="Django之Form表单">
+                  Django之Form表单 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

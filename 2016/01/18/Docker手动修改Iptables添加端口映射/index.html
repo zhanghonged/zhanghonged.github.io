@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本博客的第一篇文章，有点小激动哦，希望可以坚持下来。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker手动修改Iptables添加端口映射">
+<meta property="og:url" content="http://zhanghonged.github.io/2016/01/18/Docker%E6%89%8B%E5%8A%A8%E4%BF%AE%E6%94%B9Iptables%E6%B7%BB%E5%8A%A0%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="本博客的第一篇文章，有点小激动哦，希望可以坚持下来。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/lizhi.png">
+<meta property="article:published_time" content="2016-01-18T08:45:38.000Z">
+<meta property="article:modified_time" content="2016-08-09T07:29:43.981Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="docker">
+<meta property="article:tag" content="iptables">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://zhanghonged.github.io/uploads/lizhi.png">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2016/01/18/Docker%E6%89%8B%E5%8A%A8%E4%BF%AE%E6%94%B9Iptables%E6%B7%BB%E5%8A%A0%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2016/01/18/Docker%E6%89%8B%E5%8A%A8%E4%BF%AE%E6%94%B9Iptables%E6%B7%BB%E5%8A%A0%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84/","path":"2016/01/18/Docker手动修改Iptables添加端口映射/","title":"Docker手动修改Iptables添加端口映射"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Docker手动修改Iptables添加端口映射 | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%80%E6%9C%AF%E5%82%A8%E5%A4%87"><span class="nav-number">1.</span> <span class="nav-text">技术储备</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E7%BD%91%E5%8D%A1%E6%94%B6%E5%88%B0%E6%95%B0%E6%8D%AE%E5%8C%85iptables%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%EF%BC%9A"><span class="nav-number">1.1.</span> <span class="nav-text">一、网卡收到数据包iptables处理流程：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81docker%E8%BF%90%E8%A1%8Cipatables%E8%87%AA%E5%8A%A8%E6%B7%BB%E5%8A%A0%E7%9A%84%E8%A7%84%E5%88%99"><span class="nav-number">1.2.</span> <span class="nav-text">二、docker运行ipatables自动添加的规则</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%E3%80%81docker%E5%90%AF%E5%8A%A8%E6%97%B6%E8%87%AA%E5%8A%A8%E6%B7%BB%E5%8A%A0%E8%A7%84%E5%88%99"><span class="nav-number">1.2.1.</span> <span class="nav-text">1、docker启动时自动添加规则:</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#nat%E8%A1%A8%E8%A7%84%E5%88%99"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">nat表规则</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#filter%E8%A1%A8%E8%A7%84%E5%88%99"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">filter表规则:</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%E3%80%81docker%E5%90%AF%E5%8A%A8%E5%AE%B9%E5%99%A8%E5%B9%B6%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84-p-x2F-P-%E5%90%8E%E8%87%AA%E5%8A%A8%E6%B7%BB%E5%8A%A0%E8%A7%84%E5%88%99"><span class="nav-number">1.2.2.</span> <span class="nav-text">2、docker启动容器并端口映射(-p&#x2F;P)后自动添加规则:</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%8B%E5%8A%A8%E6%B7%BB%E5%8A%A0iptables%E8%A7%84%E5%88%99"><span class="nav-number">2.</span> <span class="nav-text">手动添加iptables规则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E5%9C%A8%E5%B7%B2%E5%90%AF%E5%8A%A8%E7%9A%84docker%E5%AE%B9%E5%99%A8%E4%B8%8A%E6%89%A9%E5%B1%95%E7%AB%AF%E5%8F%A3%EF%BC%8C%E4%BD%BF%E7%94%A8docker0%E7%BD%91%E6%A1%A5"><span class="nav-number">2.1.</span> <span class="nav-text">1、在已启动的docker容器上扩展端口，使用docker0网桥:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E6%9C%AA%E4%BD%BF%E7%94%A8docker0%EF%BC%8C%E4%BD%BF%E7%94%A8%E8%87%AA%E5%AE%9A%E4%B9%89%E7%BD%91%E6%A1%A5%EF%BC%8C%E5%88%86%E4%B8%A4%E7%A7%8D%E6%83%85%E5%86%B5"><span class="nav-number">2.2.</span> <span class="nav-text">2、未使用docker0，使用自定义网桥，分两种情况:</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#A%E3%80%81%E7%89%A9%E7%90%86%E7%BD%91%E5%8D%A1%E6%A1%A5%E6%8E%A5%E5%88%B0bridge%E7%BD%91%E6%A1%A5%EF%BC%8C%E9%85%8D%E7%BD%AE%E5%AE%B9%E5%99%A8%E5%B9%B6%E8%BF%9E%E6%8E%A5bridge%E7%BD%91%E6%A1%A5"><span class="nav-number">2.2.1.</span> <span class="nav-text">A、物理网卡桥接到bridge网桥，配置容器并连接bridge网桥</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B%E3%80%81%E4%BD%BF%E7%94%A8openvswitch-%E7%BD%91%E6%A1%A5%E5%B9%B6%E5%88%92%E5%88%86vlan"><span class="nav-number">2.2.2.</span> <span class="nav-text">B、使用openvswitch 网桥并划分vlan</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2016/01/18/Docker%E6%89%8B%E5%8A%A8%E4%BF%AE%E6%94%B9Iptables%E6%B7%BB%E5%8A%A0%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Docker手动修改Iptables添加端口映射 | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Docker手动修改Iptables添加端口映射
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-01-18 16:45:38" itemprop="dateCreated datePublished" datetime="2016-01-18T16:45:38+08:00">2016-01-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2016-08-09 15:29:43" itemprop="dateModified" datetime="2016-08-09T15:29:43+08:00">2016-08-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/docker%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">docker学习</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>本博客的第一篇文章，有点小激动哦，希望可以坚持下来。<br><img src="/uploads/lizhi.png" alt="lizhi"></p>
+<span id="more"></span>
+
+<p>言归正传，开始整：</p>
+<h2 id="技术储备"><a href="#技术储备" class="headerlink" title="技术储备"></a>技术储备</h2><h3 id="一、网卡收到数据包iptables处理流程："><a href="#一、网卡收到数据包iptables处理流程：" class="headerlink" title="一、网卡收到数据包iptables处理流程："></a>一、网卡收到数据包iptables处理流程：</h3><p>网卡收到一个数据包，内核决定这个数据包是发给本地的应用程序还是转发给其他主机。<br>如果发给本地应用程序:<br>nat-PREROUTING –&gt; filter-INPUT –&gt; 接受的应用程序</p>
+<p>如果从本机出去:<br>nat-OUTPUT –&gt; file-OUTPUT –&gt; nat-POSTROUTING</p>
+<p>如果收到一个数据包再转发出去:<br>nat-PREROUTING –&gt; file-FORWARD –&gt; nat-POSTROUTING</p>
+<h3 id="二、docker运行ipatables自动添加的规则"><a href="#二、docker运行ipatables自动添加的规则" class="headerlink" title="二、docker运行ipatables自动添加的规则"></a>二、docker运行ipatables自动添加的规则</h3><p>我们先来分析下docker添加iptables流程:</p>
+<h4 id="1、docker启动时自动添加规则"><a href="#1、docker启动时自动添加规则" class="headerlink" title="1、docker启动时自动添加规则:"></a>1、docker启动时自动添加规则:</h4><h5 id="nat表规则"><a href="#nat表规则" class="headerlink" title="nat表规则"></a>nat表规则</h5><p>a、数据包发往主机</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -A PREROUTING -m addrtype --dst-type LOCAL -j DOCKER</span><br></pre></td></tr></table></figure>
+<p>这里通过addrtype这个module来匹配数据包，如果这个数据包是发往本地的，那走DOCKER自定义链。</p>
+<p>b、数据包发送出去</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -A OUTPUT ! -d 127.0.0.0/8 -m addrtype --dst-type LOCAL -j DOCKER</span><br></pre></td></tr></table></figure>
+<p>如果数据包的目的地址是非127的LOCAL地址，则走DOCKER链。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -A POSTROUTING -s 172.18.0.0/16 ! -o docker0 -j MASQUERADE</span><br></pre></td></tr></table></figure>
+<p>这个是个SNAT规则，非docker0这个接口发送的源地址网段为172.18.0.0&#x2F;16的包在出去的时候会走NAT，这个规则保证docker容器可以访问外网。</p>
+<h5 id="filter表规则"><a href="#filter表规则" class="headerlink" title="filter表规则:"></a>filter表规则:</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -A FORWARD -o docker0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT</span><br></pre></td></tr></table></figure>
+<p>-m conntrack <br>对下列连接通信与当前的包&#x2F;连接进行匹配<br>–ctstate RELATED,ESTABLISHED 规则将应用到的连接状态。在本例中，ESTABLISHED 连接代表能够看到两个方向数据包的连接，而RELATED 类型代表，数据包开启一个新连接，但是与现有连接相关联。</p>
+<h4 id="2、docker启动容器并端口映射-p-x2F-P-后自动添加规则"><a href="#2、docker启动容器并端口映射-p-x2F-P-后自动添加规则" class="headerlink" title="2、docker启动容器并端口映射(-p&#x2F;P)后自动添加规则:"></a>2、docker启动容器并端口映射(-p&#x2F;P)后自动添加规则:</h4><p>我们这里添加2022到22端口的映射<br>-p 2022:22</p>
+<p>a、公网访问2022端口，数据包进入内核后，内核走nat—PREROUTING,就匹配上了这条规则：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -A DOCKER -d 172.18.0.2/32 ! -i docker0 -o docker0 -p tcp -m tcp --dport 22 -j ACCEPT</span><br></pre></td></tr></table></figure>
+<p>接着内核将这个包的目的地址改为172.18.0.2:22 ，然后就发给我们的容器。</p>
+<p>b、容器访问公网的情况，按照上面所说情况,规则这样走(iptables处理流程，收到一个数据包再转发出去)：<br><span style="color: #ff0000;">nat-PREROUTING–&gt;file-FORWARD–&gt;nat-POSTROUTING</span><br>此时数据包经过网桥逻辑，从docker0进入内核，然后走nat—PREROUTING，也就是走DOCKER链，但DOCKER链 !–i docker0使数据包没有被匹配，于是走剩余规则，filter—FORWARD也没有匹配，于是走nat—POSTROUTING，通过SNAT出去了。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -A POSTROUTING -s 172.18.0.0/16 ! -o docker0 -j MASQUERADE</span><br></pre></td></tr></table></figure>
+
+<h2 id="手动添加iptables规则"><a href="#手动添加iptables规则" class="headerlink" title="手动添加iptables规则"></a>手动添加iptables规则</h2><p>了解了iptables处理流程及docker的iptables添加规则后，我们自己手动iptables映射端口就好实现了，下面我们分几种情况来分析下：</p>
+<h3 id="1、在已启动的docker容器上扩展端口，使用docker0网桥"><a href="#1、在已启动的docker容器上扩展端口，使用docker0网桥" class="headerlink" title="1、在已启动的docker容器上扩展端口，使用docker0网桥:"></a>1、在已启动的docker容器上扩展端口，使用docker0网桥:</h3><p>在以下3种情况下均生效</p>
+<ul>
+<li>run时已添加端口映射</li>
+<li>run时未添加端口映射</li>
+<li>run时–net&#x3D;none 后来使用pipework添加IP</li>
+</ul>
+<p>扩展端口添加如下规则：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -A DOCKER ! -i docker0 -p tcp -m tcp --dport 8080-j DNAT --to-destination 172.18.0.2:80</span><br></pre></td></tr></table></figure>
+<p>保证容器可以访问外网，docker启动时已经添加如下规则(没有的话自己手动添加下)：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -A POSTROUTING -s 172.18.0.0/16 ! -o docker0 -j MASQUERADE</span><br></pre></td></tr></table></figure>
+
+<h3 id="2、未使用docker0，使用自定义网桥，分两种情况"><a href="#2、未使用docker0，使用自定义网桥，分两种情况" class="headerlink" title="2、未使用docker0，使用自定义网桥，分两种情况:"></a>2、未使用docker0，使用自定义网桥，分两种情况:</h3><h4 id="A、物理网卡桥接到bridge网桥，配置容器并连接bridge网桥"><a href="#A、物理网卡桥接到bridge网桥，配置容器并连接bridge网桥" class="headerlink" title="A、物理网卡桥接到bridge网桥，配置容器并连接bridge网桥"></a>A、物理网卡桥接到bridge网桥，配置容器并连接bridge网桥</h4><p>例如(使用br0网桥):</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">brctl addbr br0</span><br><span class="line">ip addr add 10.0.0.1/24 dev br0</span><br><span class="line">ip addr del 10.0.0.1/24 dev eth0</span><br><span class="line">brctl addif br0 eth0</span><br><span class="line">ip route del default</span><br><span class="line">ip route add default gw 10.0.0.254 dev br0</span><br><span class="line">docker run -itd --name test1 ubuntu /bin/bash</span><br><span class="line">pipework br0 test1 10.0.0.2/24@10.0.0.254</span><br></pre></td></tr></table></figure>
+<p>iptables增加端口映射规则：<br>把docker启动后的默认添加的规则进行修改，默认docker0全部替换为新建网桥br0,包括file表和nat的规则。<br>实施建议：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">iptables-save &gt; iptables.txt</span><br><span class="line">#修改iptables.txt,替换docker0为br0</span><br><span class="line">iptables-restore &lt; iptables.txt</span><br><span class="line">#最后添加DNAT规则：</span><br><span class="line">iptables -t nat -A DOCKER ! -i br0 -p tcp -m tcp --dport 8080 -j DNAT --to-destination 10.10.101.2:80</span><br><span class="line">#一般情况此时端口映射已经添加成功了，如何还无法访问的话，继续添加如下规则，filter表的FORWARD规则：</span><br><span class="line">iptables -A DOCKER -d 10.0.0.2/32 ! -i br0 -o br0-p tcp -m tcp --dport 80 -j ACCEPT</span><br></pre></td></tr></table></figure>
+<h4 id="B、使用openvswitch-网桥并划分vlan"><a href="#B、使用openvswitch-网桥并划分vlan" class="headerlink" title="B、使用openvswitch 网桥并划分vlan"></a>B、使用openvswitch 网桥并划分vlan</h4><p>物理网卡桥接到ovs网桥,ovs网桥创建vlan，配置docker容器连接ovs网桥并划分到vlan中<br>例如(使用ovs1网桥)：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">ovs-vsctl add-br ovs1</span><br><span class="line">add-port ovs1 eth0</span><br><span class="line">ip link set dev ovs1 up</span><br><span class="line">ifconfig eth0 0</span><br><span class="line">ip addr add 10.0.0.1/24 dev ovs1</span><br><span class="line">add-port ovs1 vlan2 tag=2 -- set interface vlan2 type=internal</span><br><span class="line">docker run -d --net=none --name test1 ubuntu</span><br><span class="line">pipework ovs1 test1 10.0.0.2/24@10.0.0.254 @2</span><br><span class="line">#网关配置:</span><br><span class="line">ip route add default via 10.0.0.254 dev ovs1</span><br><span class="line">10.0.0.0/24 dev vlan2  proto kernel  scope link  src 10.0.0.2</span><br></pre></td></tr></table></figure>
+<p>iptables增加端口映射规则：<br>把docker启动后的默认添加的规则进行修改，默认docker0全部替换为新建网桥ovs1,包括file表和nat的规则<br>实施建议和使用br0网桥相同。<br>最后添加DNAT规则：(此处不同的接口不是网桥ovs1，而是vlan端口vlan2)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -A DOCKER ! -i vlan2 -p tcp -m tcp --dport 8080 -j DNAT --to-destination 10.0.0.2:80</span><br><span class="line">#一般情况此时端口映射已经添加成功了，如何无法访问的话，继续添加如下规则，filter表的FORWARD规则：</span><br><span class="line">iptables -A DOCKER -d 172.18.0.2/32 ! -i ovs1-o ovs1-p tcp -m tcp --dport 22 -j ACCEPT</span><br><span class="line">#完成以上配置后，如果容器内主机还不能上网，还需要iptables添加规则(此条iptables启动时应该已经添加)：</span><br><span class="line">iptables -t nat -A POSTROUTING -s 10.0.0.2/24 ! -o vlan2 -j MASQUERADE</span><br><span class="line">#还需file表添加规则:</span><br><span class="line">iptables -A DOCKER ! -i ovs1 -o ovs1 -j ACCEPT</span><br></pre></td></tr></table></figure>
+<p>备注：docker自定义添加iptables端口的时候，如果都是内网环境，建议iptables的filter表可以不考虑，设置全部允许只在nat表上做相关操作。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">iptables -P INPUT ACCEPT</span><br><span class="line">iptables -P OUTPUT ACCEPT</span><br><span class="line">iptables -P FORWARD ACCEPT</span><br></pre></td></tr></table></figure>
+<p>介绍完毕，大家有相关问题可以留言讨论。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/docker/" rel="tag"># docker</a>
+              <a href="/tags/iptables/" rel="tag"># iptables</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/01/19/Docker%E7%BD%91%E7%BB%9C%E5%AE%9E%E7%8E%B0/" rel="next" title="Docker网络实现">
+                  Docker网络实现 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

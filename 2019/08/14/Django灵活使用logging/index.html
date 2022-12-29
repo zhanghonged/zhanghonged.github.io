@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Django使用python的内置模块logging来管理自己的日志。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Django灵活使用logging">
+<meta property="og:url" content="http://zhanghonged.github.io/2019/08/14/Django%E7%81%B5%E6%B4%BB%E4%BD%BF%E7%94%A8logging/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="Django使用python的内置模块logging来管理自己的日志。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-08-14T03:32:20.000Z">
+<meta property="article:modified_time" content="2019-08-14T07:19:37.508Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="Django">
+<meta property="article:tag" content="logging">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2019/08/14/Django%E7%81%B5%E6%B4%BB%E4%BD%BF%E7%94%A8logging/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2019/08/14/Django%E7%81%B5%E6%B4%BB%E4%BD%BF%E7%94%A8logging/","path":"2019/08/14/Django灵活使用logging/","title":"Django灵活使用logging"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Django灵活使用logging | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81loggint%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">一、loggint四大组件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#FORMATTERS"><span class="nav-number">1.1.</span> <span class="nav-text">FORMATTERS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Filters"><span class="nav-number">1.2.</span> <span class="nav-text">Filters</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Handlers"><span class="nav-number">1.3.</span> <span class="nav-text">Handlers</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Loggers"><span class="nav-number">1.4.</span> <span class="nav-text">Loggers</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81Django%E7%9A%84%E9%BB%98%E8%AE%A4logging%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">二、Django的默认logging配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E9%85%8D%E7%BD%AElogging"><span class="nav-number">3.</span> <span class="nav-text">三、配置logging</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81disable-existing-loggers"><span class="nav-number">3.1.</span> <span class="nav-text">1、disable_existing_loggers</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2%E3%80%81propagate"><span class="nav-number">3.2.</span> <span class="nav-text">2、propagate</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3%E3%80%81%E7%A4%BA%E4%BE%8B"><span class="nav-number">3.3.</span> <span class="nav-text">3、示例</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%BD%BF%E7%94%A8logging"><span class="nav-number">4.</span> <span class="nav-text">四、使用logging</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81%E5%91%BD%E5%90%8Dloggers"><span class="nav-number">4.1.</span> <span class="nav-text">1、命名loggers</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2%E3%80%81%E8%B0%83%E7%94%A8logging"><span class="nav-number">4.2.</span> <span class="nav-text">2、调用logging</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2019/08/14/Django%E7%81%B5%E6%B4%BB%E4%BD%BF%E7%94%A8logging/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Django灵活使用logging | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Django灵活使用logging
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2019-08-14 11:32:20 / 修改时间：15:19:37" itemprop="dateCreated datePublished" datetime="2019-08-14T11:32:20+08:00">2019-08-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Django/" itemprop="url" rel="index"><span itemprop="name">Django</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>Django使用python的内置模块logging来管理自己的日志。</p>
+<span id="more"></span>
+
+<h1 id="一、loggint四大组件"><a href="#一、loggint四大组件" class="headerlink" title="一、loggint四大组件"></a>一、loggint四大组件</h1><ol>
+<li><strong>Formatters</strong></li>
+<li><strong>Filters</strong></li>
+<li><strong>Handlers</strong></li>
+<li><strong>Loggers</strong></li>
+</ol>
+<h2 id="FORMATTERS"><a href="#FORMATTERS" class="headerlink" title="FORMATTERS"></a>FORMATTERS</h2><p>Formatter(格式化):定义了怎么显示内容，因为最终的日志都会是以文本的形式展现，formatter就是描述怎么来做这件事。formatter通常都是使用python格式化字符串的方法来对日志进行格式化。</p>
+<table>
+<thead>
+<tr>
+<th>格式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>%(name)s</td>
+<td>记录器的名称</td>
+</tr>
+<tr>
+<td>%(levelno)s</td>
+<td>数字形式的日志记录级别</td>
+</tr>
+<tr>
+<td>%(levelname)s</td>
+<td>日志记录级别的文本名称</td>
+</tr>
+<tr>
+<td>%(filename)s</td>
+<td>执行日志记录调用的源文件的文件名称</td>
+</tr>
+<tr>
+<td>%(pathname)s</td>
+<td>执行日志记录调用的源文件的路径名称</td>
+</tr>
+<tr>
+<td>%(funcName)s</td>
+<td>执行日志记录调用的函数名称</td>
+</tr>
+<tr>
+<td>%(module)s</td>
+<td>执行日志记录调用的模块名称</td>
+</tr>
+<tr>
+<td>%(lineno)s</td>
+<td>执行日志记录调用的行号</td>
+</tr>
+<tr>
+<td>%(created)s</td>
+<td>执行日志记录的时间</td>
+</tr>
+<tr>
+<td>%(asctime)s</td>
+<td>日期和时间</td>
+</tr>
+<tr>
+<td>%(msecs)s</td>
+<td>毫秒部分</td>
+</tr>
+<tr>
+<td>%(thread)d</td>
+<td>线程ID</td>
+</tr>
+<tr>
+<td>%(threadName)s</td>
+<td>线程名称</td>
+</tr>
+<tr>
+<td>%(process)d</td>
+<td>进程ID</td>
+</tr>
+<tr>
+<td>%(message)s</td>
+<td>记录的消息</td>
+</tr>
+</tbody></table>
+<h2 id="Filters"><a href="#Filters" class="headerlink" title="Filters"></a>Filters</h2><p>Filter(过滤器):提供了传递给handler之前的附加功能。在通常情况下，一条日志信息只要达到logger的级别之后就会传递给handler处理，但是我们可以通过使用filter来对日志进行额外的过滤。<br>例如我们可以使用某个filter来控制只允许某个特定的源的ERROR级别的日志。<br>Filter还运行咱们在处理之前修改日志，例如降低或者提高日志的级别。<br>Filter可以在logger和handler中同时使用，而且多个filter会同时工作。</p>
+<h2 id="Handlers"><a href="#Handlers" class="headerlink" title="Handlers"></a>Handlers</h2><p>Handlers(处理器):他来处理具体每条信息，例如是将日志打印到屏幕还是记录到文件或者发送至某个网络连接。<br>和记录器(logger)一样，Handlers也有自己的记录级别，如果日志级别低于handler的级别，handler同样会忽略掉该条日志。<br><strong>django内置处理器</strong></p>
+<table>
+<thead>
+<tr>
+<th>格式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>logging.StreamHandler</td>
+<td>可以向类似与sys.stdout或者sys.stderr的任何文件对象(file object)输出信息</td>
+</tr>
+<tr>
+<td>logging.FileHandler</td>
+<td>将日志消息写入文件filename</td>
+</tr>
+<tr>
+<td>logging.handlers.RotatingFileHandler(filename)</td>
+<td>如果文件的大小超 maxBytes制定的值，那么它将被备份为filenamel</td>
+</tr>
+<tr>
+<td>logging.handlers.TimedRotatingFileHandler</td>
+<td>实现按指定时间数分割日志文件</td>
+</tr>
+<tr>
+<td>logging.handlers.DatagramHandler(host，port)</td>
+<td>送日志消息给位于制定host和port上的UDP服务器。使用UDP协议，将日志信息发送到网络</td>
+</tr>
+<tr>
+<td>logging.handlers.HTTPHandler(host, url)</td>
+<td>使用HTTP的GET或POST方法将日志消息上传到一台HTTP 服务器</td>
+</tr>
+<tr>
+<td>logging.handlers.SocketHandler</td>
+<td>使用TCP协议，将日志信息发送到网络</td>
+</tr>
+<tr>
+<td>logging.handlers.SysLogHandler</td>
+<td>日志输出到syslog</td>
+</tr>
+<tr>
+<td>logging.handlers.NTEventLogHandler</td>
+<td>远程输出日志到Windows NT&#x2F;2000&#x2F;XP的事件日志</td>
+</tr>
+<tr>
+<td>logging.handlers.SMTPHandler</td>
+<td>远程输出日志到邮件地址</td>
+</tr>
+<tr>
+<td>logging.handlers.MemoryHandler</td>
+<td>日志输出到内存中的制定buffer</td>
+</tr>
+</tbody></table>
+<h2 id="Loggers"><a href="#Loggers" class="headerlink" title="Loggers"></a>Loggers</h2><p>Loggers(日志记录器)，系统中的每一条日志都是由该组件进行记录的，每一个记录器都应该有其自己的名称并标记其最低记录的等级。<br>日志文件中的每一条信息都是一条信息记录，都应该有其对应的级别，然后记录一些打印该条日志时的一些元数据，来告诉查阅者出现这条日志时程序的大致情况，例如调用堆栈或者状态码等等。<br>当一条日志给到logger时，logger会对该条信息的级别与自身的级别进行比较，如果该日志级别不低于本身级别，logger就会进行下一步操作。相反，如果日志的信息级别比logger的低，那么其会忽略这条日志，不进行任何操作。<br>当logger经过级别的比较之后决定要对某条日志进行处理时，就将该条日志交给了Handlers。</p>
+<p><strong>django内置记录器</strong></p>
+<table>
+<thead>
+<tr>
+<th>关键字参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>django</td>
+<td>在Django层次结构中的所有消息记录器。</td>
+</tr>
+<tr>
+<td>django.request</td>
+<td>与请求处理相关的日志消息。5xx响应被提升为错误消息；4xx响应被提升为警告消息。</td>
+</tr>
+<tr>
+<td>django.server</td>
+<td>与由RunServer命令调用的服务器所接收的请求的处理相关的日志消息。HTTP 5XX响应被记录为错误消息，4XX响应被记录为警告消息，其他一切都被记录为INFO。</td>
+</tr>
+<tr>
+<td>django.template</td>
+<td>与模板呈现相关的日志消息</td>
+</tr>
+<tr>
+<td>django.db.backends</td>
+<td>有关代码与数据库交互的消息</td>
+</tr>
+</tbody></table>
+<h1 id="二、Django的默认logging配置"><a href="#二、Django的默认logging配置" class="headerlink" title="二、Django的默认logging配置"></a>二、Django的默认logging配置</h1><p>默认情况下，Django的logging配置如下：</p>
+<ul>
+<li>当<strong>DEBUG</strong>为<code>True</code>时： django logger在INFO或更高级别以django层（django.server除外）发送消息到控制台。</li>
+<li>当<strong>DEBUG</strong>为<code>False</code>时： django logger在ERROR或CRITICAL级别以django层（django.server除外）发送消息到AdminEmailHandler。</li>
+<li>独立于<strong>DEBUG</strong>的值： django.server logger发送INFO或更高级别的消息到控制台。</li>
+</ul>
+<h1 id="三、配置logging"><a href="#三、配置logging" class="headerlink" title="三、配置logging"></a>三、配置logging</h1><p>django默认使用字典方式来配置logging。在配置文件中，我们使用变量<code>LOGGING</code>设置具体的<code>loggers, handlers, filters和formatters</code>。<br>logging设置是在Django的setup()方法中进行的，所以当我们在项目的<code>setting.py</code>文件中设置好之后，我们所设置的logger在django程序运行过程中是随时可用的。</p>
+<h2 id="1、disable-existing-loggers"><a href="#1、disable-existing-loggers" class="headerlink" title="1、disable_existing_loggers"></a>1、disable_existing_loggers</h2><p>将默认配置中的所有logger都将禁用，默认为<strong>True</strong>，所以一定要慎用。建议将<code>disable_existing_loggers</code>设置为<strong>False</strong>，并重新定义部分或全部默认loggers。</p>
+<h2 id="2、propagate"><a href="#2、propagate" class="headerlink" title="2、propagate"></a>2、propagate</h2><p>向不向更高级别的logger传递，可以基于每个记录器控制该传播。<br>如果您不希望特定记录器传播到其父项，则可以关闭此行为。</p>
+<h2 id="3、示例"><a href="#3、示例" class="headerlink" title="3、示例"></a>3、示例</h2><p><strong>示例1</strong>：将所有记录从django logger写入本地文件</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">LOGGING = &#123;</span><br><span class="line">    <span class="string">&#x27;version&#x27;</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="string">&#x27;disable_existing_loggers&#x27;</span>: <span class="literal">False</span>,</span><br><span class="line">    <span class="string">&#x27;handlers&#x27;</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;file&#x27;</span>: &#123;</span><br><span class="line">            <span class="string">&#x27;level&#x27;</span>: <span class="string">&#x27;DEBUG&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;class&#x27;</span>: <span class="string">&#x27;logging.FileHandler&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;filename&#x27;</span>: <span class="string">&#x27;/path/to/django/debug.log&#x27;</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&#x27;loggers&#x27;</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;django&#x27;</span>: &#123;</span><br><span class="line">            <span class="string">&#x27;handlers&#x27;</span>: [<span class="string">&#x27;file&#x27;</span>],</span><br><span class="line">            <span class="string">&#x27;level&#x27;</span>: <span class="string">&#x27;DEBUG&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;propagate&#x27;</span>: <span class="literal">True</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>确保修改filename 路径为运行Django应用的用户有权限写入的一个位置。</p>
+<p><strong>示例2</strong>：Django 的日志打印到控制台</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line">LOGGING = &#123;</span><br><span class="line">    <span class="string">&#x27;version&#x27;</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="string">&#x27;disable_existing_loggers&#x27;</span>: <span class="literal">False</span>,</span><br><span class="line">    <span class="string">&#x27;handlers&#x27;</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;console&#x27;</span>: &#123;</span><br><span class="line">            <span class="string">&#x27;class&#x27;</span>: <span class="string">&#x27;logging.StreamHandler&#x27;</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&#x27;loggers&#x27;</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;django&#x27;</span>: &#123;</span><br><span class="line">            <span class="string">&#x27;handlers&#x27;</span>: [<span class="string">&#x27;console&#x27;</span>],</span><br><span class="line">            <span class="string">&#x27;level&#x27;</span>: os.getenv(<span class="string">&#x27;DJANGO_LOG_LEVEL&#x27;</span>, <span class="string">&#x27;INFO&#x27;</span>),</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>默认此配置只将级别INFO或更高版本的消息发送到控制台，但你可以设置环境变量 <code>DJANGO_LOG_LEVEL=DEBUG</code>，以查看Django的所有调试日志记录。</p>
+<p><strong>示例3</strong>： 我自己项目的一个logging配置，所以日志写入一个日志文件，upgrade写入一个单独的日志文件。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">LOGGING = &#123;</span><br><span class="line">    <span class="string">&#x27;version&#x27;</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="string">&#x27;disable_existing_loggers&#x27;</span>: <span class="literal">False</span>,</span><br><span class="line">    <span class="string">&#x27;formatters&#x27;</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;default&#x27;</span>: &#123;</span><br><span class="line">            <span class="string">&#x27;format&#x27;</span>: <span class="string">&#x27;%(asctime)s %(name)s %(lineno)s %(levelname)s  %(message)s&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;datefmt&#x27;</span>: <span class="string">&#x27;%Y-%m-%d %H:%M:%S&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&#x27;handlers&#x27;</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;console&#x27;</span>: &#123;</span><br><span class="line">            <span class="string">&#x27;level&#x27;</span>: <span class="string">&#x27;DEBUG&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;class&#x27;</span>: <span class="string">&#x27;logging.StreamHandler&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;formatter&#x27;</span>: <span class="string">&#x27;default&#x27;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="string">&quot;file&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&#x27;level&#x27;</span>: <span class="string">&#x27;DEBUG&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;class&#x27;</span>: <span class="string">&#x27;logging.handlers.TimedRotatingFileHandler&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;filename&#x27;</span>: os.path.join(BASE_DIR,<span class="string">&#x27;logs&#x27;</span>) + os.sep + <span class="string">&#x27;xxx.log&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;when&#x27;</span>: <span class="string">&#x27;D&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;interval&#x27;</span>: <span class="number">1</span>,</span><br><span class="line">            <span class="string">&#x27;formatter&#x27;</span>: <span class="string">&#x27;default&#x27;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="string">&#x27;upgradeFile&#x27;</span>: &#123;</span><br><span class="line">            <span class="string">&#x27;level&#x27;</span>: <span class="string">&#x27;DEBUG&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;class&#x27;</span>: <span class="string">&#x27;logging.FileHandler&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;filename&#x27;</span>: os.path.join(BASE_DIR, <span class="string">&#x27;logs&#x27;</span>) + os.sep + <span class="string">&#x27;upgrade.log&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;formatter&#x27;</span>: <span class="string">&#x27;default&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&#x27;loggers&#x27;</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;upgrade&#x27;</span>: &#123;</span><br><span class="line">            <span class="string">&#x27;handlers&#x27;</span>: [<span class="string">&#x27;upgradeFile&#x27;</span>],</span><br><span class="line">            <span class="string">&#x27;level&#x27;</span>: <span class="string">&#x27;DEBUG&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;propagate&#x27;</span>: <span class="literal">False</span>  <span class="comment"># 禁止向上级传播</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="comment">#配置根logger</span></span><br><span class="line">    <span class="string">&#x27;root&#x27;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;level&quot;</span>: <span class="string">&quot;DEBUG&quot;</span>,</span><br><span class="line">        <span class="string">&quot;handlers&quot;</span>: [<span class="string">&quot;console&quot;</span>,<span class="string">&quot;file&quot;</span>]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里定义了一个<strong>root</strong>的配置项（根logger），且并不包含在四大组件当中。在使用<code>logging.getLogger([name])</code>获取logger实例的时候，如果没有名字，返回logger层级中的<strong>根logger（root logger）</strong>，就是这个。</p>
+<h1 id="四、使用logging"><a href="#四、使用logging" class="headerlink" title="四、使用logging"></a>四、使用logging</h1><p>一旦我们配置好对应的<code>loggers, handlers, filters,和formatters</code>之后，我们就可以在我们的代码中使用<code>logging</code>了，使用<code>logging</code>非常的简单，例如下面的代码:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 导入logging库</span></span><br><span class="line"><span class="keyword">import</span> logging</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取logger的一个实例</span></span><br><span class="line">logger = logging.getLogger(__name__)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">my_view</span>(<span class="params">request, arg1, arg</span>):</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">if</span> bad_mojo:</span><br><span class="line">        <span class="comment"># 记录一条错误信息</span></span><br><span class="line">        logger.error(<span class="string">&#x27;Something went wrong!&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="1、命名loggers"><a href="#1、命名loggers" class="headerlink" title="1、命名loggers"></a>1、命名loggers</h2><p><code>logging.getLogger()</code> 调用获取（如有必要则创建）一个<code>logger</code> 的实例。<br>Logger实例通过一个名称标识，Logger使用名称标识的目的是用于配置。这里的名称对应<code>settings</code>配置中对应的记录器（loggers）里的名称。<br>如果没有命名，则会使用<strong>根logger</strong>，这是源码里的一段：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">getLogger</span>(<span class="params">name=<span class="literal">None</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    Return a logger with the specified name, creating it if necessary.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    If no name is specified, return the root logger.</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">if</span> name:</span><br><span class="line">        <span class="keyword">return</span> Logger.manager.getLogger(name)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> root</span><br></pre></td></tr></table></figure>
+<p>Logger的名称习惯上通常使用<code>__name__</code>，即包含该logger的Python模块的名字。 这允许你基于模块filter和handle日志调用。</p>
+<h2 id="2、调用logging"><a href="#2、调用logging" class="headerlink" title="2、调用logging"></a>2、调用logging</h2><p>Logger 实例为每个默认的日志级别提供一个入口方法：</p>
+<ul>
+<li>logger.debug()</li>
+<li>logger.info()</li>
+<li>logger.warning()</li>
+<li>logger.error()</li>
+<li>logger.critical()</li>
+</ul>
+<p>还有另外两个调用：</p>
+<ul>
+<li>logger.log(self, level, msg, *args, **kwargs)：打印消息时手工指定日志级别。</li>
+<li>logger.exception()：创建一个ERROR 级别日志消息，它封装当前异常栈的帧。</li>
+</ul>
+<p>我自己的调用案例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">logger = logging.getLogger(__name__)</span><br><span class="line">logger_upgrade = logging.getLogger(<span class="string">&#x27;upgrade&#x27;</span>)</span><br><span class="line"></span><br><span class="line">....</span><br><span class="line">logger.info(<span class="string">&quot;检测客户端版本更新: %s&quot;</span> % data)</span><br><span class="line">....</span><br><span class="line">logger_upgrade.error(<span class="string">&quot;检测到非法版本,aid: %s&quot;</span>% aid)</span><br><span class="line">....</span><br></pre></td></tr></table></figure>
+
+<p><code>检测到非法版本</code>的log单独使用一个记录器，存入单独的文件，方便后面查看。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"># python</a>
+              <a href="/tags/Django/" rel="tag"># Django</a>
+              <a href="/tags/logging/" rel="tag"># logging</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/07/30/Django%E4%BD%BF%E7%94%A8Celery%E5%AE%9E%E7%8E%B0%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/" rel="prev" title="Django使用Celery实现定时任务">
+                  <i class="fa fa-chevron-left"></i> Django使用Celery实现定时任务
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/10/15/unison-inotify%E5%AE%9E%E7%8E%B0%E6%96%87%E4%BB%B6%E5%8F%8C%E5%90%91%E5%90%8C%E6%AD%A5/" rel="next" title="unison+inotify实现文件双向同步">
+                  unison+inotify实现文件双向同步 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

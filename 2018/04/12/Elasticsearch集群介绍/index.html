@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="近期工作中有一个大数据查询匹配的需求，由于数据量越来越大，数据库查询匹配方式的效率越来越低，响应时间越来越长，经技术调研，决定采用Elasticsearch来支持此查询业务。Elasticsearch 是一个分布式、可扩展、实时的搜索与数据分析引擎。具有极好的可扩展性，可以在笔记本电脑上运行。 也可以在承载了 PB 级数据的成百上千台服务器上运行。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Elasticsearch集群">
+<meta property="og:url" content="http://zhanghonged.github.io/2018/04/12/Elasticsearch%E9%9B%86%E7%BE%A4%E4%BB%8B%E7%BB%8D/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="近期工作中有一个大数据查询匹配的需求，由于数据量越来越大，数据库查询匹配方式的效率越来越低，响应时间越来越长，经技术调研，决定采用Elasticsearch来支持此查询业务。Elasticsearch 是一个分布式、可扩展、实时的搜索与数据分析引擎。具有极好的可扩展性，可以在笔记本电脑上运行。 也可以在承载了 PB 级数据的成百上千台服务器上运行。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/elasticsearch-head.jpg">
+<meta property="article:published_time" content="2018-04-12T05:57:16.000Z">
+<meta property="article:modified_time" content="2018-04-12T09:55:17.600Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="Elasticsearch">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://zhanghonged.github.io/uploads/elasticsearch-head.jpg">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2018/04/12/Elasticsearch%E9%9B%86%E7%BE%A4%E4%BB%8B%E7%BB%8D/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2018/04/12/Elasticsearch%E9%9B%86%E7%BE%A4%E4%BB%8B%E7%BB%8D/","path":"2018/04/12/Elasticsearch集群介绍/","title":"Elasticsearch集群"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Elasticsearch集群 | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Elasticsearch%E9%9B%86%E7%BE%A4%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">Elasticsearch集群介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B7%E6%9C%89%E4%BB%A5%E4%B8%8B%E7%89%B9%E6%80%A7"><span class="nav-number">1.1.</span> <span class="nav-text">具有以下特性:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8A%82%E7%82%B9"><span class="nav-number">1.2.</span> <span class="nav-text">节点</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%E3%80%81node-master-%E4%B8%BB%E8%8A%82%E7%82%B9"><span class="nav-number">1.2.1.</span> <span class="nav-text">1、node-master 主节点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%E3%80%81node-%E5%89%AF%E8%8A%82%E7%82%B9"><span class="nav-number">1.2.2.</span> <span class="nav-text">2、node 副节点</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E7%89%87"><span class="nav-number">1.3.</span> <span class="nav-text">分片</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%E3%80%81shards-%E4%B8%BB%E5%88%86%E7%89%87"><span class="nav-number">1.3.1.</span> <span class="nav-text">1、shards 主分片</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%E3%80%81replicas-%E5%89%AF%E6%9C%AC%E5%88%86%E7%89%87"><span class="nav-number">1.3.2.</span> <span class="nav-text">2、replicas  副本分片</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Elasticsearch%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA"><span class="nav-number">2.</span> <span class="nav-text">Elasticsearch集群搭建</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E9%83%A8%E7%BD%B2%E7%8E%AF%E5%A2%83"><span class="nav-number">2.1.</span> <span class="nav-text">一、部署环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E9%85%8D%E7%BD%AE%E9%9B%86%E7%BE%A4"><span class="nav-number">2.2.</span> <span class="nav-text">二、配置集群</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%E3%80%81%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90"><span class="nav-number">2.2.1.</span> <span class="nav-text">1、修改配置文件解析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%E3%80%81%E8%87%AA%E5%AE%9A%E4%B9%89%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">2.2.2.</span> <span class="nav-text">2、自定义配置文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3%E3%80%81%E4%BF%AE%E6%94%B9Linux%E8%B5%84%E6%BA%90%E4%BD%BF%E7%94%A8%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">2.2.3.</span> <span class="nav-text">3、修改Linux资源使用配置文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4%E3%80%81%E4%BF%AE%E6%94%B9Linux%E7%B3%BB%E7%BB%9F%E6%8E%A7%E5%88%B6%E6%96%87%E4%BB%B6"><span class="nav-number">2.2.4.</span> <span class="nav-text">4、修改Linux系统控制文件</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5%E3%80%81%E6%96%B0%E5%BB%BA%E6%99%AE%E9%80%9A%E7%94%A8%E6%88%B7"><span class="nav-number">2.3.</span> <span class="nav-text">5、新建普通用户</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6%E3%80%81%E5%88%86%E5%88%AB%E5%90%AF%E5%8A%A83%E5%8F%B0%E8%8A%82%E7%82%B9"><span class="nav-number">2.4.</span> <span class="nav-text">6、分别启动3台节点</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2018/04/12/Elasticsearch%E9%9B%86%E7%BE%A4%E4%BB%8B%E7%BB%8D/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Elasticsearch集群 | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Elasticsearch集群
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2018-04-12 13:57:16 / 修改时间：17:55:17" itemprop="dateCreated datePublished" datetime="2018-04-12T13:57:16+08:00">2018-04-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Elasticsearch/" itemprop="url" rel="index"><span itemprop="name">Elasticsearch</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>近期工作中有一个大数据查询匹配的需求，由于数据量越来越大，数据库查询匹配方式的效率越来越低，响应时间越来越长，经技术调研，决定采用Elasticsearch来支持此查询业务。<br><strong>Elasticsearch</strong> 是一个分布式、可扩展、实时的搜索与数据分析引擎。具有极好的可扩展性，可以在笔记本电脑上运行。 也可以在承载了 PB 级数据的成百上千台服务器上运行。</p>
+<span id="more"></span>
+<p><span style="font-size:24px;font-weight:bold;">参考:</span><br><a target="_blank" rel="noopener" href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/index.html">Elasticsearch:权威指南</a></p>
+<h2 id="Elasticsearch集群介绍"><a href="#Elasticsearch集群介绍" class="headerlink" title="Elasticsearch集群介绍"></a>Elasticsearch集群介绍</h2><p><strong>ElasticSearch</strong> 的主旨是随时可用和按需扩容，天生就是分布式的。通过为集群添加更多的节点，并且将负载压力和稳定性分散到这些节点中。</p>
+<h3 id="具有以下特性"><a href="#具有以下特性" class="headerlink" title="具有以下特性:"></a><span style="color:#FF8000;font-weight:bold;font-size:20px;">具有以下特性:</span></h3><p><span style="color:#FF8000;font-weight:bold;font-size:20px;">1、</span>一个运行中的 <strong>Elasticsearch</strong> 实例称为一个 <strong>节点</strong>，而集群是由一个或者多个拥有相同 <strong>cluster.name</strong> 配置的节点组成， 它们共同承担数据和负载的压力。当有节点加入集群中或者从集群中移除节点时，集群将会重新平均分布所有的数据。<br><span style="color:#FF8000;font-weight:bold;font-size:20px;">2、</span>当一个节点被选举成为 <strong>主</strong> 节点时，它将负责管理集群范围内的所有变更，例如增加、删除索引，或者增加、删除节点等。 但主节点并不需要涉及到文档级别的变更和搜索等操作，所以当集群只拥有一个主节点的情况下，即使流量的增加它也不会成为瓶颈。 默认任何节点都可以成为主节点。<br><span style="color:#FF8000;font-weight:bold;font-size:20px;">3、</span>用户可以将请求发送到 <strong>集群中的任何节点</strong> ，包括主节点。 每个节点都知道任意文档所处的位置，并且能够将我们的请求直接转发到存储我们所需文档的节点。 无论我们将请求发送到哪个节点，它都能负责从各个包含我们所需文档的节点收集回数据，并将最终结果返回給客户端。 Elasticsearch 对这一切的管理都是透明的。</p>
+<h3 id="节点"><a href="#节点" class="headerlink" title="节点"></a><span style="color:blue;font-weight:bold;font-size:20px;">节点</span></h3><h4 id="1、node-master-主节点"><a href="#1、node-master-主节点" class="headerlink" title="1、node-master 主节点"></a><span style="color:blue;font-weight:bold;font-size:20px;">1、</span>node-master 主节点</h4><p>集群中用于元数据(metadata)的请求处理，比如确定分片位置，索引的新增、删除请求分配等。</p>
+<h4 id="2、node-副节点"><a href="#2、node-副节点" class="headerlink" title="2、node 副节点"></a><span style="color:blue;font-weight:bold;font-size:20px;">2、</span>node 副节点</h4><p>包括client node和 data node</p>
+<ul>
+<li><strong>client node</strong> 用于转发请求，起到平衡负载的作用</li>
+<li><strong>data node</strong> 节点上保存了数据分片。它负责数据相关操作，比如分片的 CRUD，以及搜索和整合操作。这些操作都比较消耗 CPU、内存和 I&#x2F;O 资源。</li>
+</ul>
+<h3 id="分片"><a href="#分片" class="headerlink" title="分片"></a><span style="color:green;font-weight:bold;font-size:20px;">分片</span></h3><p>一个 <strong>分片</strong> 是一个底层的 <strong>工作单元</strong> ，它仅保存了全部数据中的一部分。<br>一个分片可以是 **主 **分片或者 <strong>副本</strong> 分片。</p>
+<h4 id="1、shards-主分片"><a href="#1、shards-主分片" class="headerlink" title="1、shards 主分片"></a><span style="color:green;font-weight:bold;font-size:20px;">1、</span>shards 主分片</h4><p>索引内任意一个文档都归属于一个主分片，所以主分片的数目决定着索引能够保存的最大数据量。</p>
+<h4 id="2、replicas-副本分片"><a href="#2、replicas-副本分片" class="headerlink" title="2、replicas  副本分片"></a><span style="color:green;font-weight:bold;font-size:20px;">2、</span>replicas  副本分片</h4><p>一个副本分片只是一个主分片的拷贝。 副本分片作为硬件故障时保护数据不丢失的冗余备份，并为搜索和返回文档等读操作提供服务。<br><span style="text-shadow:1px 1px 1px red;">在索引建立的时候就已经确定了主分片数，但是副本分片数可以随时修改。默认新建索引的时候是5个主分片和1个副本分片。</span></p>
+<h2 id="Elasticsearch集群搭建"><a href="#Elasticsearch集群搭建" class="headerlink" title="Elasticsearch集群搭建"></a>Elasticsearch集群搭建</h2><h3 id="一、部署环境"><a href="#一、部署环境" class="headerlink" title="一、部署环境"></a>一、部署环境</h3><p>OS：CentOS Linux release 7.4<br>JDK：jdk1.8.0_121<br>Elasticsearch：6.2.3</p>
+<p>|node名称|IP|是否可为master|是否可为数据节点<br>|—|—|—|<br>|node-1|192.168.1.40|是|是|<br>|node-2|192.168.1.41|是|是|<br>|node-3|192.168.1.42|是|是|</p>
+<h3 id="二、配置集群"><a href="#二、配置集群" class="headerlink" title="二、配置集群"></a>二、配置集群</h3><h4 id="1、修改配置文件解析"><a href="#1、修改配置文件解析" class="headerlink" title="1、修改配置文件解析"></a>1、修改配置文件解析</h4><p><strong>vim  elasticsearch-6.2.3&#x2F;config&#x2F;elasticsearch.yml</strong><br>● <span style="color:#12BCBC;font-weight:bold;font-size:18px;">cluster.name</span><br>集群名，自定义集群名，默认为elasticsearch，建议修改，因为低版本多播模式下同一网段下相同集群名会自动加入同一集群，如生产环境这样易造成数据运维紊乱。<br>● <span style="color:#12BCBC;font-weight:bold;font-size:18px;">node.name</span><br>节点名，同一集群下要求每个节点的节点名不一致，起到区分节点和辨认节点作用。<br>● <span style="color:#12BCBC;font-weight:bold;font-size:18px;">node.master</span><br>指定该节点是否有资格被选举成为master节点，默认是true，默认集群中的第一台机器为master，如果这台机挂了就会重新选举master。<br>● <span style="color:#12BCBC;font-weight:bold;font-size:18px;">node.data</span><br>允许该节点存储数据(默认开启)<br>● <span style="color:#12BCBC;font-weight:bold;font-size:18px;">path.data</span><br>默认数据路径，可用逗号分隔多个路径<br>● <span style="color:#12BCBC;font-weight:bold;font-size:18px;">path.logs</span><br>默认日志路径<br>● <span style="color:#12BCBC;font-weight:bold;font-size:18px;">bootstrap.mlockall</span><br>内存锁，选项为true或false，允许 JVM 锁住内存，禁止操作系统交换出去<br>● <span style="color:#12BCBC;font-weight:bold;font-size:18px;">network.host</span><br>绑定的ip地址<br>● <span style="color:#12BCBC;font-weight:bold;font-size:18px;">http.port</span><br>设置对外服务的http端口，默认为9200<br>● <span style="color:#12BCBC;font-weight:bold;font-size:18px;">transport.tcp.port</span><br>置节点间交互的tcp端口,默认是9300<br>● <span style="color:#12BCBC;font-weight:bold;font-size:18px;">discovery.zen.ping.unicast.hosts</span><br>集群的ip集合，可指定端口，默认为9300，防止节点意外加入集群。<br>● <span style="color:#12BCBC;font-weight:bold;font-size:18px;">discovery.zen.minimum_master_nodes</span><br>最少的主节点个数，为了防止脑裂，最好设置为(master候选节点个数&#x2F;2 + 1)个<br>● <span style="color:#12BCBC;font-weight:bold;font-size:18px;">discovery.zen.ping_timeout</span><br>主节点选举超时时间设置<br>● <span style="color:#12BCBC;font-weight:bold;font-size:18px;">gateway.recover_after_nodes</span><br>值为n，网关控制在n个节点(数据节点或者 master 节点)启动之后才恢复整个集群<br>● <span style="color:#12BCBC;font-weight:bold;font-size:18px;">gateway.recover_after_time</span><br>值为时间，等待多长时间后才恢复整个群集，例如：gateway.recover_after_time: 5m<br>● <span style="color:#12BCBC;font-weight:bold;font-size:18px;">action.destructive_requires_name</span><br>选项为true或false，删除indices是否需要现实名字</p>
+<h4 id="2、自定义配置文件"><a href="#2、自定义配置文件" class="headerlink" title="2、自定义配置文件"></a>2、自定义配置文件</h4><p>下面是节点1的配置文件，其他两个节点就 <strong>node.name</strong> 不同，其他项都一样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">cluster.name: mycluster</span><br><span class="line">node.name: node-1</span><br><span class="line">node.master: true</span><br><span class="line">node.data: true</span><br><span class="line">network.host: 0.0.0.0</span><br><span class="line">http.port: 9200</span><br><span class="line">bootstrap.mlockall: true</span><br><span class="line">discovery.zen.ping.unicast.hosts: [&quot;192.168.1.40:9300&quot;, &quot;192.168.1.41:9300&quot;, &quot;192.168.1.42:9300&quot;]</span><br><span class="line">discovery.zen.minimum_master_nodes: 2</span><br></pre></td></tr></table></figure>
+<h4 id="3、修改Linux资源使用配置文件"><a href="#3、修改Linux资源使用配置文件" class="headerlink" title="3、修改Linux资源使用配置文件"></a>3、修改Linux资源使用配置文件</h4><p>我们来修改 <strong>&#x2F;etc&#x2F;security&#x2F;limits.conf</strong> 配置文件，用来限制用户对系统资源的使用：</p>
+<p>* soft nofile 65536    #警告设定所有用户最大打开文件数为65535<br>* hard nofile 65536    #严格设定所有用户最大打开文件数为65535<br>* soft nproc 2048      #警告设定所有用户最大打开进程数为2048<br>* hard nproc 4096      #严格设定所有用户最大打开进程数为2048</p>
+<p>#因为es配置文件里设置锁住swapping，因此需要如下设置<br>es soft memlock unlimited   #警告设定es用户最大锁定内存地址空间为无限制<br>es hard memlock unlimited   #严格设定es用户最大锁定内存地址空间为无限制</p>
+<h4 id="4、修改Linux系统控制文件"><a href="#4、修改Linux系统控制文件" class="headerlink" title="4、修改Linux系统控制文件"></a>4、修改Linux系统控制文件</h4><p>修改 <strong>&#x2F;etc&#x2F;sysctl.conf</strong> 配置文件:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vm.max_map_count=655360  # 限制进程可以拥有的VMA(虚拟内存区域)的数量</span><br><span class="line">fs.file-max=655360       # 设置系统进程一共可以打开的文件数量</span><br></pre></td></tr></table></figure>
+<h3 id="5、新建普通用户"><a href="#5、新建普通用户" class="headerlink" title="5、新建普通用户"></a>5、新建普通用户</h3><p>ElasticSearch不允许root用户来启动，因此新建普通用户 <strong>es</strong>:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">useradd es</span><br></pre></td></tr></table></figure>
+<h3 id="6、分别启动3台节点"><a href="#6、分别启动3台节点" class="headerlink" title="6、分别启动3台节点"></a>6、分别启动3台节点</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">elasticsearch-6.2.3/bin/elasticsearch -d</span><br></pre></td></tr></table></figure>
+
+
+<p>启动成功后通过chrome的 <strong>ElasticSearch Head</strong> 插件来看看效果<br><img src="/uploads/elasticsearch-head.jpg"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Elasticsearch/" rel="tag"># Elasticsearch</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/04/12/virtualenv%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83/" rel="prev" title="Virtualenv虚拟环境">
+                  <i class="fa fa-chevron-left"></i> Virtualenv虚拟环境
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/04/15/Elasticsearch%E4%B8%AD%E6%96%87%E5%88%86%E8%AF%8D%E5%99%A8IK/" rel="next" title="Elasticsearch中文分词器IK">
+                  Elasticsearch中文分词器IK <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

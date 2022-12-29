@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="阿里云的RDS数据库MYSQL版使用开源软件 Percona Xtrabackup 对数据库进行备份，所以可以使用该软件将云数据库MySQL的备份文件恢复到自建数据库中，本文将介绍详细的操作步骤。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用XtraBackup恢复阿里云RDS自动备份的数据库">
+<meta property="og:url" content="http://zhanghonged.github.io/2018/09/20/%E4%BD%BF%E7%94%A8XtraBackup%E6%81%A2%E5%A4%8D%E9%98%BF%E9%87%8C%E4%BA%91RDS%E8%87%AA%E5%8A%A8%E5%A4%87%E4%BB%BD%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="阿里云的RDS数据库MYSQL版使用开源软件 Percona Xtrabackup 对数据库进行备份，所以可以使用该软件将云数据库MySQL的备份文件恢复到自建数据库中，本文将介绍详细的操作步骤。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-09-20T08:42:38.000Z">
+<meta property="article:modified_time" content="2018-09-20T09:50:08.280Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="XtraBackup">
+<meta property="article:tag" content="阿里云">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2018/09/20/%E4%BD%BF%E7%94%A8XtraBackup%E6%81%A2%E5%A4%8D%E9%98%BF%E9%87%8C%E4%BA%91RDS%E8%87%AA%E5%8A%A8%E5%A4%87%E4%BB%BD%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2018/09/20/%E4%BD%BF%E7%94%A8XtraBackup%E6%81%A2%E5%A4%8D%E9%98%BF%E9%87%8C%E4%BA%91RDS%E8%87%AA%E5%8A%A8%E5%A4%87%E4%BB%BD%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93/","path":"2018/09/20/使用XtraBackup恢复阿里云RDS自动备份的数据库/","title":"使用XtraBackup恢复阿里云RDS自动备份的数据库"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>使用XtraBackup恢复阿里云RDS自动备份的数据库 | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81Percona-XtraBackup%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">一、Percona XtraBackup介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%AE%89%E8%A3%85XtraBackup"><span class="nav-number">2.</span> <span class="nav-text">二、安装XtraBackup</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%81%A2%E5%A4%8D%E9%98%BF%E9%87%8C%E4%BA%91%E5%A4%87%E4%BB%BD"><span class="nav-number">3.</span> <span class="nav-text">三、恢复阿里云备份</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81XtraBackup%E5%A4%87%E4%BB%BD%E6%81%A2%E5%A4%8Dmsql"><span class="nav-number">4.</span> <span class="nav-text">四、XtraBackup备份恢复msql</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81Xtrabackup%E5%B8%B8%E7%94%A8%E5%8F%82%E6%95%B0"><span class="nav-number">4.1.</span> <span class="nav-text">1、Xtrabackup常用参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E5%85%A8%E9%87%8F%E5%A4%87%E4%BB%BD"><span class="nav-number">4.2.</span> <span class="nav-text">2、全量备份</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E5%85%A8%E9%87%8F%E6%81%A2%E5%A4%8D"><span class="nav-number">4.3.</span> <span class="nav-text">3、全量恢复</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81%E5%A2%9E%E9%87%8F%E5%A4%87%E4%BB%BD"><span class="nav-number">4.4.</span> <span class="nav-text">4、增量备份</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5%E3%80%81%E5%A2%9E%E9%87%8F%E6%81%A2%E5%A4%8D"><span class="nav-number">4.5.</span> <span class="nav-text">5、增量恢复</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2018/09/20/%E4%BD%BF%E7%94%A8XtraBackup%E6%81%A2%E5%A4%8D%E9%98%BF%E9%87%8C%E4%BA%91RDS%E8%87%AA%E5%8A%A8%E5%A4%87%E4%BB%BD%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="使用XtraBackup恢复阿里云RDS自动备份的数据库 | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用XtraBackup恢复阿里云RDS自动备份的数据库
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2018-09-20 16:42:38 / 修改时间：17:50:08" itemprop="dateCreated datePublished" datetime="2018-09-20T16:42:38+08:00">2018-09-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%97%A5%E5%B8%B8%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index"><span itemprop="name">日常运维</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>阿里云的RDS数据库MYSQL版使用开源软件 <strong>Percona Xtrabackup</strong> 对数据库进行备份，所以可以使用该软件将云数据库MySQL的备份文件恢复到自建数据库中，本文将介绍详细的操作步骤。</p>
+<span id="more"></span>
+<h2 id="一、Percona-XtraBackup介绍"><a href="#一、Percona-XtraBackup介绍" class="headerlink" title="一、Percona XtraBackup介绍"></a>一、Percona XtraBackup介绍</h2><p>XtraBackup是Percona公司的开源项目，用以实现类似Innodb官方的热备份工具InnoDB Hot Backup的功能。<br><strong>XtraBackup优点：</strong><br>1、	支持全备、增量备份、部分备份；<br>2、	支持压缩备份；<br>3、	备份不影响数据读写、事务等。<br><strong>XtraBackup缺点：</strong><br>1、	不支持脱机备份；<br>2、	不支持直接备份到磁带设备；<br>3、	不支持Cloud Back；<br>4、	MyISAM的备份会阻塞。</p>
+<p><span style="color:red;">注意：XtraBackup只支持Linux平台，不支持Windows平台。</span></p>
+<h2 id="二、安装XtraBackup"><a href="#二、安装XtraBackup" class="headerlink" title="二、安装XtraBackup"></a>二、安装XtraBackup</h2><p><span style="color:blue">系统环境： centos7.4</span></p>
+<p><strong>我们这里采用源码编译方式安装。</strong></p>
+<p>1、	从github上下载源码<br><a target="_blank" rel="noopener" href="https://github.com/percona/percona-xtrabackup">https://github.com/percona/percona-xtrabackup</a><br>2、	安装系统依赖包</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">yum install cmake gcc gcc-c++ libaio libaio-devel automake autoconf \</span><br><span class="line">bison libtool ncurses-devel libgcrypt-devel libev-devel libcurl-devel \</span><br><span class="line">vim-common</span><br></pre></td></tr></table></figure>
+<p>3、	开始编译安装</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cmake -DBUILD_CONFIG=xtrabackup_release -DWITH_MAN_PAGES=OFF </span><br><span class="line">make</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+<p>4、<span style="color:red;">若cmake过程报错如下：</span></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Cmake Error at cmake/boost.cmake:81 (MESSAGE):</span><br><span class="line">    You can download it with –DDOWNLOAD_BOOST=1 -DWITH_BOOST=&lt;directory&gt;</span><br></pre></td></tr></table></figure>
+<p>解决办法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /usr/local/boost</span><br><span class="line">cd /usr/local/boost</span><br><span class="line">wget http://www.sourceforge.net/projects/boost/files/boost/1.59.0/boost_1_59_0.tar.gz</span><br><span class="line">rm boost_1_59_0.tar.gz</span><br></pre></td></tr></table></figure>
+<p>然后重新cmake，增加参数:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cmake -DBUILD_CONFIG=xtrabackup_release -DWITH_MAN_PAGES=OFF -DWITH_BOOST=/usr/local/boost</span><br><span class="line">make</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+<p>4、	验证安装</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/xtrabackup/bin/innobackupex –version</span><br></pre></td></tr></table></figure>
+<p>如下信息表示安装完成</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">innobackupex version 2.4.7 Linux (x86_64) (revision id: 5b42862)</span><br></pre></td></tr></table></figure>
+
+<h2 id="三、恢复阿里云备份"><a href="#三、恢复阿里云备份" class="headerlink" title="三、恢复阿里云备份"></a>三、恢复阿里云备份</h2><p>1、在 <span style="color:#6BE2DC">RDS管理控制台</span>—<span style="color:#6BE2DC">数据备份</span> 标签页，下载阿里云提供的备份文件。</p>
+<p>2、	解压已下载的数据备份文件<br>在阿里云上下载解压缩工具 <strong>rds_backup_extract.sh</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash rds_backup_extract.sh  -f  ‘&lt;数据备份文件名&gt;’  -C  ‘&lt;解压到的目录&gt;’</span><br></pre></td></tr></table></figure>
+
+<p><span style="color:red;">注意：使用阿里云的  <strong>rds_backup_extract.sh</strong> 脚本解压备份文件时已经删除了mysql的用户信息，最后启动后可以直接登陆。</p>
+<p><span style="color:red;">如果使用系统的tar 命令解压文件，最后user表里还是线上的用户信息，<br>登陆的使用需要使用跳过验证的方式启动mysql：mysqld_safe –skip-grant-tables &amp;</span><br></span><br>3、	停止恢复机器上的mysql服务，并删除原有mysql 数据目录data下的所有文件</p>
+<p>4、	开始恢复</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">innobackupex --defaults-file=/etc/my.cnf --copy-back /root/backdata/</span><br></pre></td></tr></table></figure>
+<p><span style="color:red;">如果出现报错:</span></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error: datadir must be specified.</span><br></pre></td></tr></table></figure>
+<p>处理办法:<br>my.cnf配置文件里增加：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">datadir=/usr/local/mysql5/data</span><br></pre></td></tr></table></figure>
+<p>再次恢复即可。</p>
+<p>5、	恢复完成后可以看到mysql默认的数据目录里已经有文件生成了。<br>执行如下命令，修改文件属主，并确定文件所属为MySQL用户。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chown -R mysql.mysql /usr/local/mysql5/data</span><br></pre></td></tr></table></figure>
+<p>6、	启动mysql</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqld_safe --defaults-file=/etc/my.cnf --user=mysql --datadir=/usr/local/mysql5/data &amp;</span><br></pre></td></tr></table></figure>
+<p>或</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/mysqld start</span><br></pre></td></tr></table></figure>
+<p>7、	登录数据库</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot</span><br></pre></td></tr></table></figure>
+<p>到此恢复完成。</p>
+<h2 id="四、XtraBackup备份恢复msql"><a href="#四、XtraBackup备份恢复msql" class="headerlink" title="四、XtraBackup备份恢复msql"></a>四、XtraBackup备份恢复msql</h2><h3 id="1、Xtrabackup常用参数"><a href="#1、Xtrabackup常用参数" class="headerlink" title="1、Xtrabackup常用参数"></a>1、Xtrabackup常用参数</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">--user=USER</span><br><span class="line">指定备份用户，不指定的话为当前系统用户</span><br><span class="line">--password=PASSWD </span><br><span class="line">指定备份用户密码</span><br><span class="line">--port=PORT</span><br><span class="line">指定数据库端口</span><br><span class="line">--defaults-group=GROUP-NAME </span><br><span class="line">在多实例的时候使用</span><br><span class="line">--host=HOST </span><br><span class="line">指定备份的主机，可以为远程数据库服务器</span><br><span class="line">--apply-log</span><br><span class="line">回滚日志</span><br><span class="line">--database</span><br><span class="line">指定需要备份的数据库，多个数据库之间以空格分开</span><br><span class="line">--defaults-file</span><br><span class="line">指定MYSQL的配置文件</span><br><span class="line">--copy-back</span><br><span class="line">将备份数据复制回原始位置</span><br><span class="line">--incremental</span><br><span class="line">增量备份，后面跟要增量备份的路径</span><br><span class="line">--incremental-basedir=DIRECTORY</span><br><span class="line">增量备份时使用指向上一次的增量备份所在的目录</span><br><span class="line">--incremental-dir=DIRECTORY </span><br><span class="line">增量备份还原的时候用来合并增量备份到全量，用来指定全备路径</span><br><span class="line">--redo-only</span><br><span class="line">对增量备份进行合并</span><br><span class="line">--rsync </span><br><span class="line">加快本地文件传输，适用于NON-INNODB数据库引擎。不与--STREAM共用</span><br><span class="line">--no-timestamp </span><br><span class="line">生成的备份文件不以时间戳为目录.</span><br><span class="line">--slave-info</span><br><span class="line">该选项表示对SLAVE进行备份的时候使用，打印出MASTER的名字和BINLOGPOS，同样将这些信息以CHANGE MASTER的命令写入XTRABACKUP_SLAVE_INFO文件。可以通过基于这份备份启动一个从库。</span><br><span class="line">--safe-slave-backup</span><br><span class="line">该选项表示为保证一致性复制状态，这个选项停止SQL线程并且等到SHOW STATUS中的SLAVE_OPEN_TEMP_TABLES为0的时候开始备份，如果没有打开临时表，BAKCUP会立刻开始，否则SQL线程启动或者关闭知道没有打开的临时表。如果SLAVE_OPEN_TEMP_TABLES在--SAFE-SLAVE-BACKUP-TIMEOUNT（默认300秒）秒之后不为0，从库SQL线程会在备份完成的时候重启。</span><br><span class="line">--defaults-file </span><br><span class="line">如果使用–DEFAULTS-FILE选项,则必须在第一位</span><br><span class="line">--parallel</span><br><span class="line">此参数用于开启多个子进程并发备份多个数据文件（注意，一个数据文件只会有一个进程完成备份）。可以加快备份速度。但是在服务器资源不足时，谨慎使用。</span><br><span class="line">--throttle</span><br><span class="line">此参数用于限制备份过程中每秒的IO次数。</span><br></pre></td></tr></table></figure>
+<h3 id="2、全量备份"><a href="#2、全量备份" class="headerlink" title="2、全量备份"></a>2、全量备份</h3><p>执行命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">innobackupex --no-timestamp --parallel=4 --user=root --password=xxx /root/xtrabackup/</span><br></pre></td></tr></table></figure>
+<p>执行完成后输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">180920 13:57:37 Finished backing up non-InnoDB tables and files</span><br><span class="line">180920 13:57:37 Executing FLUSH NO_WRITE_TO_BINLOG ENGINE LOGS...</span><br><span class="line">xtrabackup: The latest check point (for incremental): &#x27;1649644&#x27;</span><br><span class="line">xtrabackup: Stopping log copying thread.</span><br><span class="line">.180920 13:57:37 &gt;&gt; log scanned up to (1649644)</span><br><span class="line"></span><br><span class="line">180920 13:57:37 Executing UNLOCK TABLES</span><br><span class="line">180920 13:57:37 All tables unlocked</span><br><span class="line">180920 13:57:37 Backup created in directory &#x27;/root/xtrabackup/&#x27;</span><br><span class="line">180920 13:57:37 [00] Writing /root/xtrabackup/backup-my.cnf</span><br><span class="line">180920 13:57:37 [00]        ...done</span><br><span class="line">180920 13:57:37 [00] Writing /root/xtrabackup/xtrabackup_info</span><br><span class="line">180920 13:57:37 [00]        ...done</span><br><span class="line">xtrabackup: Transaction log of lsn (1649644) to (1649644) was copied.</span><br><span class="line">180920 13:57:38 completed OK!</span><br></pre></td></tr></table></figure>
+<p>查看备份目录生成的文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@WR3RGqSL ~]# ll xtrabackup/</span><br><span class="line">total 532520</span><br><span class="line">-rw-r----- 1 root root       481 Sep 20 13:57 backup-my.cnf</span><br><span class="line">drwxr-x--- 2 root root      4096 Sep 20 13:57 edu</span><br><span class="line">-rw-r----- 1 root root 545259520 Sep 20 13:57 ibdata1</span><br><span class="line">drwxr-x--- 2 root root      4096 Sep 20 13:57 mysql</span><br><span class="line">drwxr-x--- 2 root root      4096 Sep 20 13:57 performance_schema</span><br><span class="line">drwxr-x--- 2 root root        20 Sep 20 13:57 test</span><br><span class="line">-rw-r----- 1 root root       113 Sep 20 13:57 xtrabackup_checkpoints</span><br><span class="line">-rw-r----- 1 root root       456 Sep 20 13:57 xtrabackup_info</span><br><span class="line">-rw-r----- 1 root root      2560 Sep 20 13:57 xtrabackup_logfile</span><br><span class="line">drwxr-x--- 2 root root      8192 Sep 20 13:57 yimiao</span><br></pre></td></tr></table></figure>
+<p>创建备份后并不能直接用于恢复.需要先 <strong>prepare</strong>，<strong>prepare</strong>的目的是跑一下 <strong>redo</strong>,将未提交的 <strong>rollback</strong> 回滚,跑出一个一致性的备份。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">innobackupex --apply-log /root/xtrabackup/</span><br></pre></td></tr></table></figure>
+<p>查看perpare后的目录，多出了 <strong>id</strong> 开头的4个文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[root@WR3RGqSL ~]# ll xtrabackup/</span><br><span class="line">total 651308</span><br><span class="line">-rw-r----- 1 root root       481 Sep 20 13:57 backup-my.cnf</span><br><span class="line">drwxr-x--- 2 root root      4096 Sep 20 13:57 edu</span><br><span class="line">-rw-r----- 1 root root 545259520 Sep 20 14:10 ibdata1</span><br><span class="line">-rw-r----- 1 root root  50331648 Sep 20 14:10 ib_logfile0</span><br><span class="line">-rw-r----- 1 root root  50331648 Sep 20 14:10 ib_logfile1</span><br><span class="line">-rw-r----- 1 root root  12582912 Sep 20 14:10 ibtmp1</span><br><span class="line">drwxr-x--- 2 root root      4096 Sep 20 13:57 mysql</span><br><span class="line">drwxr-x--- 2 root root      4096 Sep 20 13:57 performance_schema</span><br><span class="line">drwxr-x--- 2 root root        20 Sep 20 13:57 test</span><br><span class="line">-rw-r--r-- 1 root root        25 Sep 20 14:10 xtrabackup_binlog_pos_innodb</span><br><span class="line">-rw-r----- 1 root root       113 Sep 20 14:10 xtrabackup_checkpoints</span><br><span class="line">-rw-r----- 1 root root       456 Sep 20 13:57 xtrabackup_info</span><br><span class="line">-rw-r----- 1 root root   8388608 Sep 20 14:10 xtrabackup_logfile</span><br><span class="line">-rw-r--r-- 1 root root         1 Sep 20 14:10 xtrabackup_master_key_id</span><br><span class="line">drwxr-x--- 2 root root      8192 Sep 20 13:57 yimiao</span><br></pre></td></tr></table></figure>
+<h3 id="3、全量恢复"><a href="#3、全量恢复" class="headerlink" title="3、全量恢复"></a>3、全量恢复</h3><p>a、将备份生成的xtrabackup打包，传输到异机mysql服务器的某一目录下并解压。<br>b、关闭mysql服务。<br>c、清空mysql的data目录文件，若binlog在data目录下，则不能删除binlog，删除data数据的原因是因为copy-back时不会覆盖原来的数据。<br>d、执行恢复</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">innobackupex --copy-back /root/xtrabackup</span><br></pre></td></tr></table></figure>
+<p>e、修改mysql数据目录权限<br>执行恢复完成后mysql的数据目录就生成了文件，此时需要修改目录权限</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chown -R mysql.mysql /usr/local/mysql5/data</span><br></pre></td></tr></table></figure>
+<p>f、启动mysql</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service mysqld start</span><br></pre></td></tr></table></figure>
+<h3 id="4、增量备份"><a href="#4、增量备份" class="headerlink" title="4、增量备份"></a>4、增量备份</h3><p>增量备份目录1：&#x2F;root&#x2F;xtrabackup_inc1<br>增量备份目录2：&#x2F;root&#x2F;xtrabackup_inc2</p>
+<p><span style="font-weight:bold;font-size:18px;">第一次增量备份</span><br>执行命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">innobackupex --user=root --password=xxx --incremental /root/xtrabackup_inc1 --incremental-basedir=/root/xtrabackup</span><br></pre></td></tr></table></figure>
+<p><span style="color:red;font-weight:bold;">注意：</span><br><strong>--incremental-basedir</strong>  第一次增量备份时指的是完全备份所在的目录。<br>此命令执行结束后，<strong>innobackupex</strong> 命令会在 <strong>&#x2F;data&#x2F;backup</strong> 目录中创建一个新的以时间命名的目录以存放所有的增量备份数据。<br>另外，在执行过增量备份之后再一次进行增量备份时，其 <strong>--incremental-basedir</strong> 应该指向上一次的增量备份所在的目录。<br>需要注意的是，增量备份仅能应用于 <strong>InnoDB</strong> 或 <strong>XtraDB</strong> 表，对于 <strong>MyISAM</strong> 表而言，执行增量备份时其实进行的是完全备份。</p>
+<p><span style="font-weight:bold;font-size:18px;">第二次增量备份</span><br>执行命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">innobackupex --defaults-file=/etc/my.cnf --user=root --password=xxx --incremental /root/xtrabackup_inc2 --incremental-basedir=/root/xtrabackup_inc1/2018-09-20_14-50-20/</span><br></pre></td></tr></table></figure>
+<p>此处的 <strong>--incremental-basedir</strong> 目录指向的是第一次增量备份的目录，意思是针对第一次增量备份来进行此次备份。</p>
+<h3 id="5、增量恢复"><a href="#5、增量恢复" class="headerlink" title="5、增量恢复"></a>5、增量恢复</h3><p><span style="font-weight:bold;font-size:18px;">只有一次增量备份</span><br>1、合并增量备份到全量，并处理备份集<br>如果需要恢复的话需要先执行如下操作，将第一次增量备份数据合并到全量备份。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">innobackupex --apply-log --redo-only /root/xtrabackup</span><br><span class="line"></span><br><span class="line">innobackupex --apply-log --redo-only /root/xtrabackup --incremental-dir=/root/xtrabackup_inc1/2018-09-20_14-50-20/</span><br></pre></td></tr></table></figure>
+<p><strong>参数说明：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">-incremental-dir=DIRECTORY </span><br><span class="line">增量备份还原的时候用来合并增量备份到全量，用来指定增量路径</span><br><span class="line">--redo-only</span><br><span class="line">对增量备份进行合并</span><br><span class="line">--apply-log</span><br><span class="line">处理未提交事物，回滚日志</span><br></pre></td></tr></table></figure>
+<p>2、执行恢复<br>删除数据文件以及停掉mysql，参考全量恢复</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nnobackupex --copy-back /root/xtrabackup</span><br></pre></td></tr></table></figure>
+<p>3、修改数据文件权限，启动mysql。</p>
+<p><span style="font-weight:bold;font-size:18px;">两次增量备份</span><br>1、合并增量备份到全量，并处理备份集<br>如果需要恢复的话需要先执行如下操作，将第一次增量备份数据合并到全量备份。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">innobackupex --apply-log --redo-only /root/xtrabackup</span><br><span class="line"></span><br><span class="line">innobackupex --apply-log --redo-only /root/xtrabackup --incremental-dir=/root/xtrabackup_inc1/2018-09-20_14-50-20/</span><br></pre></td></tr></table></figure>
+<p>如果存在多次增量备份的话，就多次执行如下命令。<br>此处执行针对的是第二次增量备份，将第二次增量备份数据合并到全量备份：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">innobackupex --apply-log --redo-only /root/xtrabackup --incremental-dir=/root/xtrabackup_inc2/2018-09-20_15-17-46/</span><br></pre></td></tr></table></figure>
+<p>2、执行恢复<br>删除数据文件以及停掉mysql，参考全量恢复</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nnobackupex --copy-back /root/xtrabackup</span><br></pre></td></tr></table></figure>
+<p>3、修改数据文件权限，启动mysql。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/XtraBackup/" rel="tag"># XtraBackup</a>
+              <a href="/tags/%E9%98%BF%E9%87%8C%E4%BA%91/" rel="tag"># 阿里云</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/09/07/ELK%E5%A4%84%E7%90%86Nginx%E6%97%A5%E5%BF%97/" rel="prev" title="ELK处理Nginx日志">
+                  <i class="fa fa-chevron-left"></i> ELK处理Nginx日志
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/09/25/Dockerfile%E4%B8%ADRUN%E3%80%81CMD%E3%80%81ENTRYPOINT%E5%8C%BA%E5%88%AB/" rel="next" title="Dockerfile中RUN、CMD、ENTRYPOINT区别">
+                  Dockerfile中RUN、CMD、ENTRYPOINT区别 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

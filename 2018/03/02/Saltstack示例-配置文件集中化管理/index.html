@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="实现一个集中化的nginx配置文件管理，根据业务下不同设备型号、分区、内存参数的差异化，动态产生适合本机的nginx配置文件，并分发到被控端加载生效。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Saltstack示例-配置文件集中化管理">
+<meta property="og:url" content="http://zhanghonged.github.io/2018/03/02/Saltstack%E7%A4%BA%E4%BE%8B-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E9%9B%86%E4%B8%AD%E5%8C%96%E7%AE%A1%E7%90%86/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="实现一个集中化的nginx配置文件管理，根据业务下不同设备型号、分区、内存参数的差异化，动态产生适合本机的nginx配置文件，并分发到被控端加载生效。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-03-02T07:08:10.000Z">
+<meta property="article:modified_time" content="2018-03-02T08:06:41.984Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="saltstack">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2018/03/02/Saltstack%E7%A4%BA%E4%BE%8B-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E9%9B%86%E4%B8%AD%E5%8C%96%E7%AE%A1%E7%90%86/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2018/03/02/Saltstack%E7%A4%BA%E4%BE%8B-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E9%9B%86%E4%B8%AD%E5%8C%96%E7%AE%A1%E7%90%86/","path":"2018/03/02/Saltstack示例-配置文件集中化管理/","title":"Saltstack示例-配置文件集中化管理"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Saltstack示例-配置文件集中化管理 | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E7%8E%AF%E5%A2%83%E8%AF%B4%E6%98%8E"><span class="nav-number">1.</span> <span class="nav-text">一、环境说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E"><span class="nav-number">2.</span> <span class="nav-text">二、配置说明</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#master%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">2.1.</span> <span class="nav-text">master配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#grains%E3%80%81pillar%E3%80%81state%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="nav-number">2.2.</span> <span class="nav-text">grains、pillar、state目录结构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E9%85%8D%E7%BD%AEgrains"><span class="nav-number">3.</span> <span class="nav-text">三、配置grains</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E9%85%8D%E7%BD%AEpillar"><span class="nav-number">4.</span> <span class="nav-text">四、配置pillar</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E9%85%8D%E7%BD%AEstate"><span class="nav-number">5.</span> <span class="nav-text">五、配置state</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E5%AE%9A%E4%B9%89nginx%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6jinja%E6%A8%A1%E6%9D%BF"><span class="nav-number">5.1.</span> <span class="nav-text">1、定义nginx配置文件jinja模板</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81state%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">5.2.</span> <span class="nav-text">2、state配置文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E6%89%A7%E8%A1%8Cstate%E5%B9%B6%E6%A0%A1%E9%AA%8C%E7%BB%93%E6%9E%9C"><span class="nav-number">6.</span> <span class="nav-text">六、执行state并校验结果</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2018/03/02/Saltstack%E7%A4%BA%E4%BE%8B-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E9%9B%86%E4%B8%AD%E5%8C%96%E7%AE%A1%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Saltstack示例-配置文件集中化管理 | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Saltstack示例-配置文件集中化管理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2018-03-02 15:08:10 / 修改时间：16:06:41" itemprop="dateCreated datePublished" datetime="2018-03-02T15:08:10+08:00">2018-03-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Saltstack/" itemprop="url" rel="index"><span itemprop="name">Saltstack</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>实现一个集中化的nginx配置文件管理，根据业务下不同设备型号、分区、内存参数的差异化，动态产生适合本机的nginx配置文件，并分发到被控端加载生效。</p>
+<span id="more"></span>
+<h2 id="一、环境说明"><a href="#一、环境说明" class="headerlink" title="一、环境说明"></a>一、环境说明</h2><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>minionID</th>
+<th>IP</th>
+<th>组名</th>
+<th>Cpus(核数)</th>
+<th>Web root</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>master</td>
+<td>—</td>
+<td>192.168.3.3</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>minion</td>
+<td>centos-7-2</td>
+<td>192.168.3.4</td>
+<td>web1group</td>
+<td>1</td>
+<td>&#x2F;opt&#x2F;nginx&#x2F;web1</td>
+</tr>
+<tr>
+<td>minion</td>
+<td>centos-7-3</td>
+<td>192.168.3.5</td>
+<td>web2group</td>
+<td>1</td>
+<td>&#x2F;opt&#x2F;nginx&#x2F;web2</td>
+</tr>
+</tbody></table>
+<p>实验环境每个组里只有一个minion，模拟多minion情况。</p>
+<h2 id="二、配置说明"><a href="#二、配置说明" class="headerlink" title="二、配置说明"></a>二、配置说明</h2><h3 id="master配置文件"><a href="#master配置文件" class="headerlink" title="master配置文件"></a>master配置文件</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">interface: 192.168.3.3</span><br><span class="line"></span><br><span class="line">auto_accept: False</span><br><span class="line"></span><br><span class="line">file_roots:</span><br><span class="line">  base:</span><br><span class="line">    - /srv/salt</span><br><span class="line"></span><br><span class="line">pillar_roots:</span><br><span class="line">  base:</span><br><span class="line">    - /srv/pillar</span><br><span class="line"></span><br><span class="line">pillar_opts: True</span><br><span class="line"></span><br><span class="line">nodegroups:</span><br><span class="line">  web1group: &#x27;L@centos-7-2&#x27;</span><br><span class="line">  web2group: &#x27;L@centos-7-3&#x27;</span><br></pre></td></tr></table></figure>
+<h3 id="grains、pillar、state目录结构"><a href="#grains、pillar、state目录结构" class="headerlink" title="grains、pillar、state目录结构"></a>grains、pillar、state目录结构</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[root@centos-7-1 ~]# tree /srv</span><br><span class="line">/srv</span><br><span class="line">├── pillar</span><br><span class="line">│   ├── top.sls</span><br><span class="line">│   ├── web1server.sls</span><br><span class="line">│   └── web2server.sls</span><br><span class="line">└── salt</span><br><span class="line">    ├── _grains</span><br><span class="line">    │   └── nginx_config.py</span><br><span class="line">    ├── nginx</span><br><span class="line">    │   └── nginx.conf</span><br><span class="line">    ├── nginx.sls</span><br><span class="line">    └── top.sls</span><br><span class="line"></span><br><span class="line">4 directories, 7 files</span><br></pre></td></tr></table></figure>
+<h2 id="三、配置grains"><a href="#三、配置grains" class="headerlink" title="三、配置grains"></a>三、配置grains</h2><p>在master端编写grains的py脚本，动态求出minion端的max_open_file的值，值为limit -n的结果。<br>此值将用来配置nginx配置文件中worker_rlimit_nofile、worker_connections 的值。<br><strong>&#x2F;srv&#x2F;salt&#x2F;_grains&#x2F;nginx_config.py</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment">#coding:utf-8</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> commands</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">NginxGrains</span>():</span><br><span class="line">  grains = &#123;&#125;</span><br><span class="line">  _open_file=<span class="number">65535</span></span><br><span class="line">  <span class="keyword">try</span>:</span><br><span class="line">    getulimit = commands.getstatusoutput(<span class="string">&#x27;source /etc/profile;ulimit -n&#x27;</span>)</span><br><span class="line">  <span class="keyword">except</span> Exception,e:</span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line">  <span class="keyword">if</span> getulimit[<span class="number">0</span>]==<span class="number">0</span>:</span><br><span class="line">    _open_file=<span class="built_in">int</span>(getulimit[<span class="number">1</span>])</span><br><span class="line">  grains[<span class="string">&#x27;max_open_file&#x27;</span>] = _open_file</span><br><span class="line">  <span class="keyword">return</span> grains</span><br></pre></td></tr></table></figure>
+<p><strong>同步grains模块</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">salt &#x27;*&#x27; saltutil.sync_all</span><br></pre></td></tr></table></figure>
+<p><strong>刷新模块(让minion编译模块)</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">salt &#x27;*&#x27; sys.reload_modules</span><br></pre></td></tr></table></figure>
+<p><strong>验证max_open_file的值</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@centos-7-1 ~]# salt &#x27;*&#x27; grains.item max_open_file</span><br><span class="line">centos-7-3:</span><br><span class="line">    ----------</span><br><span class="line">    max_open_file:</span><br><span class="line">        1024</span><br><span class="line">centos-7-2:</span><br><span class="line">    ----------</span><br><span class="line">    max_open_file:</span><br><span class="line">        1024</span><br></pre></td></tr></table></figure>
+<h2 id="四、配置pillar"><a href="#四、配置pillar" class="headerlink" title="四、配置pillar"></a>四、配置pillar</h2><p>这里使用分组规则定义pillar，不同分组引用各自的sls属性，使用match属性值进行区分，使用nodegroup属性，除此之外还支持grain、pillar等形式。<br><span style="font-size:10px;color:#E8684D;font-weight:bold;">例子中一个分组中只有一个minion，正式环境可能包含多个。</span><br>下面是pillar配置文件展示。<br><strong>&#x2F;srv&#x2F;pillar&#x2F;top.sls</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">base:</span></span><br><span class="line">  <span class="attr">web1group:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">match:</span> <span class="string">nodegroup</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">web1server</span></span><br><span class="line">  <span class="attr">web2group:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">match:</span> <span class="string">nodegroup</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">web2server</span></span><br></pre></td></tr></table></figure>
+<p><strong>&#x2F;srv&#x2F;pillar&#x2F;web1server.sls</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">nginx:</span></span><br><span class="line">  <span class="attr">root:</span> <span class="string">/opt/nginx/web1</span></span><br></pre></td></tr></table></figure>
+<p><strong>&#x2F;srv&#x2F;pillar&#x2F;web2server.sls</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">nginx:</span></span><br><span class="line">  <span class="attr">root:</span> <span class="string">/opt/nginx/web2</span></span><br></pre></td></tr></table></figure>
+<p><strong>验证结果，这里通过group来进行验证</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[root@centos-7-1 ~]# salt -N &#x27;web1group&#x27; pillar.data nginx</span><br><span class="line">centos-7-2:</span><br><span class="line">    ----------</span><br><span class="line">    nginx:</span><br><span class="line">        ----------</span><br><span class="line">        root:</span><br><span class="line">            /opt/nginx/web1</span><br><span class="line">[root@centos-7-1 ~]# salt -N &#x27;web2group&#x27; pillar.data nginx</span><br><span class="line">centos-7-3:</span><br><span class="line">    ----------</span><br><span class="line">    nginx:</span><br><span class="line">        ----------</span><br><span class="line">        root:</span><br><span class="line">            /opt/nginx/web2</span><br></pre></td></tr></table></figure>
+<h2 id="五、配置state"><a href="#五、配置state" class="headerlink" title="五、配置state"></a>五、配置state</h2><h3 id="1、定义nginx配置文件jinja模板"><a href="#1、定义nginx配置文件jinja模板" class="headerlink" title="1、定义nginx配置文件jinja模板"></a>1、定义nginx配置文件jinja模板</h3><p><strong>worker_processes</strong> 采用 <strong>grains[‘num_cpus’]</strong> 的值，与cpu核心数一致。<br><strong>worker_cpu_affinity</strong> 分配多核cpu，根据当前设备核数进行匹配，采用 <strong>grains[‘num_cpus’]</strong><br><strong>worker_rlimit_nofile worker_connections</strong> 参数理论上为 <strong>grains[‘max_open_file’]</strong><br><strong>root</strong> 参数为定制的 <strong>pillar[‘nginx’][‘root’]</strong> 的值。<br><strong>&#x2F;srv&#x2F;salt&#x2F;nginx&#x2F;nginx.conf</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line">user  nginx;</span><br><span class="line">worker_processes  &#123;&#123; grains[&#x27;num_cpus&#x27;] &#125;&#125;;</span><br><span class="line">&#123;% if grains[&#x27;num_cpus&#x27;] == 1 %&#125;</span><br><span class="line">#worker_cpu_affinity 01 10;</span><br><span class="line">&#123;% elif grains[&#x27;num_cpus&#x27;] == 2 %&#125;</span><br><span class="line">worker_cpu_affinity 01 10;</span><br><span class="line">&#123;% elif grains[&#x27;num_cpus&#x27;] ==4 %&#125;</span><br><span class="line">worker_cpu_affinity 1000 0100 0010 0001;</span><br><span class="line">&#123;% elif grains[&#x27;num_cpus&#x27;] &gt;=8 %&#125;</span><br><span class="line">worker_cpu_affinity 00000001 00000010 00001000 00010000 00100000 01000000 10000000;</span><br><span class="line">&#123;% else %&#125;</span><br><span class="line">worker_cpu_affinity 1000 0100 0010 0001;</span><br><span class="line">&#123;% endif %&#125;</span><br><span class="line">worker_rlimit_nofile &#123;&#123; grains[&#x27;max_open_file&#x27;] &#125;&#125;;</span><br><span class="line"></span><br><span class="line">error_log  /var/log/nginx/error.log;</span><br><span class="line">#error_log  logs/error.log notice;</span><br><span class="line">#error_log  logs/error.log info;</span><br><span class="line"></span><br><span class="line">pid /var/run/nginx.pid;</span><br><span class="line"></span><br><span class="line">events &#123;</span><br><span class="line">  worker_connections  &#123;&#123; grains[&#x27;max_open_file&#x27;] &#125;&#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">http &#123;</span><br><span class="line">  include  /etc/nginx/mime.types;</span><br><span class="line">  default_type  application/octet-stream;</span><br><span class="line"></span><br><span class="line">  log_format  main  &#x27;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &#x27;</span><br><span class="line">                    &#x27;$status $body_bytes_sent &quot;$http_referer&quot; &#x27;</span><br><span class="line">                    &#x27;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&#x27;;</span><br><span class="line"></span><br><span class="line">  access_log  /var/log/nginx/access.log  main;</span><br><span class="line"></span><br><span class="line">  sendfile        on;</span><br><span class="line">  #tcp_nopush     on;</span><br><span class="line"></span><br><span class="line">  #keepalive_timeout  0;</span><br><span class="line">  keepalive_timeout  65;</span><br><span class="line"></span><br><span class="line">  #gzip  on;</span><br><span class="line"></span><br><span class="line">  server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  localhost;</span><br><span class="line"></span><br><span class="line">    #charset koi8-r;</span><br><span class="line"></span><br><span class="line">    #access_log  logs/host.access.log  main;</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">      root   &#123;&#123; pillar[&#x27;nginx&#x27;][&#x27;root&#x27;] &#125;&#125;;</span><br><span class="line">      index  index.html index.htm;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2、state配置文件"><a href="#2、state配置文件" class="headerlink" title="2、state配置文件"></a>2、state配置文件</h3><p><strong>&#x2F;srv&#x2F;salt&#x2F;top.sls</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">base:</span></span><br><span class="line">  <span class="string">&#x27;*&#x27;</span><span class="string">:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">nginx</span></span><br></pre></td></tr></table></figure>
+<p>下面定义nginx包、服务管理配置的sls<br><strong>salt:&#x2F;&#x2F;nginx&#x2F;nginx.conf</strong> 为配置文件模板文件位置。<br><strong>enable: True</strong> 为检查服务是否开机启动，如果不是设置为开机启动。<br><strong>reload: True</strong> 表示服务支持reload操作，不加则会默认执行restart操作。<br><strong>watch</strong> 监控两项，一为配置文件是否变化，二为确保nginx安装成功。<br><strong>template: jinja</strong> 使用jinja渲染这个配置文件。</p>
+<p><strong>&#x2F;srv&#x2F;salt&#x2F;nginx.sls</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">nginx:</span></span><br><span class="line">  <span class="attr">pkg:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">installed</span></span><br><span class="line">  <span class="attr">file.managed:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">source:</span> <span class="string">salt://nginx/nginx.conf</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">/etc/nginx/nginx.conf</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">user:</span> <span class="string">root</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">group:</span> <span class="string">root</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">mode:</span> <span class="number">644</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">template:</span> <span class="string">jinja</span></span><br><span class="line">  <span class="attr">service.running:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">enable:</span> <span class="literal">True</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">reload:</span> <span class="literal">True</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">watch:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">file:</span> <span class="string">/etc/nginx/nginx.conf</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">pkg:</span> <span class="string">nginx</span></span><br></pre></td></tr></table></figure>
+<h2 id="六、执行state并校验结果"><a href="#六、执行state并校验结果" class="headerlink" title="六、执行state并校验结果"></a>六、执行state并校验结果</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">salt &#x27;*&#x27; state.highstae</span><br></pre></td></tr></table></figure>
+<p>到minion端检测配置文件和服务启动状态。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/saltstack/" rel="tag"># saltstack</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/03/01/Saltstack%E5%B8%B8%E7%94%A8%E6%A8%A1%E5%9D%97%E5%8F%8AAPI/" rel="prev" title="Saltstack常用模块及API">
+                  <i class="fa fa-chevron-left"></i> Saltstack常用模块及API
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/03/06/Django%E4%BB%A5Json%E7%B1%BB%E5%9E%8B%E8%BF%94%E5%9B%9E%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9F%A5%E8%AF%A2%E7%BB%93%E6%9E%9C/" rel="next" title="Django以Json类型返回数据库查询结果">
+                  Django以Json类型返回数据库查询结果 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

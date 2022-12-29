@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="我们已经配置了一些项目和触发器，在触发器发送状态改变时，我们就要考虑告警动作了。邮件告警作为一种常规且方便的告警途径，通过这节内容我们来介绍下。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zabbix-邮件告警">
+<meta property="og:url" content="http://zhanghonged.github.io/2018/06/27/Zabbix-%E9%82%AE%E4%BB%B6%E5%91%8A%E8%AD%A6/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="我们已经配置了一些项目和触发器，在触发器发送状态改变时，我们就要考虑告警动作了。邮件告警作为一种常规且方便的告警途径，通过这节内容我们来介绍下。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/zabbix_mail_1.jpg">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/zabbix_mail_2.jpg">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/zabbix_mail_3.jpg">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/zabbix_mail_4.jpg">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/zabbix_mail_5.jpg">
+<meta property="article:published_time" content="2018-06-27T02:27:12.000Z">
+<meta property="article:modified_time" content="2018-06-27T06:33:55.056Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="监控">
+<meta property="article:tag" content="zabbix">
+<meta property="article:tag" content="告警">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://zhanghonged.github.io/uploads/zabbix_mail_1.jpg">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2018/06/27/Zabbix-%E9%82%AE%E4%BB%B6%E5%91%8A%E8%AD%A6/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2018/06/27/Zabbix-%E9%82%AE%E4%BB%B6%E5%91%8A%E8%AD%A6/","path":"2018/06/27/Zabbix-邮件告警/","title":"Zabbix-邮件告警"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Zabbix-邮件告警 | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E9%85%8D%E7%BD%AE%E8%84%9A%E6%9C%AC"><span class="nav-number">1.</span> <span class="nav-text">一、配置脚本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81zabbix-web%E7%AB%AF%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">二、zabbix web端配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E5%A2%9E%E5%8A%A0%E6%8A%A5%E8%AD%A6%E5%AA%92%E4%BB%8B%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.1.</span> <span class="nav-text">1、增加报警媒介类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E4%B8%BA%E7%94%A8%E6%88%B7%E5%88%86%E9%85%8D%E6%8A%A5%E8%AD%A6%E6%8F%90%E7%A4%BA"><span class="nav-number">2.2.</span> <span class="nav-text">2、为用户分配报警提示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E9%85%8D%E7%BD%AE%E6%8A%A5%E8%AD%A6%E5%8A%A8%E4%BD%9C"><span class="nav-number">2.3.</span> <span class="nav-text">3、配置报警动作</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2018/06/27/Zabbix-%E9%82%AE%E4%BB%B6%E5%91%8A%E8%AD%A6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Zabbix-邮件告警 | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Zabbix-邮件告警
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2018-06-27 10:27:12 / 修改时间：14:33:55" itemprop="dateCreated datePublished" datetime="2018-06-27T10:27:12+08:00">2018-06-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Zabbix/" itemprop="url" rel="index"><span itemprop="name">Zabbix</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>我们已经配置了一些项目和触发器，在触发器发送状态改变时，我们就要考虑告警动作了。<br>邮件告警作为一种常规且方便的告警途径，通过这节内容我们来介绍下。</p>
+<span id="more"></span>
+<p>Zabbix的默认 <strong>报警媒介类型</strong> 支持 <strong>Email</strong> 电子邮件告警，可直接选择 <strong>电子邮件</strong> 报警类型，并填入SMTP信息就可以。但如果邮件报警有更负责的需求，需要支持图片、附件等自定义邮件内容，这里就显得有些力不从心了。</p>
+<p>您可以创建一个将以您的方式处理通知的<span style="color:#B62E3C;font-weight:bold;">脚本</span>，来自定义报警提示。</p>
+<h2 id="一、配置脚本"><a href="#一、配置脚本" class="headerlink" title="一、配置脚本"></a>一、配置脚本</h2><p>1、脚本路径默认为zabbix安装目录 <em>zabbix&#x2F;share&#x2F;zabbix&#x2F;alertscripts</em> ，可以在配置文件中自定义目录位置。<br>2、脚本编写 <em>SendMymail.py</em></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment">#coding:utf-8</span></span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> smtplib</span><br><span class="line"><span class="keyword">from</span> email.mime.text <span class="keyword">import</span> MIMEText</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">此脚本接收3个参数：收件人、邮件主题、邮件内容</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">mail_server = <span class="string">&quot;smtp.exmail.qq.com&quot;</span></span><br><span class="line">mail_server_port = <span class="number">465</span></span><br><span class="line">mail_user = <span class="string">&quot;xxxxxxxxx&quot;</span></span><br><span class="line">mail_passwd = <span class="string">&quot;xxxxxxxxxxxxx&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyEmail</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self,to_list,subject,content</span>):</span><br><span class="line">        self.mail_server = mail_server</span><br><span class="line">        self.mail_server_port = mail_server_port</span><br><span class="line">        self.user = mail_user</span><br><span class="line">        self.passwd = mail_passwd</span><br><span class="line">        self.to_list = to_list</span><br><span class="line">        self.subject = subject</span><br><span class="line">        self.content = content</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">send</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            server = smtplib.SMTP_SSL(self.mail_server,self.mail_server_port)</span><br><span class="line">            server.login(self.user, self.passwd)</span><br><span class="line">            server.sendmail(self.user, self.to_list, self.get_attach())</span><br><span class="line">            server.close()</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;邮件发送成功&quot;</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;邮件发送失败: %s&quot;</span> %<span class="built_in">str</span>(e))</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">get_attach</span>(<span class="params">self</span>):</span><br><span class="line">        attach = MIMEText(self.content,<span class="string">&#x27;plain&#x27;</span>,<span class="string">&#x27;utf-8&#x27;</span>)</span><br><span class="line">        attach[<span class="string">&quot;Subject&quot;</span>] = self.subject</span><br><span class="line">        attach[<span class="string">&quot;From&quot;</span>] = <span class="string">&quot;zabbix报警&quot;</span> + <span class="string">&quot;&lt;&quot;</span> + self.user + <span class="string">&quot;&gt;&quot;</span></span><br><span class="line">        attach[<span class="string">&quot;To&quot;</span>] = self.to_list</span><br><span class="line">        <span class="keyword">return</span> attach.as_string()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    my = MyEmail(sys.argv[<span class="number">1</span>],sys.argv[<span class="number">2</span>],sys.argv[<span class="number">3</span>])</span><br><span class="line">    my.send() </span><br></pre></td></tr></table></figure>
+<h2 id="二、zabbix-web端配置"><a href="#二、zabbix-web端配置" class="headerlink" title="二、zabbix web端配置"></a>二、zabbix web端配置</h2><h3 id="1、增加报警媒介类型"><a href="#1、增加报警媒介类型" class="headerlink" title="1、增加报警媒介类型"></a>1、增加报警媒介类型</h3><ul>
+<li>进入 <em>管理</em> -&gt; 媒介类型</li>
+<li>点击 <em>创建媒介类型</em></li>
+</ul>
+<p><img src="/uploads/zabbix_mail_1.jpg"><br><strong>类型：</strong> 选择脚本<br><strong>脚本名称：</strong> 填写上一步创建的脚本<br><strong>脚本参数：</strong> 向脚本添加命令行参数，是zabbix的 <strong>宏</strong> 变量</p>
+<blockquote>
+<p>{ALERT.SENDTO} 收件人地址<br>{ALERT.SUBJECT} 主题<br>{ALERT.MESSAGE} 内容</p>
+</blockquote>
+<h3 id="2、为用户分配报警提示"><a href="#2、为用户分配报警提示" class="headerlink" title="2、为用户分配报警提示"></a>2、为用户分配报警提示</h3><ul>
+<li>进入 <em>管理</em> -&gt; <em>用户</em></li>
+<li>打开用户属性窗体</li>
+<li>在 <em>报警媒介</em> 选项卡 点击 <em>添加</em></li>
+</ul>
+<p><img src="/uploads/zabbix_mail_2.jpg"></p>
+<p><strong>类型：</strong> 选择上一步创建的媒介类型<br><strong>收件人：</strong> 填写收件人邮箱地址<br><strong>如果存在严重性则使用</strong> 标记要激活警示标记的触发严重性的复选框</p>
+<h3 id="3、配置报警动作"><a href="#3、配置报警动作" class="headerlink" title="3、配置报警动作"></a>3、配置报警动作</h3><ul>
+<li>进入 <em>配置</em> -&gt; <em>动作</em></li>
+<li>右上角的 <em>事件源</em> 下拉框选择 <em>触发器</em></li>
+<li>点击 <em>创建动作</em></li>
+</ul>
+<p><img src="/uploads/zabbix_mail_3.jpg"><br><strong>计算式：</strong> 多个条件的表达式，默认AND与不同的条件类型和OR具有相同的条件类型<br><strong>条件：</strong> 动作触发的条件</p>
+<p><span style="color:red;font-weight:bold;">操作</span>是故障发生时的配置，通过zabbix <strong>宏</strong> 来构建下面内容:<br><img src="/uploads/zabbix_mail_4.jpg"></p>
+<blockquote>
+<p>{HOST.NAME} 告警主机<br>{EVENT.DATE}{EVENT.TIME} 告警时间<br>{TRIGGER.SEVERITY} 告警级别<br>{TRIGGER.NAME} 故障名称<br>{ITEM.KEY} 告警项目<br>{ITEM.NAME}:{ITEM.VALUE} 问题详情<br>{TRIGGER.STATUS}:{ITEM.VALUE} 当前状态<br>{ENET.ID} 事件ID</p>
+</blockquote>
+<p><em>操作</em> 选项 点击 <em>新的</em> 添加新的步骤<br><img src="/uploads/zabbix_mail_5.jpg"><br><strong>发送到用户</strong> 选择上面建立的需要发送的用户，如需报警到多个用户，这里多选几个就行<br><strong>仅送到</strong> 选择之前建立的 <strong>邮件报警</strong> 报警媒介*</p>
+<p><span style="color:red;font-weight:bold;">恢复操作</span>是故障解除时的配置<br>内容如下:<br><em>默认标题</em></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">恢复&#123;TRIGGER.STATUS&#125;, 服务器:&#123;HOSTNAME&#125;: &#123;TRIGGER.NAME&#125;已恢复!</span><br></pre></td></tr></table></figure>
+<p><em>消息内容</em></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">告警主机:&#123;HOSTNAME&#125;</span><br><span class="line">告警时间:&#123;EVENT.DATE&#125;&#123;EVENT.TIME&#125;</span><br><span class="line">告警等级:&#123;TRIGGER.NAME&#125;</span><br><span class="line">告警项目:&#123;ITEM.KEY&#125;</span><br><span class="line">问题详情:&#123;ITEM.NAME&#125;:&#123;ITEM.VALUE&#125;</span><br><span class="line">当前状态:&#123;TRIGGER.STATUS&#125;:&#123;ITEM.VALUE&#125;</span><br><span class="line">事件ID:&#123;EVENT.ID&#125;</span><br></pre></td></tr></table></figure>
+<p><em>操作</em>&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;和上面一样配置<strong>用户</strong>和<strong>报警媒介</strong>。<br><span style="color:red;font-weight:bold;">确认操作</span>是确认故障时的配置<br><em>默认标题</em></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">确认问题: &#123;TRIGGER.NAME&#125;</span><br></pre></td></tr></table></figure>
+<p><em>消息内容</em></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;USER.FULLNAME&#125; 在 &#123;ACK.DATE&#125; &#123;ACK.TIME&#125; 确认问题:</span><br><span class="line">确认信息:</span><br><span class="line">&#123;ACK.MESSAGE&#125;</span><br><span class="line">当前问题状态: &#123;EVENT.STATUS&#125;</span><br></pre></td></tr></table></figure>
+<p><em>操作</em>&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;和上面一样配置<strong>用户</strong>和<strong>报警媒介</strong>。</p>
+<p>完成以上配置后，触发告警事件就可以通过邮件给指定用户告警了。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%9B%91%E6%8E%A7/" rel="tag"># 监控</a>
+              <a href="/tags/zabbix/" rel="tag"># zabbix</a>
+              <a href="/tags/%E5%91%8A%E8%AD%A6/" rel="tag"># 告警</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/06/27/Zabbix-%E5%A4%96%E9%83%A8%E6%A3%80%E6%9F%A5/" rel="prev" title="Zabbix-外部检查">
+                  <i class="fa fa-chevron-left"></i> Zabbix-外部检查
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/06/27/Zabbix-%E7%9F%AD%E4%BF%A1%E5%91%8A%E8%AD%A6/" rel="next" title="Zabbix-短信告警">
+                  Zabbix-短信告警 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

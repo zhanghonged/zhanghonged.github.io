@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Serializers 可以将复杂的数据结构变成json或者xml格式，还有反序列化功能，在传入数据校验成功后将解析后数据转换为复杂的数据结构。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DRF-Serializers">
+<meta property="og:url" content="http://zhanghonged.github.io/2018/04/25/DRF-Serializers/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="Serializers 可以将复杂的数据结构变成json或者xml格式，还有反序列化功能，在传入数据校验成功后将解析后数据转换为复杂的数据结构。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/serializer.png">
+<meta property="article:published_time" content="2018-04-25T01:52:39.000Z">
+<meta property="article:modified_time" content="2018-04-26T03:15:23.162Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="Serializers">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://zhanghonged.github.io/uploads/serializer.png">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2018/04/25/DRF-Serializers/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2018/04/25/DRF-Serializers/","path":"2018/04/25/DRF-Serializers/","title":"DRF-Serializers"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>DRF-Serializers | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%BD%BF%E7%94%A8Serializers%E5%BA%8F%E5%88%97%E5%99%A8"><span class="nav-number">1.</span> <span class="nav-text">一、使用Serializers序列器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E9%A6%96%E5%85%88%E5%88%9B%E5%BB%BAmodel%E5%AF%B9%E8%B1%A1"><span class="nav-number">1.1.</span> <span class="nav-text">1、首先创建model对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E5%88%9B%E5%BB%BA%E5%BA%8F%E5%88%97%E5%8C%96%E7%B1%BB"><span class="nav-number">1.2.</span> <span class="nav-text">2、创建序列化类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E5%BA%8F%E5%88%97%E5%8C%96%E5%AF%B9%E8%B1%A1"><span class="nav-number">1.3.</span> <span class="nav-text">3、序列化对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%AF%B9%E8%B1%A1"><span class="nav-number">1.4.</span> <span class="nav-text">4、反序列化对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5%E3%80%81Saving-instances"><span class="nav-number">1.5.</span> <span class="nav-text">5、Saving instances</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6%E3%80%81Validation"><span class="nav-number">1.6.</span> <span class="nav-text">6、Validation</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%97%E6%AE%B5%E7%BA%A7%E5%88%AB%E9%AA%8C%E8%AF%81-Field-level-validation"><span class="nav-number">1.6.1.</span> <span class="nav-text">字段级别验证 Field-level validation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E7%BA%A7%E5%88%AB%E9%AA%8C%E8%AF%81-Object-level-validation"><span class="nav-number">1.6.2.</span> <span class="nav-text">对象级别验证 Object-level validation</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Validators"><span class="nav-number">1.7.</span> <span class="nav-text">Validators</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81ModelSerializer"><span class="nav-number">2.</span> <span class="nav-text">二、ModelSerializer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E5%88%9B%E5%BB%BA%E5%BA%8F%E5%88%97%E5%8C%96%E7%B1%BB"><span class="nav-number">2.1.</span> <span class="nav-text">1、创建序列化类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81ModelSerializer%E9%9C%80%E8%A6%81%E8%A7%A3%E5%86%B3%E7%9A%842%E4%B8%AA%E9%97%AE%E9%A2%98"><span class="nav-number">2.2.</span> <span class="nav-text">2、ModelSerializer需要解决的2个问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%A4%96%E9%94%AE%E5%85%B3%E8%81%94%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-number">3.</span> <span class="nav-text">三、外键关联序列化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E4%BD%BF%E7%94%A8serializers-Serializer"><span class="nav-number">3.1.</span> <span class="nav-text">1、使用serializers.Serializer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E4%BD%BF%E7%94%A8ModelSerializer"><span class="nav-number">3.2.</span> <span class="nav-text">2、使用ModelSerializer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E5%A4%96%E9%94%AE%E5%85%B3%E8%81%94%E5%8F%8D%E6%9F%A5%E8%AF%A2"><span class="nav-number">3.3.</span> <span class="nav-text">3、外键关联反查询</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2018/04/25/DRF-Serializers/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="DRF-Serializers | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          DRF-Serializers
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-04-25 09:52:39" itemprop="dateCreated datePublished" datetime="2018-04-25T09:52:39+08:00">2018-04-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2018-04-26 11:15:23" itemprop="dateModified" datetime="2018-04-26T11:15:23+08:00">2018-04-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Django-REST-framework/" itemprop="url" rel="index"><span itemprop="name">Django REST framework</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><strong>Serializers</strong> 可以将复杂的数据结构变成json或者xml格式，还有反序列化功能，在传入数据校验成功后将解析后数据转换为复杂的数据结构。</p>
+<span id="more"></span>
+<p>serializers有以下几个作用：</p>
+<ul>
+<li>将queryset与model实例等进行序列化，转化成json格式，返回给用户(api接口)。</li>
+<li>将post与patch&#x2F;put的上来的数据进行验证。</li>
+<li>对post与patch&#x2F;put数据进行处理。</li>
+</ul>
+<p>下图展示了主要内容:<br><img src="/uploads/serializer.png"></p>
+<h2 id="一、使用Serializers序列器"><a href="#一、使用Serializers序列器" class="headerlink" title="一、使用Serializers序列器"></a>一、使用Serializers序列器</h2><h3 id="1、首先创建model对象"><a href="#1、首先创建model对象" class="headerlink" title="1、首先创建model对象"></a>1、首先创建model对象</h3><p>下面示例创建一个商品详细信息的model对象:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> models</span><br><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Goods</span>(models.Model):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    商品详细信息</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    name = models.CharField(max_length=<span class="number">300</span>, verbose_name=<span class="string">&quot;商品名称&quot;</span>)</span><br><span class="line">    sold_num = models.IntegerField(default=<span class="number">0</span>, verbose_name=<span class="string">&quot;商品销售量&quot;</span>)</span><br><span class="line">    shop_price = models.FloatField(default=<span class="number">0</span>, verbose_name=<span class="string">&quot;本店价格&quot;</span>)</span><br><span class="line">    goods_brief = models.TextField(verbose_name=<span class="string">&quot;商品简短描述&quot;</span>)</span><br><span class="line">    add_time = models.DateTimeField(default=datetime.now, verbose_name=<span class="string">&quot;添加时间&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">class</span> <span class="title class_">Meta</span>:</span><br><span class="line">        verbose_name = <span class="string">&quot;商品&quot;</span></span><br><span class="line">        verbose_name_plural = verbose_name</span><br></pre></td></tr></table></figure>
+<h3 id="2、创建序列化类"><a href="#2、创建序列化类" class="headerlink" title="2、创建序列化类"></a>2、创建序列化类</h3><p>新建 <strong>serializer.py</strong> 文件，创建序列化类</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> serializers</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">GoodsSerializer</span>(serializers.Serializer):</span><br><span class="line">    name = serializers.CharField(required=<span class="literal">True</span>, max_length=<span class="number">100</span>)</span><br><span class="line">    sold_num = serializers.IntegerField(default=<span class="number">0</span>)</span><br><span class="line">    shop_price = serializers.IntegerField(default=<span class="number">0</span>)</span><br><span class="line">    goods_brief = serializers.IntegerField()</span><br><span class="line">    add_time = serializers.DateTimeField()</span><br></pre></td></tr></table></figure>
+<p>这部分定义了要进行序列化&#x2F;反序列化的字段。</p>
+<h3 id="3、序列化对象"><a href="#3、序列化对象" class="headerlink" title="3、序列化对象"></a>3、序列化对象</h3><p>现在可以使用 <strong>GoodsSerializer</strong> 来序列化一个Goods或Goods列表，使用 <span style="color:red;">Serializer</span> class 和使用 <span style="color:red;">Form</span> class非常像。<br>在终端中启动 Django shell:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python manage.py shell</span><br></pre></td></tr></table></figure>
+<p>创建一个Goods实例并序列化：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> goods.models <span class="keyword">import</span> Goods</span><br><span class="line"><span class="keyword">from</span> goods.serializer <span class="keyword">import</span> GoodsSerializer</span><br><span class="line"><span class="keyword">from</span> rest_framework.renderers <span class="keyword">import</span> JSONRenderer</span><br><span class="line"></span><br><span class="line">good = Goods(name=<span class="string">&quot;茅台53度飞天茅台500ml&quot;</span>,sold_num=<span class="number">20</span>,shop_price=<span class="number">1008</span>,goods_brief=<span class="string">&quot;贵州茅台酒厂（集团）保健酒业有限 公司生产&quot;</span>)</span><br><span class="line">good.save()</span><br><span class="line">serializer = GoodsSerializer(good)</span><br><span class="line">serializer.data</span><br><span class="line"></span><br><span class="line"><span class="comment">#&#123;&#x27;name&#x27;: &#x27;茅台53度飞天茅台500ml&#x27;, &#x27;sold_num&#x27;: 20, &#x27;shop_price&#x27;: 1008, &#x27;goods_brief&#x27;: &#x27;贵州茅台酒厂（集团）保健酒业有限公司生产&#x27;, &#x27;add_time&#x27;: &#x27;2018-04-25T15:21:23.778587Z&#x27;&#125;</span></span><br></pre></td></tr></table></figure>
+<p>至此我们已经将模型实例转换为Python原生数据类型。为了完成序列化过程，我们将数据呈现为json类型:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">content = JSONRenderer().render(serializer.data)</span><br><span class="line">content</span><br><span class="line"></span><br><span class="line"><span class="comment">#&#123;&quot;name&quot;:&quot;\xe8\x8c\x85\xe5\x8f\xb053\xe5\xba\xa6\xe9\xa3\x9e\xe5\xa4\xa9\xe8\x8c\x85\xe5\x8f\xb0500ml&quot;,&quot;sold_num&quot;:20,&quot;shop_price&quot;:1008,&quot;goods_brief&quot;:&quot;\xe8\xb4\xb5\xe5\xb7\x9e\xe8\x8c\x85\xe5\x8f\xb0\xe9\x85\x92\xe5\x8e\x82\xef\xbc\x88\xe9\x9b\x86\xe5\x9b\xa2\xef\xbc\x89\xe4\xbf\x9d\xe5\x81\xa5\xe9\x85\x92\xe4\xb8\x9a\xe6\x9c\x89\xe9\x99\x90\xe5\x85\xac\xe5\x8f\xb8\xe7\x94\x9f\xe4\xba\xa7&quot;,&quot;add_time&quot;:&quot;2018-04-25T15:21:23.778587Z&quot;&#125;</span></span><br></pre></td></tr></table></figure>
+<h3 id="4、反序列化对象"><a href="#4、反序列化对象" class="headerlink" title="4、反序列化对象"></a>4、反序列化对象</h3><p>反序列化过程类似。<br>首先我们将一个流解析为Python原生数据类型:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.utils.six <span class="keyword">import</span> BytesIO</span><br><span class="line"><span class="keyword">from</span> rest_framework.parsers <span class="keyword">import</span> JSONParser</span><br><span class="line"></span><br><span class="line">stream = BytesIO(content)</span><br><span class="line">data = JSONParser().parse(stream)</span><br></pre></td></tr></table></figure>
+<p>然后把验证过这个原生数据类型恢复到实例当中</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">serializer = GoodsSerializer(data = data)</span><br><span class="line">serializer.is_valid()</span><br><span class="line"><span class="comment">#True</span></span><br><span class="line">serializer.validated_data</span><br></pre></td></tr></table></figure>
+<p>当我们输入参数 <strong>many&#x3D;True</strong> 时, serializer还能序列化queryset:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">serializer = GoodsSerializer(Goods.objects.<span class="built_in">all</span>(),many=<span class="literal">True</span>)</span><br><span class="line">serializer.data</span><br><span class="line"><span class="comment">#[OrderedDict([(&#x27;name&#x27;, &#x27;新鲜水果甜蜜香脆单果约800克&#x27;), (&#x27;sold_num&#x27;, 1), (&#x27;shop_price&#x27;, 156), (&#x27;goods_brief&#x27;, &#x27;食用百香 果可以增加胃部饱腹感，减少余热量的摄入，还可以吸附胆固醇和胆汁之类有机分子，抑制人体对脂肪的吸收。因此，长期食用有利于 改善人体营养吸收结构，降低体内脂肪，塑造健康优美体态。&#x27;), (&#x27;add_time&#x27;, None)]), OrderedDict([(&#x27;name&#x27;, &#x27;帐篷出租&#x27;), (&#x27;sold_num&#x27;, 2), (&#x27;shop_price&#x27;, 50), (&#x27;goods_brief&#x27;, &#x27;帐篷出租&#x27;), (&#x27;add_time&#x27;, &#x27;2018-04-25T15:03:19.837149Z&#x27;)]), OrderedDict([(&#x27;name&#x27;, &#x27;茅台53度飞天茅台500ml&#x27;), (&#x27;sold_num&#x27;, 20), (&#x27;shop_price&#x27;, 1008), (&#x27;goods_brief&#x27;, &#x27;贵州茅台酒厂（集团）保健酒业有限公司生产&#x27;), (&#x27;add_time&#x27;, &#x27;2018-04-25T15:21:23.778587Z&#x27;)])]</span></span><br></pre></td></tr></table></figure>
+<h3 id="5、Saving-instances"><a href="#5、Saving-instances" class="headerlink" title="5、Saving instances"></a>5、Saving instances</h3><p>如果需要把验证过数据返回完整的对象实例，那么需要实现一个或两个 <span style="color:red;">create()</span> 和 <span style="color:red;">update()</span> 方法。例如:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> serializers</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">GoodsSerializer</span>(serializers.Serializer):</span><br><span class="line">    name = serializers.CharField(required=<span class="literal">True</span>, max_length=<span class="number">100</span>)</span><br><span class="line">    sold_num = serializers.IntegerField(default=<span class="number">0</span>)</span><br><span class="line">    shop_price = serializers.IntegerField(default=<span class="number">0</span>)</span><br><span class="line">    goods_brief = serializers.IntegerField()</span><br><span class="line">    add_time = serializers.DateTimeField()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">create</span>(<span class="params">self, validated_data</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        根据接收到的 validated_data 创建一个 Goods 实例</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> Goods.objects.create(**validated_data)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">update</span>(<span class="params">self, instance, validated_data</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        根据接收到的 validated_data 更新并返回一个 Goods 实例</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        instance.name = validated_data.get(<span class="string">&#x27;name&#x27;</span>, instance.name)</span><br><span class="line">        instance.sold_num = validated_data.get(<span class="string">&#x27;sold_num&#x27;</span>, instance.sold_num)</span><br><span class="line">        instance.shop_price = validated_data.get(<span class="string">&#x27;shop_price&#x27;</span>, instance.shop_price)</span><br><span class="line">        instance.goods_brief = validated_data.get(<span class="string">&#x27;goods_brief&#x27;</span>, instance.goods_brief)</span><br><span class="line">        instance.add_time = validated_data.get(<span class="string">&#x27;add_time&#x27;</span>, instance.add_time)</span><br><span class="line">        instance.save()</span><br><span class="line">        <span class="keyword">return</span> instance</span><br></pre></td></tr></table></figure>
+<p><strong>create()</strong> 和 <strong>update()</strong> 方法定义了符合规范的 <strong>Goods</strong> 实例的创建和更新的方法。<br>反序列化数据时，我们可以调用 <strong>save()</strong> 以返回一个基于已验证数据的对象实例。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">good = serializer.save()</span><br></pre></td></tr></table></figure>
+<p>调用 <span style="color:red;">save()</span> 方法会创建一个新实例或更新一个已存在的实例，这取决于在实例化序列化器类时是否传递了一个已存在的实例。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># .save() will create a new instance.</span></span><br><span class="line">serializer = GoodsSerializer(data=data)</span><br><span class="line"></span><br><span class="line"><span class="comment"># .save() will update the existing `good` instance.</span></span><br><span class="line">serializer = GoodsSerializer(good, data=data)</span><br></pre></td></tr></table></figure>
+<p><strong>save()</strong> 方法源码中有下面一段：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">save</span>(<span class="params">self, **kwargs</span>):</span><br><span class="line">	...</span><br><span class="line">	...</span><br><span class="line">	<span class="keyword">if</span> self.instance <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">		self.instance = self.update(self.instance, validated_data)</span><br><span class="line">		<span class="keyword">assert</span> self.instance <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>, (</span><br><span class="line">			<span class="string">&#x27;`update()` did not return an object instance.&#x27;</span></span><br><span class="line">		)</span><br><span class="line">	<span class="keyword">else</span>:</span><br><span class="line">		self.instance = self.create(validated_data)</span><br><span class="line">		<span class="keyword">assert</span> self.instance <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>, (</span><br><span class="line">			<span class="string">&#x27;`create()` did not return an object instance.&#x27;</span></span><br><span class="line">		)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> self.instance</span><br></pre></td></tr></table></figure>
+<p>显然，<strong>serializer.save</strong> 的操作，它去调用了 <strong>serializer</strong> 的 <strong>create</strong> 或 <strong>update</strong> 方法.<br>可以看出具体调用update还是create取决于在实例化序列化器类时是否传递了一个已存在的实例。</p>
+<h3 id="6、Validation"><a href="#6、Validation" class="headerlink" title="6、Validation"></a>6、Validation</h3><p>在对数据进行反序列化时，在尝试访问已验证的数据或保存一个对象实例之前，总是需要先调用 <strong>is_valid()</strong> 方法。<br>如果验证出错，<span style="color:red;">errors</span> 属性就会以字典形式返回错误信息:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">serializer = GoodsSerializer(data=&#123;<span class="string">&#x27;name&#x27;</span>:<span class="string">&#x27;花生豆&#x27;</span>,<span class="string">&#x27;sold_num&#x27;</span>:<span class="string">&#x27;11&#x27;</span>&#125;)</span><br><span class="line">serializer.is_valid()</span><br><span class="line"><span class="comment">#False</span></span><br><span class="line">serializer.errors</span><br><span class="line"><span class="comment">#&#123;&#x27;goods_brief&#x27;: [ErrorDetail(string=&#x27;This field is required.&#x27;, code=&#x27;required&#x27;)], &#x27;add_time&#x27;: [ErrorDetail(string=&#x27;This field is required.&#x27;, code=&#x27;required&#x27;)]&#125;</span></span><br></pre></td></tr></table></figure>
+<h4 id="字段级别验证-Field-level-validation"><a href="#字段级别验证-Field-level-validation" class="headerlink" title="字段级别验证 Field-level validation"></a>字段级别验证 Field-level validation</h4><p>我们在上面提到field，它能起到一定的验证作用，但很明显，它存在很大的局限性，举个简单的例子，我们要判断我们手机号码，如果使用CharField(max_length&#x3D;11, min_length&#x3D;11），它只能确保我们输入的是11个字符，那么我们需要自定义！</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mobile_phone = serializers.CharField(max_length=<span class="number">11</span>, min_length=<span class="number">11</span>）</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">validate_mobile_phone</span>(<span class="params">self, mobile_phone</span>):</span><br><span class="line">    <span class="comment"># 注意参数，self以及字段名</span></span><br><span class="line">    <span class="comment"># 注意函数名写法，validate_ + 字段名字</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> re.<span class="keyword">match</span>(REGEX_MOBILE, mobile):</span><br><span class="line">    <span class="comment"># REGEX_MOBILE表示手机的正则表达式 &quot;^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\\d&#123;8&#125;$&quot;</span></span><br><span class="line">        <span class="keyword">raise</span> serializers.ValidationError(<span class="string">&quot;手机号码非法&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> mobile_phone</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>当然，这里面还可以加入很多逻辑，例如，还可以判断手机是否原本就存在数据库等等。</p>
+<h4 id="对象级别验证-Object-level-validation"><a href="#对象级别验证-Object-level-validation" class="headerlink" title="对象级别验证 Object-level validation"></a>对象级别验证 Object-level validation</h4><p>上面验证方式，只能验证一个字段，如果是两个字段联合在一起进行验证，那么我们就可以重载validate( )方法。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> serializers</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">EventSerializer</span>(serializers.Serializer):</span><br><span class="line">    description = serializers.CharField(max_length=<span class="number">100</span>)</span><br><span class="line">    start = serializers.DateTimeField()</span><br><span class="line">    finish = serializers.DateTimeField()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">validate</span>(<span class="params">self, data</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">		传进来什么参数就返回什么参数，这里用data，也可以用其他</span></span><br><span class="line"><span class="string">        校验结束时间必须大于开始时间</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">if</span> data[<span class="string">&#x27;start&#x27;</span>] &gt; data[<span class="string">&#x27;finish&#x27;</span>]:</span><br><span class="line">            <span class="keyword">raise</span> serializers.ValidationError(<span class="string">&quot;finish must occur after start&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> data</span><br></pre></td></tr></table></figure>
+<h3 id="Validators"><a href="#Validators" class="headerlink" title="Validators"></a>Validators</h3><p>在序列器上的各个字段也可以包括验证器，通过在字段实例上声明它们，如下例:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">multiple_of_ten</span>(<span class="params">value</span>):</span><br><span class="line">    <span class="keyword">if</span> value % <span class="number">10</span> != <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">raise</span> serializers.ValidationError(<span class="string">&#x27;Not a multiple of ten&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">GameRecord</span>(serializers.Serializer):</span><br><span class="line">    score = IntegerField(validators=[multiple_of_ten])</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+<p>当然，Django REST framework提供的 <strong>validators</strong> 还有很好的功能：**UniqueValidator，UniqueTogetherValidator **等.<br><strong>UniqueValidator</strong>: 指定某一个对象是唯一的，如，用户名只能存在唯一：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">username = serializers.CharField(</span><br><span class="line">        max_length=11, </span><br><span class="line">        min_length=11,</span><br><span class="line">        validators=[UniqueValidator(queryset=UserProfile.objects.all())</span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+<p><strong>UniqueTogetherValidator</strong>: 联合唯一<br>序列化类也可以包含用于整体验证的验证器，在 <strong>class Meta</strong> 中声明他们:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">EventSerializer</span>(serializers.Serializer):</span><br><span class="line">    name = serializers.CharField()</span><br><span class="line">    room_number = serializers.IntegerField(choices=[<span class="number">101</span>, <span class="number">102</span>, <span class="number">103</span>, <span class="number">201</span>])</span><br><span class="line">    date = serializers.DateField()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">class</span> <span class="title class_">Meta</span>:</span><br><span class="line">        <span class="comment"># Each room only has one event per day.</span></span><br><span class="line">        validators = UniqueTogetherValidator(</span><br><span class="line">            queryset=Event.objects.<span class="built_in">all</span>(),</span><br><span class="line">            fields=[<span class="string">&#x27;room_number&#x27;</span>, <span class="string">&#x27;date&#x27;</span>]</span><br><span class="line">        )</span><br></pre></td></tr></table></figure>
+
+<h2 id="二、ModelSerializer"><a href="#二、ModelSerializer" class="headerlink" title="二、ModelSerializer"></a>二、ModelSerializer</h2><p>大多数情况下，我们都是基于model字段去开发。因此强烈建议使用 <strong>ModelSerializer</strong> 进行序列化。</p>
+<h3 id="1、创建序列化类"><a href="#1、创建序列化类" class="headerlink" title="1、创建序列化类"></a>1、创建序列化类</h3><p>ModelSerializer提供一种快捷的方法自动创建与模型字段相对应的的 <span style="color:red;">Serializer</span> class.<br>ModelSerializer已经重载了 <strong>create</strong> 与 <strong>update</strong> 方法，它能够满足将 <strong>post</strong> 或 <strong>patch</strong> 上来的数据进行进行直接地创建与更新，除非有额外需求，那么就可以重载create与update方法。<br>ModelSerializer在Meta中设置fields字段，系统会自动进行映射，省去每个字段再写一个field。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> goods.models <span class="keyword">import</span> Goods</span><br><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> serializers</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">GoodsSerializer</span>(serializers.ModelSerializer):</span><br><span class="line">    <span class="keyword">class</span> <span class="title class_">Meta</span>:</span><br><span class="line">        model = Goods</span><br><span class="line">        fields = (<span class="string">&#x27;id&#x27;</span>, <span class="string">&#x27;name&#x27;</span>, <span class="string">&#x27;sold_num&#x27;</span>, <span class="string">&#x27;shop_price&#x27;</span>, <span class="string">&#x27;add_time&#x27;</span>)</span><br><span class="line">		</span><br><span class="line">        <span class="comment"># fields = &#x27;__all__&#x27;: 表示所有字段</span></span><br><span class="line">        <span class="comment"># exclude = (&#x27;add_time&#x27;,):  除去指定的某些字段</span></span><br><span class="line">        <span class="comment"># 这三种方式，存在一个即可</span></span><br></pre></td></tr></table></figure>
+<h3 id="2、ModelSerializer需要解决的2个问题"><a href="#2、ModelSerializer需要解决的2个问题" class="headerlink" title="2、ModelSerializer需要解决的2个问题"></a>2、ModelSerializer需要解决的2个问题</h3><p>某个字段不属于指定model，它是write_only，需要用户传进来，但我们不能对它进行save( )，因为ModelSerializer是基于Model，这个字段在Model中没有对应，这个时候，我们需要重载validate！<br>如在用户注册时，我们需要填写验证码，这个验证码只需要验证，不需要保存到用户这个Model中：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">validate</span>(<span class="params">self, attrs</span>):</span><br><span class="line">	<span class="keyword">del</span> attrs[<span class="string">&quot;code&quot;</span>]</span><br><span class="line">	<span class="keyword">return</span> attrs</span><br></pre></td></tr></table></figure>
+<p>某个字段不属于指定model，它是read_only，只需要将它序列化传递给用户，但是在这个model中，没有这个字段！我们需要用到SerializerMethodField。<br>假设需要返回用户加入这个网站多久了，不可能维持这样加入的天数这样一个数据，一般会记录用户加入的时间点，然后当用户获取这个数据，我们再计算返回给它:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">UserSerializer</span>(serializers.ModelSerializer):  </span><br><span class="line">    days_since_joined = serializers.SerializerMethodField()</span><br><span class="line">    <span class="comment"># 方法写法：get_ + 字段</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">get_days_since_joined</span>(<span class="params">self, obj</span>):</span><br><span class="line">    <span class="comment"># obj指这个model的对象</span></span><br><span class="line">        <span class="keyword">return</span> (now() - obj.date_joined).days</span><br><span class="line"></span><br><span class="line">    <span class="keyword">class</span> <span class="title class_">Meta</span>:</span><br><span class="line">        model = User</span><br></pre></td></tr></table></figure>
+<h2 id="三、外键关联序列化"><a href="#三、外键关联序列化" class="headerlink" title="三、外键关联序列化"></a>三、外键关联序列化</h2><p>实例环境：商品和商品分类，一个商品属于一个分类，一个分类下可能有多个商品。<br><strong>models.py</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">GoodsCategory</span>(models.Model):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    商品类别</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    CATEGORY_TYPE = (</span><br><span class="line">        (<span class="number">1</span>, <span class="string">&quot;一级类目&quot;</span>),</span><br><span class="line">        (<span class="number">2</span>, <span class="string">&quot;二级类目&quot;</span>),</span><br><span class="line">        (<span class="number">3</span>, <span class="string">&quot;三级类目&quot;</span>)</span><br><span class="line">    )</span><br><span class="line">    name = models.CharField(default=<span class="string">&quot;&quot;</span>, max_length=<span class="number">30</span>, verbose_name=<span class="string">&quot;类别名&quot;</span>, help_text=<span class="string">&quot;类别名&quot;</span>)</span><br><span class="line">    code = models.CharField(default=<span class="string">&quot;&quot;</span>, max_length=<span class="number">30</span>, verbose_name=<span class="string">&quot;类别code&quot;</span>, help_text=<span class="string">&quot;类别code&quot;</span>)</span><br><span class="line">    category_type = models.IntegerField(choices=CATEGORY_TYPE, verbose_name=<span class="string">&quot;类目级别&quot;</span>, help_text=<span class="string">&quot;类目级别&quot;</span>)</span><br><span class="line">    add_time = models.DateTimeField(default=datetime.now, verbose_name=<span class="string">&quot;添加时间&quot;</span>)</span><br><span class="line">    <span class="keyword">class</span> <span class="title class_">Meta</span>:</span><br><span class="line">        verbose_name = <span class="string">&quot;商品类别&quot;</span></span><br><span class="line">        verbose_name_plural = verbose_name</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__str__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> self.name</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Goods</span>(models.Model):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    商品详细信息</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    name = models.CharField(max_length=<span class="number">300</span>, verbose_name=<span class="string">&quot;商品名称&quot;</span>)</span><br><span class="line">    sold_num = models.IntegerField(default=<span class="number">0</span>, verbose_name=<span class="string">&quot;商品销售量&quot;</span>)</span><br><span class="line">    shop_price = models.FloatField(default=<span class="number">0</span>, verbose_name=<span class="string">&quot;本店价格&quot;</span>)</span><br><span class="line">    goods_brief = models.TextField(verbose_name=<span class="string">&quot;商品简短描述&quot;</span>)</span><br><span class="line">    add_time = models.DateTimeField(default=datetime.now, verbose_name=<span class="string">&quot;添加时间&quot;</span>)</span><br><span class="line">    category = models.ForeignKey(GoodsCategory, null=<span class="literal">True</span>, blank=<span class="literal">True</span>, verbose_name=<span class="string">&quot;商品类别&quot;</span>,related_name=<span class="string">&#x27;goods&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">class</span> <span class="title class_">Meta</span>:</span><br><span class="line">        verbose_name = <span class="string">&quot;商品&quot;</span></span><br><span class="line">        verbose_name_plural = verbose_name</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__str__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> self.name</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="1、使用serializers-Serializer"><a href="#1、使用serializers-Serializer" class="headerlink" title="1、使用serializers.Serializer"></a>1、使用serializers.Serializer</h3><p>直接用 <strong>PrimaryKeyRelatedField</strong> 就可以<br>在GoodsSerializer中设置如下字段：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">category = serializers.PrimaryKeyRelatedField(queryset=GoodsCategory.objects.<span class="built_in">all</span>(), required=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="2、使用ModelSerializer"><a href="#2、使用ModelSerializer" class="headerlink" title="2、使用ModelSerializer"></a>2、使用ModelSerializer</h3><p>这个更简单，直接通过映射就好了:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> goods.models <span class="keyword">import</span> Goods, GoodsCategory</span><br><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> serializers</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">GoodsCategorySerializer</span>(serializers.ModelSerializer):</span><br><span class="line">    <span class="keyword">class</span> <span class="title class_">Meta</span>:</span><br><span class="line">        model = GoodsCategory</span><br><span class="line">        fields = (<span class="string">&#x27;name&#x27;</span>,<span class="string">&#x27;code&#x27;</span>,<span class="string">&#x27;category_type&#x27;</span>,<span class="string">&#x27;add_time&#x27;</span>,<span class="string">&#x27;goods&#x27;</span>)</span><br><span class="line">		</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">GoodsSerializer</span>(serializers.ModelSerializer):</span><br><span class="line">    <span class="keyword">class</span> <span class="title class_">Meta</span>:</span><br><span class="line">        model = Goods</span><br><span class="line">        fields = <span class="string">&#x27;__all__&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>在Django shell中查看结果:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> goods.serializer <span class="keyword">import</span> GoodsSerializer</span><br><span class="line"><span class="keyword">from</span> goods.models <span class="keyword">import</span> Goods</span><br><span class="line">good = GoodsSerializer(Goods.objects.<span class="built_in">all</span>(),many=<span class="literal">True</span>)</span><br><span class="line">good.data</span><br><span class="line"></span><br><span class="line"><span class="comment">#[OrderedDict([(&#x27;id&#x27;, 2), (&#x27;name&#x27;, &#x27;帐篷出租&#x27;), (&#x27;sold_num&#x27;, 2), (&#x27;shop_price&#x27;, 50.0), (&#x27;goods_brief&#x27;, &#x27;帐篷出租&#x27;), (&#x27;add_time&#x27;, &#x27;2018-04-25T15:03:19.837149Z&#x27;), (&#x27;category&#x27;, 1)]), OrderedDict([(&#x27;id&#x27;, 3), (&#x27;name&#x27;, &#x27;茅台53度飞天茅台500ml&#x27;), (&#x27;sold_num&#x27;, 20), (&#x27;shop_price&#x27;, 1008.0), (&#x27;goods_brief&#x27;, &#x27;贵州茅台酒厂（集团）保健酒业有限公司生产&#x27;), (&#x27;add_time&#x27;, &#x27;2018-04-25T15:21:23.778587Z&#x27;), (&#x27;category&#x27;, 1)])]</span></span><br></pre></td></tr></table></figure>
+<p>不过这样只能获取到商品分类外键的一个ID，并不能获取到商品分类的详细信息，如果需要详细信息，则需要设置嵌套serializer:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">GoodsCategorySerializer</span>(serializers.ModelSerializer):</span><br><span class="line">    <span class="keyword">class</span> <span class="title class_">Meta</span>:</span><br><span class="line">        model = GoodsCategory</span><br><span class="line">        fields = <span class="string">&#x27;__all__&#x27;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">GoodsSerializer</span>(serializers.ModelSerializer):</span><br><span class="line">    category = GoodsCategorySerializer()</span><br><span class="line">    <span class="keyword">class</span> <span class="title class_">Meta</span>:</span><br><span class="line">        model = Goods</span><br><span class="line">        fields = <span class="string">&#x27;__all__&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>查看结果:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> goods.serializer <span class="keyword">import</span> GoodsSerializer</span><br><span class="line"><span class="keyword">from</span> goods.models <span class="keyword">import</span> Goods</span><br><span class="line">good = GoodsSerializer(Goods.objects.<span class="built_in">all</span>(),many=<span class="literal">True</span>)</span><br><span class="line">good.data</span><br><span class="line"></span><br><span class="line"><span class="comment">#[OrderedDict([(&#x27;id&#x27;, 2), (&#x27;category&#x27;, OrderedDict([(&#x27;id&#x27;, 1), (&#x27;name&#x27;, &#x27;水果&#x27;), (&#x27;code&#x27;, &#x27;12321&#x27;), (&#x27;category_type&#x27;, 1), (&#x27;add_time&#x27;, None)])), (&#x27;name&#x27;, &#x27;帐篷出租&#x27;), (&#x27;sold_num&#x27;, 2), (&#x27;shop_price&#x27;, 50.0), (&#x27;goods_brief&#x27;, &#x27;帐篷出租&#x27;), (&#x27;add_time&#x27;, &#x27;2018-04-25T15:03:19.837149Z&#x27;)]), OrderedDict([(&#x27;id&#x27;, 3), (&#x27;category&#x27;, OrderedDict([(&#x27;id&#x27;, 1), (&#x27;name&#x27;, &#x27;水果&#x27;), (&#x27;code&#x27;, &#x27;12321&#x27;), (&#x27;category_type&#x27;, 1), (&#x27;add_time&#x27;, None)])), (&#x27;name&#x27;, &#x27;茅台53度飞天茅台500ml&#x27;), (&#x27;sold_num&#x27;, 20), (&#x27;shop_price&#x27;, 1008.0), (&#x27;goods_brief&#x27;, &#x27;贵州茅台酒厂（集团）保健酒业有限公司生产&#x27;), (&#x27;add_time&#x27;, &#x27;2018-04-25T15:21:23.778587Z&#x27;)])]</span></span><br></pre></td></tr></table></figure>
+<h3 id="3、外键关联反查询"><a href="#3、外键关联反查询" class="headerlink" title="3、外键关联反查询"></a>3、外键关联反查询</h3><p>比如获取某一分类下的所有商品信息，实现外键反向查询。<br><span style="color:red;">关键点: 需要在models外键中设置 <strong>related_name</strong> </span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">GoodsSerializer</span>(serializers.ModelSerializer):</span><br><span class="line">    <span class="keyword">class</span> <span class="title class_">Meta</span>:</span><br><span class="line">        model = Goods</span><br><span class="line">        fields = <span class="string">&#x27;__all__&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">GoodsCategorySerializer</span>(serializers.ModelSerializer):</span><br><span class="line">    goods = GoodsSerializer(many=<span class="literal">True</span>)  <span class="comment"># 一个分类下可能有多个商品，因此一定要加 many=True</span></span><br><span class="line">    <span class="keyword">class</span> <span class="title class_">Meta</span>:</span><br><span class="line">        model = GoodsCategory</span><br><span class="line">        fields = (<span class="string">&#x27;name&#x27;</span>,<span class="string">&#x27;code&#x27;</span>,<span class="string">&#x27;category_type&#x27;</span>,<span class="string">&#x27;add_time&#x27;</span>,<span class="string">&#x27;goods&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>查看结果:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> goods.models <span class="keyword">import</span> GoodsCategory</span><br><span class="line"><span class="keyword">from</span> goods.serializer <span class="keyword">import</span> GoodsCategorySerializer</span><br><span class="line">category = GoodsCategorySerializer(GoodsCategory.objects.<span class="built_in">all</span>(),many=<span class="literal">True</span>)</span><br><span class="line">category.data</span><br><span class="line"></span><br><span class="line"><span class="comment">#[OrderedDict([(&#x27;name&#x27;, &#x27;水果&#x27;), (&#x27;code&#x27;, &#x27;12321&#x27;), (&#x27;category_type&#x27;, 1), (&#x27;add_time&#x27;, None), (&#x27;goods&#x27;, [OrderedDict([(&#x27;id&#x27;, 2), (&#x27;name&#x27;, &#x27;帐篷出租&#x27;), (&#x27;sold_num&#x27;, 2), (&#x27;shop_price&#x27;, 50.0), (&#x27;goods_brief&#x27;, &#x27;帐篷出租&#x27;), (&#x27;add_time&#x27;, &#x27;2018-04-25T15:03:19.837149Z&#x27;), (&#x27;category&#x27;, 1)]), OrderedDict([(&#x27;id&#x27;, 3), (&#x27;name&#x27;, &#x27;茅台53度飞天茅台500ml&#x27;), (&#x27;sold_num&#x27;, 20), (&#x27;shop_price&#x27;, 1008.0), (&#x27;goods_brief&#x27;, &#x27;贵州茅台酒厂（集团）保健酒业有限公司生产&#x27;), (&#x27;add_time&#x27;, &#x27;2018-04-25T15:21:23.778587Z&#x27;), (&#x27;category&#x27;, 1)])])])]</span></span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Serializers/" rel="tag"># Serializers</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/04/16/Elasticsearch%E4%B9%8B%E4%BD%BF%E7%94%A8Logstash%E5%AF%BC%E5%85%A5Mysql%E6%95%B0%E6%8D%AE/" rel="prev" title="Elasticsearch之使用Logstash导入Mysql数据">
+                  <i class="fa fa-chevron-left"></i> Elasticsearch之使用Logstash导入Mysql数据
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/04/26/DRF-GenericViews%E3%80%81ViewSets/" rel="next" title="DRF-GenericViews、ViewSets">
+                  DRF-GenericViews、ViewSets <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

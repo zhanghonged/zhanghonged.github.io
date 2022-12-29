@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="textwrap：通过调整文本中换行出现的位置来格式化段落。textwrap模块用于在需要打印等情况下对文本进行格式化输出，功能上与一些文本编辑器或文字处理相关程序类似。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Text-textwrap">
+<meta property="og:url" content="http://zhanghonged.github.io/2018/06/12/Text-textwrap/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="textwrap：通过调整文本中换行出现的位置来格式化段落。textwrap模块用于在需要打印等情况下对文本进行格式化输出，功能上与一些文本编辑器或文字处理相关程序类似。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-06-12T03:13:24.000Z">
+<meta property="article:modified_time" content="2018-06-12T07:51:03.534Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="textwrap">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2018/06/12/Text-textwrap/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2018/06/12/Text-textwrap/","path":"2018/06/12/Text-textwrap/","title":"Text-textwrap"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Text-textwrap | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E6%95%B0%E6%8D%AE"><span class="nav-number">1.</span> <span class="nav-text">示例数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81%E5%A1%AB%E8%A1%A5%E6%AE%B5%E8%90%BD"><span class="nav-number">2.</span> <span class="nav-text">1、填补段落</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2%E3%80%81%E5%88%A0%E9%99%A4%E5%B7%B2%E5%AD%98%E5%9C%A8%E7%BC%A9%E8%BF%9B"><span class="nav-number">3.</span> <span class="nav-text">2、删除已存在缩进</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3%E3%80%81%E7%BB%93%E5%90%88Dedent%E5%92%8CFill"><span class="nav-number">4.</span> <span class="nav-text">3、结合Dedent和Fill</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4%E3%80%81%E7%BC%A9%E8%BF%9B%E5%9D%97"><span class="nav-number">5.</span> <span class="nav-text">4、缩进块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5%E3%80%81%E6%82%AC%E6%8C%82%E7%BC%A9%E8%BF%9B"><span class="nav-number">6.</span> <span class="nav-text">5、悬挂缩进</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6%E3%80%81%E6%88%AA%E6%96%AD%E9%95%BF%E6%96%87%E6%9C%AC"><span class="nav-number">7.</span> <span class="nav-text">6、截断长文本</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2018/06/12/Text-textwrap/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Text-textwrap | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Text-textwrap
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2018-06-12 11:13:24 / 修改时间：15:51:03" itemprop="dateCreated datePublished" datetime="2018-06-12T11:13:24+08:00">2018-06-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/PyMOTW-3/" itemprop="url" rel="index"><span itemprop="name">PyMOTW-3</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><span style="font-size:1.2em;font-weight:bold">textwrap：通过调整文本中换行出现的位置来格式化段落。</span><br><strong>textwrap</strong>模块用于在需要打印等情况下对文本进行格式化输出，功能上与一些文本编辑器或文字处理相关程序类似。</p>
+<span id="more"></span>
+
+<h2 id="示例数据"><a href="#示例数据" class="headerlink" title="示例数据"></a>示例数据</h2><p>这个示例数据放在<em>textwrap_example.py</em>文件中，里面包含了一个字符串<em>sample_text</em>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># textwrap_example.py</span><br><span class="line">sample_text = &#x27;&#x27;&#x27;</span><br><span class="line">    The textwrap module can be used to format text for output in</span><br><span class="line">    situations where pretty-printing is desired.  It offers</span><br><span class="line">    programmatic functionality similar to the paragraph wrapping</span><br><span class="line">    or filling features found in many text editors.</span><br><span class="line">    &#x27;&#x27;&#x27;</span><br></pre></td></tr></table></figure>
+<h2 id="1、填补段落"><a href="#1、填补段落" class="headerlink" title="1、填补段落"></a>1、填补段落</h2><p><strong>fill()</strong> 函数以文本为输入并将格式化的文本输出。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># textwrap_fill.py</span></span><br><span class="line"><span class="keyword">import</span> textwrap</span><br><span class="line"><span class="keyword">from</span> textwrap_example <span class="keyword">import</span> sample_text</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(textwrap.fill(sample_text, width=<span class="number">50</span>))</span><br></pre></td></tr></table></figure>
+<p>结果是不尽如人意的，目前文本仍然是正常的，但是第一行保留了缩进，并且每个后续行前面的空格都被嵌入在段落中。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ python3 textwrap_fill.py</span><br><span class="line"></span><br><span class="line">     The textwrap module can be used to <span class="built_in">format</span></span><br><span class="line">text <span class="keyword">for</span> output <span class="keyword">in</span>     situations where pretty-</span><br><span class="line">printing <span class="keyword">is</span> desired.  It offers     programmatic</span><br><span class="line">functionality similar to the paragraph wrapping</span><br><span class="line"><span class="keyword">or</span> filling features found <span class="keyword">in</span> many text editors.</span><br></pre></td></tr></table></figure>
+<h2 id="2、删除已存在缩进"><a href="#2、删除已存在缩进" class="headerlink" title="2、删除已存在缩进"></a>2、删除已存在缩进</h2><p>上面例子格式化的并不好，在输出中嵌入了tab和额外的空格。<br>在上面示例文本中通过使用 <strong>dedent()</strong> 方法来移除所有行的公共空白前缀可以产生更好的结果，并且允许代码本身使用 <strong>DocStrings</strong> 或直接在Python代码中嵌入的多行字符串来进行格式化。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># textwrap_dedent.py</span></span><br><span class="line"><span class="keyword">import</span> textwrap</span><br><span class="line"><span class="keyword">from</span> textwrap_example <span class="keyword">import</span> sample_text</span><br><span class="line"></span><br><span class="line">dedented_text = textwrap.dedent(sample_text)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Dedented:&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(dedented_text)</span><br></pre></td></tr></table></figure>
+<p>这样结果看起来好一些:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ python3 textwrap_dedent.py</span><br><span class="line"></span><br><span class="line">Dedented:</span><br><span class="line"></span><br><span class="line">The textwrap module can be used to format text for output in</span><br><span class="line">situations where pretty-printing is desired.  It offers</span><br><span class="line">programmatic functionality similar to the paragraph wrapping</span><br><span class="line">or filling features found in many text editors.</span><br></pre></td></tr></table></figure>
+<p>由于 <em>“dedent”</em> 和 <em>“indent”</em> 是相反含义的两个词，因此输出结果是一个文本块，其中删除了每行中常见的初始空格。<br>如果某一行缩进的比其他行都多一些，导致的结果就是一个空白将不能被删除。<br>输入:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">␣Line one.</span><br><span class="line">␣␣␣Line two.</span><br><span class="line">␣Line three.</span><br></pre></td></tr></table></figure>
+<p>结果:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Line one.</span><br><span class="line">␣␣Line two.</span><br><span class="line">Line three.</span><br></pre></td></tr></table></figure>
+<h2 id="3、结合Dedent和Fill"><a href="#3、结合Dedent和Fill" class="headerlink" title="3、结合Dedent和Fill"></a>3、结合Dedent和Fill</h2><p>下来可以通过<strong>fill()</strong> 传递不同的 <strong>width</strong> 参数来处理 <strong>dedented</strong> 后的文本。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># textwrap_fill_width.py</span></span><br><span class="line"><span class="keyword">import</span> textwrap</span><br><span class="line"><span class="keyword">from</span> textwrap_example <span class="keyword">import</span> sample_text</span><br><span class="line"></span><br><span class="line">dedented_text = textwrap.dedent(sample_text).strip()</span><br><span class="line"><span class="keyword">for</span> width <span class="keyword">in</span> [<span class="number">45</span>, <span class="number">60</span>]:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;&#123;&#125; Columns:\n&#x27;</span>.<span class="built_in">format</span>(width))</span><br><span class="line">    <span class="built_in">print</span>(textwrap.fill(dedented_text, width=width))</span><br><span class="line">    <span class="built_in">print</span>()</span><br></pre></td></tr></table></figure>
+<p>产生指定宽度的输出:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$ python3 textwrap_fill_width.py</span><br><span class="line"></span><br><span class="line">45 Columns:</span><br><span class="line"></span><br><span class="line">The textwrap module can be used to format</span><br><span class="line">text for output in situations where pretty-</span><br><span class="line">printing is desired.  It offers programmatic</span><br><span class="line">functionality similar to the paragraph</span><br><span class="line">wrapping or filling features found in many</span><br><span class="line">text editors.</span><br><span class="line"></span><br><span class="line">60 Columns:</span><br><span class="line"></span><br><span class="line">The textwrap module can be used to format text for output in</span><br><span class="line">situations where pretty-printing is desired.  It offers</span><br><span class="line">programmatic functionality similar to the paragraph wrapping</span><br><span class="line">or filling features found in many text editors.</span><br></pre></td></tr></table></figure>
+<h2 id="4、缩进块"><a href="#4、缩进块" class="headerlink" title="4、缩进块"></a>4、缩进块</h2><p><strong>indent()</strong> 函数可以为字符串所用行添加一直的前缀。下面示例给每行添加 <strong>&gt;</strong> 开头的前缀：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># textwrap_indent.py</span></span><br><span class="line"><span class="keyword">import</span> textwrap</span><br><span class="line"><span class="keyword">from</span> textwrap_example <span class="keyword">import</span> sample_text</span><br><span class="line"></span><br><span class="line">dedented_text = textwrap.dedent(sample_text)</span><br><span class="line">wrapped = textwrap.fill(dedented_text, width=<span class="number">50</span>)</span><br><span class="line">wrapped += <span class="string">&#x27;\n\nSecond paragraph after a blank line.&#x27;</span></span><br><span class="line">final = textwrap.indent(wrapped, <span class="string">&#x27;&gt; &#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Quoted block:\n&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(final)</span><br></pre></td></tr></table></figure>
+<p>整个文本块在换行符上被分割，前缀被添加到文本的每一行中，然后这些行被合并到一个新的字符串中并返回。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ python3 textwrap_indent.py</span><br><span class="line"></span><br><span class="line">Quoted block:</span><br><span class="line"></span><br><span class="line">&gt;  The textwrap module can be used to format text</span><br><span class="line">&gt; for output in situations where pretty-printing is</span><br><span class="line">&gt; desired.  It offers programmatic functionality</span><br><span class="line">&gt; similar to the paragraph wrapping or filling</span><br><span class="line">&gt; features found in many text editors.</span><br><span class="line"></span><br><span class="line">&gt; Second paragraph after a blank line.</span><br></pre></td></tr></table></figure>
+<p>给 <strong>indent()</strong> 函数传递 <strong>predicate</strong> 参数可以控制哪一行可以接收一个新的前缀。依次作用于每一行，对返回值为 <strong>true</strong> 的行添加前缀。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># textwrap_indent_predicate.py</span></span><br><span class="line"><span class="keyword">import</span> textwrap</span><br><span class="line"><span class="keyword">from</span> textwrap_example <span class="keyword">import</span> sample_text</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">should_indent</span>(<span class="params">line</span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;Indent &#123;!r&#125;?&#x27;</span>.<span class="built_in">format</span>(line))</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">len</span>(line.strip()) % <span class="number">2</span> == <span class="number">0</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">dedented_text = textwrap.dedent(sample_text)</span><br><span class="line">wrapped = textwrap.fill(dedented_text, width=<span class="number">50</span>)</span><br><span class="line">final = textwrap.indent(wrapped, <span class="string">&#x27;EVEN &#x27;</span>,</span><br><span class="line">                        predicate=should_indent)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;\nQuoted block:\n&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(final)</span><br></pre></td></tr></table></figure>
+<p>结果为给偶数字符的行添加EVEN前缀:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$ python3 textwrap_indent_predicate.py</span><br><span class="line"></span><br><span class="line">Indent &#x27; The textwrap module can be used to format text\n&#x27;?</span><br><span class="line">Indent &#x27;for output in situations where pretty-printing is\n&#x27;?</span><br><span class="line">Indent &#x27;desired.  It offers programmatic functionality\n&#x27;?</span><br><span class="line">Indent &#x27;similar to the paragraph wrapping or filling\n&#x27;?</span><br><span class="line">Indent &#x27;features found in many text editors.&#x27;?</span><br><span class="line"></span><br><span class="line">Quoted block:</span><br><span class="line"></span><br><span class="line">EVEN  The textwrap module can be used to format text</span><br><span class="line">for output in situations where pretty-printing is</span><br><span class="line">EVEN desired.  It offers programmatic functionality</span><br><span class="line">EVEN similar to the paragraph wrapping or filling</span><br><span class="line">EVEN features found in many text editors.</span><br></pre></td></tr></table></figure>
+<h2 id="5、悬挂缩进"><a href="#5、悬挂缩进" class="headerlink" title="5、悬挂缩进"></a>5、悬挂缩进</h2><p>悬挂缩进是一种类型设置样式，其中段落中的所有行都应该缩进，除了第一行。<br>控制第一行的缩进独立于后续的所有行，用同样的方式来控制输出宽度：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># textwrap_hanging_indent.py</span></span><br><span class="line"><span class="keyword">import</span> textwrap</span><br><span class="line"><span class="keyword">from</span> textwrap_example <span class="keyword">import</span> sample_text</span><br><span class="line"></span><br><span class="line">dedented_text = textwrap.dedent(sample_text).strip()</span><br><span class="line"><span class="built_in">print</span>(textwrap.fill(dedented_text,</span><br><span class="line">                    initial_indent=<span class="string">&#x27;&#x27;</span>,</span><br><span class="line">                    subsequent_indent=<span class="string">&#x27; &#x27;</span> * <span class="number">4</span>,</span><br><span class="line">                    widt</span><br></pre></td></tr></table></figure>
+<p>这样便生成一个第一行缩进小于其他所有行的悬挂式缩进:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ python3 textwrap_hanging_indent.py</span><br><span class="line"></span><br><span class="line">The textwrap module can be used to format text for</span><br><span class="line">    output in situations where pretty-printing is</span><br><span class="line">    desired.  It offers programmatic functionality</span><br><span class="line">    similar to the paragraph wrapping or filling</span><br><span class="line">    features found in many text editors.</span><br></pre></td></tr></table></figure>
+<p>缩进的值允许设置为非空白字符。</p>
+<h2 id="6、截断长文本"><a href="#6、截断长文本" class="headerlink" title="6、截断长文本"></a>6、截断长文本</h2><p><strong>shorten()</strong> 函数可以截断文本创建一个概要或预览。<br>所有存在的空白，如制表符、换行符和多个空格组合都将标准化为一个单独的空格。然后文本被截断为小于或等于所原始长度。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># textwrap_shorten.py</span></span><br><span class="line"><span class="keyword">import</span> textwrap</span><br><span class="line"><span class="keyword">from</span> textwrap_example <span class="keyword">import</span> sample_text</span><br><span class="line"></span><br><span class="line">dedented_text = textwrap.dedent(sample_text)</span><br><span class="line">original = textwrap.fill(dedented_text, width=<span class="number">50</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Original:\n&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(original)</span><br><span class="line"></span><br><span class="line">shortened = textwrap.shorten(original, <span class="number">100</span>)</span><br><span class="line">shortened_wrapped = textwrap.fill(shortened, width=<span class="number">50</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;\nShortened:\n&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(shortened_wrapped)</span><br></pre></td></tr></table></figure>
+<p>如果将非空白文本作为截断的一部分从原始文本中删除，则将其替换为占位符值。默认值是[…]，<strong>shorten()</strong> 可以通过传递一个 **placeholder ** 参数来替换。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$ python3 textwrap_shorten.py</span><br><span class="line"></span><br><span class="line">Original:</span><br><span class="line"></span><br><span class="line"> The textwrap module can be used to format text</span><br><span class="line">for output in situations where pretty-printing is</span><br><span class="line">desired.  It offers programmatic functionality</span><br><span class="line">similar to the paragraph wrapping or filling</span><br><span class="line">features found in many text editors.</span><br><span class="line"></span><br><span class="line">Shortened:</span><br><span class="line"></span><br><span class="line">The textwrap module can be used to format text for</span><br><span class="line">output in situations where pretty-printing [...]</span><br></pre></td></tr></table></figure>
+<p><span style="font-weight:bold;color:#000080">备注:<span><br><a target="_blank" rel="noopener" href="https://docs.python.org/3.6/library/textwrap.html">Standard library documentation for textwrap</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"># python</a>
+              <a href="/tags/textwrap/" rel="tag"># textwrap</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/06/11/Text-string/" rel="prev" title="Text-string">
+                  <i class="fa fa-chevron-left"></i> Text-string
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/06/12/Text-difflib/" rel="next" title="Text-difflib">
+                  Text-difflib <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

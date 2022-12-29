@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Service介绍　　Kubernetes的Pods是平凡的，可创建可销毁而且不可再生。　　ReplicationController的特别之处是可以动态创建和销毁Pods(扩容 or 缩容 or 更新)。　　虽然pods有他们单独的ip，但是他们的ip并不能得到稳定的保证，这将会导致一个问题：如果在kubernetes集群中有一些pods（backends）为另一些pods（frontend）提">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes之Service介绍">
+<meta property="og:url" content="http://zhanghonged.github.io/2016/06/08/Kubernetes%E4%B9%8BService%E4%BB%8B%E7%BB%8D/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="Service介绍　　Kubernetes的Pods是平凡的，可创建可销毁而且不可再生。　　ReplicationController的特别之处是可以动态创建和销毁Pods(扩容 or 缩容 or 更新)。　　虽然pods有他们单独的ip，但是他们的ip并不能得到稳定的保证，这将会导致一个问题：如果在kubernetes集群中有一些pods（backends）为另一些pods（frontend）提">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/k8s-svc-1.png">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/k8s-svc-2.png">
+<meta property="article:published_time" content="2016-06-08T03:47:45.000Z">
+<meta property="article:modified_time" content="2016-08-10T06:14:56.189Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="k8s">
+<meta property="article:tag" content="service">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://zhanghonged.github.io/uploads/k8s-svc-1.png">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2016/06/08/Kubernetes%E4%B9%8BService%E4%BB%8B%E7%BB%8D/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2016/06/08/Kubernetes%E4%B9%8BService%E4%BB%8B%E7%BB%8D/","path":"2016/06/08/Kubernetes之Service介绍/","title":"Kubernetes之Service介绍"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Kubernetes之Service介绍 | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Service%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">Service介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E4%B8%80%E4%B8%AAservice"><span class="nav-number">2.</span> <span class="nav-text">定义一个service</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B2%A1%E6%9C%89%E9%80%89%E6%8B%A9%E5%99%A8%E7%9A%84Services"><span class="nav-number">3.</span> <span class="nav-text">没有选择器的Services</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%99%9A%E6%8B%9FIPs%E5%92%8Cservice%E4%BB%A3%E7%90%86%EF%BC%88Virtual-IPs-and-service-proxies%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">虚拟IPs和service代理（Virtual IPs and service proxies）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F%EF%BC%9Auserspace"><span class="nav-number">4.1.</span> <span class="nav-text">代理模式：userspace</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F%EF%BC%9Aiptables"><span class="nav-number">4.2.</span> <span class="nav-text">代理模式：iptables</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IPs-and-VIPs"><span class="nav-number">5.</span> <span class="nav-text">IPs and VIPs</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#userspace"><span class="nav-number">5.1.</span> <span class="nav-text">userspace</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#iptables"><span class="nav-number">5.2.</span> <span class="nav-text">iptables</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E7%AB%AF%E5%8F%A3%E6%9C%8D%E5%8A%A1-Multi-Port-Services"><span class="nav-number">6.</span> <span class="nav-text">多端口服务(Multi-Port Services)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89clusterIP%E5%9C%B0%E5%9D%80"><span class="nav-number">7.</span> <span class="nav-text">自定义clusterIP地址</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E9%80%82%E7%94%A8DNS%E8%BD%AE%E8%AF%A2"><span class="nav-number">8.</span> <span class="nav-text">为什么不适用DNS轮询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0-Discovering-services"><span class="nav-number">9.</span> <span class="nav-text">服务发现(Discovering services)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="nav-number">9.1.</span> <span class="nav-text">环境变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DNS"><span class="nav-number">9.2.</span> <span class="nav-text">DNS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Headless-Services"><span class="nav-number">9.3.</span> <span class="nav-text">Headless Services</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Services%E5%8F%91%E5%B8%83-service%E7%B1%BB%E5%9E%8B"><span class="nav-number">10.</span> <span class="nav-text">Services发布-service类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NodePort%E7%B1%BB%E5%9E%8B"><span class="nav-number">11.</span> <span class="nav-text">NodePort类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LoadBalancer%E7%B1%BB%E5%9E%8B"><span class="nav-number">12.</span> <span class="nav-text">LoadBalancer类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%96%E9%83%A8IPs"><span class="nav-number">13.</span> <span class="nav-text">外部IPs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8D%E8%B6%B3%E4%B9%8B%E5%A4%84"><span class="nav-number">14.</span> <span class="nav-text">不足之处</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2016/06/08/Kubernetes%E4%B9%8BService%E4%BB%8B%E7%BB%8D/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Kubernetes之Service介绍 | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Kubernetes之Service介绍
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-06-08 11:47:45" itemprop="dateCreated datePublished" datetime="2016-06-08T11:47:45+08:00">2016-06-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2016-08-10 14:14:56" itemprop="dateModified" datetime="2016-08-10T14:14:56+08:00">2016-08-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="Service介绍"><a href="#Service介绍" class="headerlink" title="Service介绍"></a>Service介绍</h2><p>　　Kubernetes的Pods是平凡的，可创建可销毁而且不可再生。<br>　　ReplicationController的特别之处是可以动态创建和销毁Pods(扩容 or 缩容 or 更新)。<br>　　虽然pods有他们单独的ip，但是他们的ip并不能得到稳定的保证，这将会导致一个问题：如果在kubernetes集群中有一些pods（backends）为另一些pods（frontend）提供一些功能，如何能保证frontend能够找到并且链接到backends。</p>
+<span id="more"></span>
+
+<p><strong>引入Services</strong><br>　　kubernetes services是一个抽象的概念，定义了如何和一组pods相关联—— 有时候叫做“micro-service”。一个service通过Label Selector来筛选出一组pods（下文会说明什么情况下不需要selector）。<br>　　举个例子，设想一个拥有三个节点的图片处理backend，这三个节点都可以随时替代——frontend并不关系链接的是哪一个。即使组成backend的pods发生了变动，frontend也不必关心连接到哪个backend。services将frontend和backend的链接关系解耦。<br>　　对于kubernetes本身的应用来说，kubernetes提供了一个简单的endpoint 的api，对于非kubernetes本身的应用，kubernetes为servicet提供了一个解决方案，通过一个设定vip的bridge来链接pods。</p>
+<h2 id="定义一个service"><a href="#定义一个service" class="headerlink" title="定义一个service"></a>定义一个service</h2><p>　　在kubernetes中，services和pods一样都是一个REST对象。同其他的REST对象一样，通过POST来创建一个service。<br>比如，有一组pods，每个pod对外暴露9376端口 他们的label为“app&#x3D;MyApp”：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;kind&quot;: &quot;Service&quot;,</span><br><span class="line">    &quot;apiVersion&quot;: &quot;v1&quot;,</span><br><span class="line">    &quot;metadata&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;my-service&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;spec&quot;: &#123;</span><br><span class="line">        &quot;selector&quot;: &#123;</span><br><span class="line">            &quot;app&quot;: &quot;MyApp&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;ports&quot;: [</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;protocol&quot;: &quot;TCP&quot;,</span><br><span class="line">                &quot;port&quot;: 80,</span><br><span class="line">                &quot;targetPort&quot;: 9376</span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个JSON定义文件将创建一个新的名字为”my-service”的Service对象，暴露端口为9376并且label为“app&#x3D;MyApp”的Pod都会被指向。<br>这个service将会被分配到一个IP(clusterIP)，service用这个ip作为代理，service的selector将会一直对pods进行筛选，并将起pods结果放入一个也焦作“my-service”的Endpoints中。<br>注意：一个service可能将流量引入到任何一个targetPost，默认targetPort字段和port字段是相同的。<br>有趣的是targetPort 也可以是一个string，可以设定为是一组pods所映射port的name。在每个pod中，这个name所对应的真实port都可以不同。<br>这为部署和升级service带来了很大的灵活性。比如你可以在后端软件的下一个版本中更改pods暴露的端口号而不中断客户访问。<br>Kubernetes Services支持TCP和UDP协议，默认是TCP。</p>
+<h2 id="没有选择器的Services"><a href="#没有选择器的Services" class="headerlink" title="没有选择器的Services"></a>没有选择器的Services</h2><p>Services通常是链接pods的一个抽象层，但是service也可以作用在其他类型的backend。比如：</p>
+<ul>
+<li>在生产环境中你想要一个外部的数据库集群，但是测试环境中用的是自己的数据库。</li>
+<li>你想要一个service指向另外一个namespace或其他cluster中的一个service。</li>
+<li>希望将非kubernetes的工作代码环境迁移到kubernetes中。</li>
+</ul>
+<p>在以上任意一个情景中，都可以使用到不指定selector的service：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;kind&quot;: &quot;Service&quot;,</span><br><span class="line">    &quot;apiVersion&quot;: &quot;v1&quot;,</span><br><span class="line">    &quot;metadata&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;my-service&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;spec&quot;: &#123;</span><br><span class="line">        &quot;ports&quot;: [</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;protocol&quot;: &quot;TCP&quot;,</span><br><span class="line">                &quot;port&quot;: 80,</span><br><span class="line">                &quot;targetPort&quot;: 9376</span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在这个例子中，因为没有使用到selector，因此没有一个明确的Endpoint对象被创建。 因此需要手动的将service映射到对应的endpoint：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;kind&quot;: &quot;Endpoints&quot;,</span><br><span class="line">    &quot;apiVersion&quot;: &quot;v1&quot;,</span><br><span class="line">    &quot;metadata&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;my-service&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;subsets&quot;: [</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;addresses&quot;: [</span><br><span class="line">                &#123; &quot;ip&quot;: &quot;1.2.3.4&quot; &#125;</span><br><span class="line">            ],</span><br><span class="line">            &quot;ports&quot;: [</span><br><span class="line">                &#123; &quot;port&quot;: 9376 &#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>无论有没有selector都不会影响这个service，其router指向了这个endpoint（在本例中为1.2.3.4：80）。<br><strong>注意：</strong>endpoint IPs不能设置成环回地址(127.0.0.1&#x2F;8)，或本地链接地址(169.254.0.0&#x2F;16),或组播地址(224.0.0.0&#x2F;24)。</p>
+<h2 id="虚拟IPs和service代理（Virtual-IPs-and-service-proxies）"><a href="#虚拟IPs和service代理（Virtual-IPs-and-service-proxies）" class="headerlink" title="虚拟IPs和service代理（Virtual IPs and service proxies）"></a>虚拟IPs和service代理（Virtual IPs and service proxies）</h2><p>　　Kubernetes中的每个node节点都运行一个kube-proxy服务。此服务是用于为Services实现虚拟IP。<br>Kubernetes V1.0版本中代理完全在使用userspace，V1.1版本中添加了iptables代理，V1.2版本中iptables代理已经是默认设置了。<br>在Kubernetes V1.0中Services是工作在3层(TCP&#x2F;UDP over IP)，V1.2中是工作在7层(HTTP)。</p>
+<h3 id="代理模式：userspace"><a href="#代理模式：userspace" class="headerlink" title="代理模式：userspace"></a>代理模式：userspace</h3><p>　　此模式下，kube-proxy进程从服务(Kubernetes master)进程那边拿到Service和Endpoint对象的变化。对每一个Service, 它在本地打开一个port(随机选择)。任何连接这个本地port的请求都会转到backend后的随机一个pod，service中的字段SessionAffinity决定了使用backend的哪个pod。最后在本地建立一些iptables规则，这样访问service的cluster ip以及对应的port时，就能将请求映射到后端的pod中。<br>　　最终的结果就是，任何对service的请求都能被映射到正确的pod中，而client不需要关心kubernetes、service或pod的其他信息。<br>默认情况下，后端选择是轮询的，可以设置service.spec.sessionAffinity 成”ClientIP”来指定同一个ClientIP的流量代理到同一个后端。(默认设置为None)</p>
+<p><img src="/uploads/k8s-svc-1.png" alt="services-userspace-overview"></p>
+<h3 id="代理模式：iptables"><a href="#代理模式：iptables" class="headerlink" title="代理模式：iptables"></a>代理模式：iptables</h3><p>　　此模式下，kube-proxy进程从服务(Kubernetes master)进程那边拿到Service和Endpoint对象的变化。为每个Service创建一个iptables规则，把访问Service的Cluster IP和端口的流量重定向到后端Pod中的一个。为每个选择后端Pod的Endpoints对象都创建iptables规则。<br>　　默认情况下，后端选择是随机的，可以设置service.spec.sessionAffinity 成”ClientIP”来指定同一个ClientIP的流量代理到同一个后端。(默认设置为None)。<br>相比于userspace代理，最终的结果就是，任何对service的请求都能被映射到正确的pod中，而client不需要关心kubernetes、service或pod的其他信息。这种方式更快和更可靠相比于userspace代理。<br><img src="/uploads/k8s-svc-2.png" alt="services-iptables-overview"></p>
+<h2 id="IPs-and-VIPs"><a href="#IPs-and-VIPs" class="headerlink" title="IPs and VIPs"></a>IPs and VIPs</h2><p>　　不同于Pod IP地址路由到一个真实的目的地。Servie IPS并不是由一个真实的单一主机应答，我们使用iptables定义一个虚拟IP地址可以按需透明的映射。当客户端连接到这个虚拟IP，连接自动跳转到一个合适的endpoint。Services的环境变量和DNS确实真真实实的依据于Services的虚拟IP和Port上。<br>支持两种代理模式：userspace和iptables，操作方式略有不同。</p>
+<h3 id="userspace"><a href="#userspace" class="headerlink" title="userspace"></a>userspace</h3><p>　　作为一个例子，考虑上述描述的图像处理例子，当我们的service被创建时，Kubernetes会给它分配一个虚拟IP地址，比如：10.0.0.1，假设service的端口是1234，cluster内的所以kube-proxy都会注意到这个service。当一个kube-proxy发现一个新的service，会在本地节点随机开启一个端口，创建一个从虚拟IP地址到这个新开端口的iptables映射规则，开始接收到达这个service的连接。<br>　　当一个客户端连接到虚拟IP地址的时候，iptables开始起作用，把数据包重定向到Service kube-proxy自己的端口上，然后kube-proxy随机选择一个后端pod，并开始代理从客户端到后端的访问。<br>这意味着Service拥有者可以选择任何的他们想要的没有风险的端口，客户端只需要简单的连接到一个IP和端口，而不知道他们正在访问哪个真实的Pod。</p>
+<h3 id="iptables"><a href="#iptables" class="headerlink" title="iptables"></a>iptables</h3><p>　　再次考虑上述图像处理应用，当后端service创建的时候，Kubernetes master给分配一个虚拟IP地址，比如：10.0.0.1，假设service的端口是1234，此service被cluster中所有kube-proxy实例发现。当一个kube-proxy发现一个新的service，将会创建一系列iptables规则从虚拟IP重定向到per-Service，per-Service规则链接到per-Endpoint规则（通过Destination NAT重定向到后端）。<br>　　当一个客户端连接到虚拟IP地址的时候，后端选择后(无论是依靠session affinity还是随机)通过iptables规则将数据包重定向到后端。不同于userspace代理，数据包永远不会经过userspace，kube-proxy并没有为虚拟IP工作，所以客户端的IP是不会变得。<br>　　以同样的基本流程执行，访问通过一个node-port或者load-balancer连接进来时，在这种环境配置下，客户端IP是不会改变的。</p>
+<h2 id="多端口服务-Multi-Port-Services"><a href="#多端口服务-Multi-Port-Services" class="headerlink" title="多端口服务(Multi-Port Services)"></a>多端口服务(Multi-Port Services)</h2><p>　　一些Services需要暴漏多于一个端口，这种情况下Kubernetes支持在一个service对象中定义多个端口。<br>注意，使用multi-port时，必须为每个port设定name,这样endpoints才能消除歧义。如下面例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;kind&quot;: &quot;Service&quot;,</span><br><span class="line">    &quot;apiVersion&quot;: &quot;v1&quot;,</span><br><span class="line">    &quot;metadata&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;my-service&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;spec&quot;: &#123;</span><br><span class="line">        &quot;selector&quot;: &#123;</span><br><span class="line">            &quot;app&quot;: &quot;MyApp&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;ports&quot;: [</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;name&quot;: &quot;http&quot;,</span><br><span class="line">                &quot;protocol&quot;: &quot;TCP&quot;,</span><br><span class="line">                &quot;port&quot;: 80,</span><br><span class="line">                &quot;targetPort&quot;: 9376</span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;name&quot;: &quot;https&quot;,</span><br><span class="line">                &quot;protocol&quot;: &quot;TCP&quot;,</span><br><span class="line">                &quot;port&quot;: 443,</span><br><span class="line">                &quot;targetPort&quot;: 9377</span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="自定义clusterIP地址"><a href="#自定义clusterIP地址" class="headerlink" title="自定义clusterIP地址"></a>自定义clusterIP地址</h2><p>　　用户可以为service指定自己的cluster ip，这样做的话需要设置spec.clusterIP字段。<br>如果你有一个已存在的DNS记录想要替换，或者现有遗留系统已经配置了一个IP地址而且难以重新配置。用户设定的ip必须是一个有效的ip，必须符合service_cluster_ip_range 范围，，这个范围是flag向apiserver定义的。<br>如果ip不合符上述规定，apiserver将会返回422。</p>
+<h2 id="为什么不适用DNS轮询"><a href="#为什么不适用DNS轮询" class="headerlink" title="为什么不适用DNS轮询"></a>为什么不适用DNS轮询</h2><p>一个问题不时的出现，为什么我们做这么多对于虚拟IPs而不是使用标准DNS轮询，有以下几个理由：</p>
+<ul>
+<li>已经拥有很长历史的DNS库不会太注意DNS TTL 并且会缓存name lookup的结果。</li>
+<li>许多应用只做一次name lookup并且将结果缓存。</li>
+<li>即使app和dns库做了很好的解决，client对dns做一遍又一遍的轮询将会增加管理的复杂度。</li>
+</ul>
+<p>我们做这些避免用户做那些作死的行为，但是，如果真有那么多用户要求，我们会提供这样的选择。</p>
+<h2 id="服务发现-Discovering-services"><a href="#服务发现-Discovering-services" class="headerlink" title="服务发现(Discovering services)"></a>服务发现(Discovering services)</h2><p>Kubernetes支持两种方式来发现一个Service，环境变量和DNS。</p>
+<h3 id="环境变量"><a href="#环境变量" class="headerlink" title="环境变量"></a>环境变量</h3><p>　　当kubelet在某个节点上启动一个Pod时，它会给这个Pod的容器为当前运行的Service设置一系列环境变量，这样Pod就可以访问这些Service了。<br>对于每个运行的pod，kubelet将为其添加现有service的全局变量，支持Docker links compatible变量 以及 简单的{SVCNAME}_SERVICE_HOST and {SVCNAME}_SERVICE_PORT变量。其中{SVCNAME}是Service名字变成大写，中划线变成下划线。<br>比如，叫做”redis-master“的service，对外映射6379端口，已经被分配一个ip，10.0.0.11，那么将会产生如下的全局变量：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">REDIS_MASTER_SERVICE_HOST=10.0.0.11</span><br><span class="line">REDIS_MASTER_SERVICE_PORT=6379</span><br><span class="line">REDIS_MASTER_PORT=tcp://10.0.0.11:6379</span><br><span class="line">REDIS_MASTER_PORT_6379_TCP=tcp://10.0.0.11:6379</span><br><span class="line">REDIS_MASTER_PORT_6379_TCP_PROTO=tcp</span><br><span class="line">REDIS_MASTER_PORT_6379_TCP_PORT=6379</span><br><span class="line">REDIS_MASTER_PORT_6379_TCP_ADDR=10.0.0.11</span><br></pre></td></tr></table></figure>
+<p>这意味着一个顺序依赖——service要想被pod使用，必须比pod先建立，否则这些service环境变量不会构建在pod中。DNS没有这些限制。</p>
+<h3 id="DNS"><a href="#DNS" class="headerlink" title="DNS"></a>DNS</h3><p>　　一个可选的扩展（强烈建议）是DNS server。DNS server通过kubernetes api server来观测是否有新service建立，并为其建立对应的dns记录。如果集群已经enable DNS，那么pod可以自动对service做name解析。<br>比如说我们在Kubernetes 名字空间”my-ns”中有个叫my-service的服务，DNS服务会创建一条”my-service.my-ns”的DNS记录。同在这个命名空间的Pod就可以通过”my-service”来得到这个Service分配到的Cluster IP，在其它命名空间的Pod则可以用全限定名”my-service.my-ns”来获得这个Service的地址。</p>
+<h3 id="Headless-Services"><a href="#Headless-Services" class="headerlink" title="Headless Services"></a>Headless Services</h3><p>　　有时你不需要ServicesIP或者希望负载均衡一个单一的Service，这种情况下你可以通过配置cluster IP为None(spec.clusterIP)创建一个headless service。<br>　　对于这样的service，不会为他们分配一个ip，也不会在pod中创建其对应的全局变量。DNS则会为service 的name添加一系列的A记录，直接指向后端映射的pod。此外，kube proxy也不会处理这类service，没有负载均衡也没有请求映射。endpoint controller则会依然创建对应的endpoint。<br>　　这个操作目的是为了用户想减少对kubernetes系统的依赖，比如想自己实现自动发现机制等等。Application可以通过api轻松的结合其他自动发现系统。。</p>
+<h2 id="Services发布-service类型"><a href="#Services发布-service类型" class="headerlink" title="Services发布-service类型"></a>Services发布-service类型</h2><p>　　对于一些应用程序你希望将部分Service暴漏为外部IP地址(在cluster外部，比如公网地址)，其他service只有在cluster内部才可见。<br>Kubernetes ServiceTypes允许你定义自己想要的服务类型。默认为基本类型ClusterIP，将service暴漏在cluster内部并且只有在内部才能连接。<br>NodePort和LoadBalancer是两种将服务暴漏在外部的类型。<br>ServiceType字段的有效值：</p>
+<ul>
+<li>ClusterIP：使用一个cluster内部IP-这个是默认配置。选择这个值意味着你的服务只可以在cluster内部被访问到。</li>
+<li>NodePort：除了使用cluster ip外，也将service的port映射到每个node的一个指定内部port上，可以使用任何&lt;NodeIP&gt;:NodePort 地址访问服务。</li>
+<li>LoadBalancer：使用一个ClusterIP &amp; NodePort，但是会向cloud provider申请映射到service本身的负载均衡。</li>
+</ul>
+<h2 id="NodePort类型"><a href="#NodePort类型" class="headerlink" title="NodePort类型"></a>NodePort类型</h2><p>　　如果设置类型字段为NodePort，Kubernetes master就会从flag-configured范围内(默认:30000-32767)定位一个端口，并且cluster里的每个node节点都会代理这个端口(每个node上端口号相同)。这个端口可以在Services的spec.ports[<em>].nodePort字段配置。<br>　　如果你想要指定一个特定的端口号，可以指定nodePort字段的值。系统将分配这个端口号或者接口处理失败(你必须要关注可能的端口冲突)，这个端口号设定的时候必须包含在上面说的范围内。<br>这样就方便了开发者使用自己的负载均衡方案。Kubernetes并非完全支持配置高级云环境，而只是直接暴露一个或多个nodes的IPs。<br>注意，这项服务在:spec.ports[</em>].nodePort可见。</p>
+<h2 id="LoadBalancer类型"><a href="#LoadBalancer类型" class="headerlink" title="LoadBalancer类型"></a>LoadBalancer类型</h2><p>　　指定服务类型为负载平衡会分配用于在服务pods之间分布传入流量的云负载均衡器。<br>　　如果在一个cloud provider中部署使用service，将type地段设置为LoadBalancer将会使service使用人家提供的负载均衡。这样会异步的来创建service的负载均衡，在service配置的status.loadBalancer字段中，描述了所使用被提供负载均衡的详细信息，如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;kind&quot;: &quot;Service&quot;,</span><br><span class="line">    &quot;apiVersion&quot;: &quot;v1&quot;,</span><br><span class="line">    &quot;metadata&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;my-service&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;spec&quot;: &#123;</span><br><span class="line">        &quot;selector&quot;: &#123;</span><br><span class="line">            &quot;app&quot;: &quot;MyApp&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;ports&quot;: [</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;protocol&quot;: &quot;TCP&quot;,</span><br><span class="line">                &quot;port&quot;: 80,</span><br><span class="line">                &quot;targetPort&quot;: 9376,</span><br><span class="line">                &quot;nodePort&quot;: 30061</span><br><span class="line">            &#125;</span><br><span class="line">        ],</span><br><span class="line">        &quot;clusterIP&quot;: &quot;10.0.171.239&quot;,</span><br><span class="line">        &quot;loadBalancerIP&quot;: &quot;78.11.24.19&quot;,</span><br><span class="line">        &quot;type&quot;: &quot;LoadBalancer&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;status&quot;: &#123;</span><br><span class="line">        &quot;loadBalancer&quot;: &#123;</span><br><span class="line">            &quot;ingress&quot;: [</span><br><span class="line">                &#123;</span><br><span class="line">                    &quot;ip&quot;: &quot;146.148.47.155&quot;</span><br><span class="line">                &#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样外部的负载均衡方案将会直接作用在后端的pod上。<br>只有特定的云服务供应商和Google Container Engineand支持负载均衡器解决方案，如果你在你自己的基础设施上运行Kubernetes，它是不可用的。此外，Kubernetes只允许你配置循环TCP负载均衡，即使云负载均衡器有高级功能，例如会话持久或请求映射。</p>
+<h2 id="外部IPs"><a href="#外部IPs" class="headerlink" title="外部IPs"></a>外部IPs</h2><p>　　如果有外部IPs路由到一个或多个cluster node节点，Kubernetes service可以暴漏在这些externalIPs上。访问通过外部IP(相当于目的IP)+service端口进入cluster，将被路由到service的endpoints。externalIPs不是Kubernetes管理的，而是cluster管理员的责任。<br>　　在service的ServiceSpec字段，externalIPs可以和任何类型的ServiceTypes配置在一起，如下面例子，我们的服务客户可以通过80.11.12.10:80(externalIP:port)访问：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;kind&quot;: &quot;Service&quot;,</span><br><span class="line">    &quot;apiVersion&quot;: &quot;v1&quot;,</span><br><span class="line">    &quot;metadata&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;my-service&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;spec&quot;: &#123;</span><br><span class="line">        &quot;selector&quot;: &#123;</span><br><span class="line">            &quot;app&quot;: &quot;MyApp&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;ports&quot;: [</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;name&quot;: &quot;http&quot;,</span><br><span class="line">                &quot;protocol&quot;: &quot;TCP&quot;,</span><br><span class="line">                &quot;port&quot;: 80,</span><br><span class="line">                &quot;targetPort&quot;: 9376</span><br><span class="line">            &#125;</span><br><span class="line">        ],</span><br><span class="line">        &quot;externalIPs&quot; : [</span><br><span class="line">            &quot;80.11.12.10&quot;</span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="不足之处"><a href="#不足之处" class="headerlink" title="不足之处"></a>不足之处</h2><p>通过iptables和用户控件映射可以很好的为中小型规模服务，但是并不适用于拥有数千个service的集群。</p>
+<ul>
+<li>客户通过usersapce代理访问service的时候会改变源IP，这将导致防火墙出现问题：在cluster中iptables转发并不更改源IP，将会影响用户通过loadbalancer或nodeport方式访问。（1.2的iptables代理已解决此问题）。</li>
+<li>LoadBalancers 只支持TCP。</li>
+<li>type字段被设计成嵌套的结构，每一层都被增加到了前一层。很多云方案提供商支持的并不是很好（如，gce没有必要分配一个NodePort来使LoadBalancer正常工作，但是AWS需要），但是当前的API需要。</li>
+</ul>
+<p>官网地址：<a target="_blank" rel="noopener" href="http://kubernetes.io/docs/user-guide/services/">http://kubernetes.io/docs/user-guide/services/</a><br>错误之处麻烦各位指正。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/k8s/" rel="tag"># k8s</a>
+              <a href="/tags/service/" rel="tag"># service</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/06/04/Kubernetes%20service%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0%E5%92%8C%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1(%E4%B8%89)%20%E5%88%9B%E5%BB%BAExternal%20Load%20Balancer/" rel="prev" title="Kubernetes service服务发现和负载均衡(三) 创建External Load Balancer">
+                  <i class="fa fa-chevron-left"></i> Kubernetes service服务发现和负载均衡(三) 创建External Load Balancer
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/06/14/Kubernetes%E5%B7%A5%E4%BD%9C%E4%B8%AD%E9%83%A8%E7%BD%B2%E5%92%8C%E7%AE%A1%E7%90%86(%E4%B8%80)%20Launching,%20Exposing,%20and%20Killing%20Applications/" rel="next" title="Kubernetes工作中部署和管理(一) Launching, Exposing, and Killing Applications">
+                  Kubernetes工作中部署和管理(一) Launching, Exposing, and Killing Applications <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

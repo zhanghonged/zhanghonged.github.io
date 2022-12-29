@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本节主要介绍使用Django ORM 建表及相关API操作。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Django之ORM单表操作及查询API">
+<meta property="og:url" content="http://zhanghonged.github.io/2018/01/10/Django%E4%B9%8BORM%E5%8D%95%E8%A1%A8%E6%93%8D%E4%BD%9C%E5%8F%8A%E6%9F%A5%E8%AF%A2API/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="本节主要介绍使用Django ORM 建表及相关API操作。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-01-10T09:05:21.000Z">
+<meta property="article:modified_time" content="2018-01-22T06:16:00.567Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="Django">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2018/01/10/Django%E4%B9%8BORM%E5%8D%95%E8%A1%A8%E6%93%8D%E4%BD%9C%E5%8F%8A%E6%9F%A5%E8%AF%A2API/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2018/01/10/Django%E4%B9%8BORM%E5%8D%95%E8%A1%A8%E6%93%8D%E4%BD%9C%E5%8F%8A%E6%9F%A5%E8%AF%A2API/","path":"2018/01/10/Django之ORM单表操作及查询API/","title":"Django之ORM单表操作及查询API"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Django之ORM单表操作及查询API | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#ORM%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">ORM概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">2.</span> <span class="nav-text">连接数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ORM%E5%BB%BA%E8%A1%A8%E6%93%8D%E4%BD%9C"><span class="nav-number">3.</span> <span class="nav-text">ORM建表操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E5%88%9B%E5%BB%BA%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.1.</span> <span class="nav-text">1、创建模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E9%AA%8C%E8%AF%81%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E4%BB%A3%E7%A0%81%E6%98%AF%E5%90%A6%E6%9C%89%E9%94%99%E8%AF%AF"><span class="nav-number">3.2.</span> <span class="nav-text">2、验证数据模型代码是否有错误</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E7%94%9F%E6%88%90%E6%95%B0%E6%8D%AE%E5%BA%93%E8%84%9A%E6%9C%AC%E6%96%87%E4%BB%B6"><span class="nav-number">3.3.</span> <span class="nav-text">3、生成数据库脚本文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81%E5%88%9B%E5%BB%BA%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">3.4.</span> <span class="nav-text">4、创建数据库</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ORM%E5%8D%95%E8%A1%A8%E6%93%8D%E4%BD%9C"><span class="nav-number">4.</span> <span class="nav-text">ORM单表操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E6%9F%A5"><span class="nav-number">4.1.</span> <span class="nav-text">1、查</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E5%A2%9E"><span class="nav-number">4.2.</span> <span class="nav-text">2、增</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E5%88%A0"><span class="nav-number">4.3.</span> <span class="nav-text">3、删</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81%E6%94%B9"><span class="nav-number">4.4.</span> <span class="nav-text">4、改</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%87%E8%83%BD%E5%8F%8C%E4%B8%8B%E5%88%92%E7%BA%BF%E6%9F%A5%E8%AF%A2"><span class="nav-number">5.</span> <span class="nav-text">万能双下划线查询</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%AF%94%E8%BE%83%E7%AC%A6"><span class="nav-number">5.1.</span> <span class="nav-text">一、比较符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E8%8C%83%E5%9B%B4%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="nav-number">5.2.</span> <span class="nav-text">二、范围操作符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%8C%B9%E9%85%8D%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="nav-number">5.3.</span> <span class="nav-text">三、匹配操作符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%AD%A3%E5%88%99%E5%8C%B9%E9%85%8D"><span class="nav-number">5.4.</span> <span class="nav-text">四、正则匹配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E6%97%A5%E6%9C%9F%E7%9B%B8%E5%85%B3"><span class="nav-number">5.5.</span> <span class="nav-text">五、日期相关</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2018/01/10/Django%E4%B9%8BORM%E5%8D%95%E8%A1%A8%E6%93%8D%E4%BD%9C%E5%8F%8A%E6%9F%A5%E8%AF%A2API/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Django之ORM单表操作及查询API | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Django之ORM单表操作及查询API
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-01-10 17:05:21" itemprop="dateCreated datePublished" datetime="2018-01-10T17:05:21+08:00">2018-01-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2018-01-22 14:16:00" itemprop="dateModified" datetime="2018-01-22T14:16:00+08:00">2018-01-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Django/" itemprop="url" rel="index"><span itemprop="name">Django</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>本节主要介绍使用Django <strong>ORM</strong> 建表及相关API操作。</p>
+<span id="more"></span>
+<h2 id="ORM概念"><a href="#ORM概念" class="headerlink" title="ORM概念"></a>ORM概念</h2><p>用于实现面向对象编程语言里不同类型系统的数据之间的转换，换句话说，就是用面向对象的方式去操作数据库的创建表和增删改查的操作。<br><b>优点：</b></p>
+<ol>
+<li><strong>ORM</strong> 使我们的通用数据库交互变得更简单，而且完全不用考虑SQL语句，快速开发。</li>
+<li>可以避免一些新手程序员写sql语句带来的性能问题。</li>
+</ol>
+<h2 id="连接数据库"><a href="#连接数据库" class="headerlink" title="连接数据库"></a>连接数据库</h2><p>&amp;nbsp;<span style="color:red;font-size:12px;">Django的默认数据库连接是sqlite。</span><br><b>Django ORM支持的数据库</b><br>sqlite、mysql、oracle、postgresql等。<br>根据实际需求在<strong>settings.py</strong> 文件中配置要连接的数据库。<br>默认的 <strong>sqlite</strong> 配置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">DATABASES = &#123;</span><br><span class="line">    &#x27;default&#x27;: &#123;</span><br><span class="line">        &#x27;ENGINE&#x27;: &#x27;django.db.backends.sqlite3&#x27;,</span><br><span class="line">        &#x27;NAME&#x27;: os.path.join(BASE_DIR, &#x27;db.sqlite3&#x27;),</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>连接 <strong>mysql</strong> 数据库配置:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">DATABASES = &#123;</span><br><span class="line">    &#x27;default&#x27;: &#123;</span><br><span class="line">        &#x27;ENGINE&#x27;: &#x27;django.db.backends.mysql&#x27;,</span><br><span class="line">        &#x27;NAME&#x27;: &#x27;mydatabase&#x27;,</span><br><span class="line">        &#x27;USER&#x27;: &#x27;mydatabaseuser&#x27;,</span><br><span class="line">        &#x27;PASSWORD&#x27;: &#x27;mypassword&#x27;,</span><br><span class="line">        &#x27;HOST&#x27;: &#x27;127.0.0.1&#x27;,</span><br><span class="line">        &#x27;PORT&#x27;: &#x27;3306&#x27;,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其他数据库的连接配置请参考<a href="https://docs.djangoproject.com/en/1.8/ref/settings/#databases" target="_block">django官网文档</a>。</p>
+<p>在 <strong>settings.py</strong> 中添加如下配置，控制台将会显示orm解析为原生sql的语句。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">LOGGING = &#123;</span><br><span class="line">    &#x27;version&#x27;: 1,</span><br><span class="line">    &#x27;disable_existing_loggers&#x27;: False,</span><br><span class="line">    &#x27;handlers&#x27;: &#123;</span><br><span class="line">        &#x27;console&#x27;:&#123;</span><br><span class="line">            &#x27;level&#x27;:&#x27;DEBUG&#x27;,</span><br><span class="line">            &#x27;class&#x27;:&#x27;logging.StreamHandler&#x27;,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">    &#x27;loggers&#x27;: &#123;</span><br><span class="line">        &#x27;django.db.backends&#x27;: &#123;</span><br><span class="line">            &#x27;handlers&#x27;: [&#x27;console&#x27;],</span><br><span class="line">            &#x27;propagate&#x27;: True,</span><br><span class="line">            &#x27;level&#x27;:&#x27;DEBUG&#x27;,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="ORM建表操作"><a href="#ORM建表操作" class="headerlink" title="ORM建表操作"></a>ORM建表操作</h2><h3 id="1、创建模型"><a href="#1、创建模型" class="headerlink" title="1、创建模型"></a>1、创建模型</h3><p>在Django下我们不用直接编写SQL语句，Django将关系型的表 <strong>(table)</strong> 转换成为一个类 **(class)**。而每个记录 <strong>(record)</strong> 是该类下的一个对象 **(object)**。我们可以使用基于对象的方法，来操纵关系型的数据库。<br>在传统的关系型数据库中，数据模型是表。在Django下，一个表为一个类。表的每一列是该类的一个属性。<br>在 <strong>models.py</strong> 中，我们创建一个有四列的表，即有四个属性的类：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">from django.db import models</span><br><span class="line"></span><br><span class="line">class Book(models.Model):</span><br><span class="line">    name = models.CharField(max_length=64,verbose_name=&#x27;书名&#x27;)</span><br><span class="line">    price = models.IntegerField(verbose_name=&#x27;价格&#x27;)</span><br><span class="line">    author = models.CharField(max_length=64,verbose_name=&#x27;作者&#x27;)</span><br><span class="line">    pub_date = models.DateTimeField(verbose_name=&#x27;出版日期&#x27;)</span><br></pre></td></tr></table></figure>
+<h3 id="2、验证数据模型代码是否有错误"><a href="#2、验证数据模型代码是否有错误" class="headerlink" title="2、验证数据模型代码是否有错误"></a>2、验证数据模型代码是否有错误</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python manage.py validate</span><br></pre></td></tr></table></figure>
+<h3 id="3、生成数据库脚本文件"><a href="#3、生成数据库脚本文件" class="headerlink" title="3、生成数据库脚本文件"></a>3、生成数据库脚本文件</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">python manage.py makemigrations</span><br></pre></td></tr></table></figure>
+<p>相当于在该app下建立 <strong>migrations</strong> 目录，并记录下你所有的关于 <strong>modes.py</strong> 的改动，比如 <strong>0001_initial.py</strong>，但是这个改动还没有作用到数据库文件。</p>
+<h3 id="4、创建数据库"><a href="#4、创建数据库" class="headerlink" title="4、创建数据库"></a>4、创建数据库</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python manage.py migrate</span><br></pre></td></tr></table></figure>
+<p>将该改动作用到数据库文件，比如产生 <strong>table</strong> 之类。</p>
+<h2 id="ORM单表操作"><a href="#ORM单表操作" class="headerlink" title="ORM单表操作"></a>ORM单表操作</h2><h3 id="1、查"><a href="#1、查" class="headerlink" title="1、查"></a>1、查</h3><p><span style="color:#16E9E3;font-weight:bold;">查询所有数据</span></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Book.objects.all()</span><br></pre></td></tr></table></figure>
+<p><span style="color:#16E9E3;font-weight:bold;">查询单条数据，<span style="color:red;">如果次查询条件能查出多条，则报错。</span></span></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">list = Book.objects.get(id=2)</span><br></pre></td></tr></table></figure>
+<p><span style="color:#16E9E3;font-weight:bold;">查询多条数据，返回一个数组，<span style="color:red;">只有一个结果时返回也是数组。</span></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Book.objects.filter(name=3)</span><br></pre></td></tr></table></figure>
+<p><span style="color:#16E9E3;font-weight:bold;">可以支持切片返回，实现原生sql的 <strong>limit</strong> 效果</span></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Book.objects.all()[0:4]</span><br></pre></td></tr></table></figure>
+<p><span style="color:#16E9E3;font-weight:bold;">返回数据库记录的第一条数据及最后一条数据</span></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Book.objects.first()</span><br><span class="line">Book.objects.last()</span><br></pre></td></tr></table></figure>
+<p><span style="color:#16E9E3;font-weight:bold;">只返回数据库记录里的特定值</span></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 返回值为list，里面包含dict</span><br><span class="line">Book.objects.all().values(&#x27;price&#x27;,&#x27;pub_date&#x27;)</span><br><span class="line">Book.objects.filter(id = 1).values(&#x27;price&#x27;,&#x27;pub_date&#x27;)</span><br><span class="line"></span><br><span class="line"># 返回值为list，里面包含元组，没有key值</span><br><span class="line">&lt;span style=&quot;color:#16E9E3;font-weight:bold;&quot;&gt;Book.objects.all().values_list(&#x27;price&#x27;,&#x27;pub_date&#x27;)</span><br></pre></td></tr></table></figure>
+<p><span style="color:#16E9E3;font-weight:bold;">反向条件查询，查询除此条件的记录</span></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Book.objects.exclude(name=&#x27;Django-Book&#x27;)</span><br></pre></td></tr></table></figure>
+<p><span style="color:#16E9E3;font-weight:bold;">查询记录排序</span></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Book.objects.all().order_by(&#x27;price&#x27;)</span><br><span class="line"># 反序两种方式</span><br><span class="line">Book.objects.all().order_by(&#x27;price&#x27;).reverse()</span><br><span class="line">Book.objects.all().order_by(&#x27;-price&#x27;).reverse()</span><br></pre></td></tr></table></figure>
+<p><span style="color:#16E9E3;font-weight:bold;">查询对象的数量</span></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Book.objects.all().count()</span><br></pre></td></tr></table></figure>
+<p><span style="color:#16E9E3;font-weight:bold;">查询结果去重</span></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 由于django models自动添加id主键，所以去重时需要过滤id</span><br><span class="line">Book.objects.all().values(&#x27;name&#x27;,&#x27;price&#x27;,&#x27;author&#x27;).distinct()</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="2、增"><a href="#2、增" class="headerlink" title="2、增"></a>2、增</h3><p>方法一</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">b = Book(name=xxx, author=xxx, price=xx, pub_date=xxx)</span><br><span class="line">b.save()</span><br></pre></td></tr></table></figure>
+<p>方法二</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Book.objects.create(name=xxx,author=xxx,price=xxx,pub_date=xxx)</span><br></pre></td></tr></table></figure>
+
+<h3 id="3、删"><a href="#3、删" class="headerlink" title="3、删"></a>3、删</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Book.objects.get(id=2).delete()</span><br><span class="line">Book.objects.filter(price=5).delete()</span><br></pre></td></tr></table></figure>
+
+<h3 id="4、改"><a href="#4、改" class="headerlink" title="4、改"></a>4、改</h3><p>方法一</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">b = Book.objects.get(id=5)</span><br><span class="line">b.name = &#x27;django从入门到精通&#x27;</span><br><span class="line">b.save()</span><br></pre></td></tr></table></figure>
+<p>方法二</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 若查询条件匹配多条则修改多条</span><br><span class="line">Book.objects.filter(name=3).update(author=&#x27;老罗&#x27;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="万能双下划线查询"><a href="#万能双下划线查询" class="headerlink" title="万能双下划线查询"></a>万能双下划线查询</h2><p>在Django中有相当多的操作是通过<span style="color:red;">双下划线</span>与动作连接起来使用，现在总结以下Django中基本的双下划线操作。</p>
+<h3 id="一、比较符"><a href="#一、比较符" class="headerlink" title="一、比较符"></a>一、比较符</h3><p>大于 <strong>__gt</strong><br>小于 <strong>__lt</strong><br>大于等于 <strong>__gte</strong><br>小于等于 <strong>__lte</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">book = Book.objects.filter(price__gte=100,price__lt=1200)</span><br></pre></td></tr></table></figure>
+<p><span style="color:red;">查询等于的时候就直接用 <strong>&#x3D;</strong> ，没有 <strong>__eq&#x3D;</strong> 的用法：</span></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">book = Book.objects.filter(price=1111)</span><br></pre></td></tr></table></figure>
+<h3 id="二、范围操作符"><a href="#二、范围操作符" class="headerlink" title="二、范围操作符"></a>二、范围操作符</h3><p>包含关系 <strong>__in</strong><br>模糊匹配 <strong>__contains</strong><br>模糊匹配不区分大小写 <strong>__icontains</strong><br>在范围内 <strong>__range</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># 后面用中括号和花括号都可以</span><br><span class="line">book = Book.objects.filter(id__in=[3,5,6,7])</span><br><span class="line">book = Book.objects.filter(id__in=&#123;3,5,6,7&#125;)</span><br><span class="line"># 查询除了下列id的其他元素</span><br><span class="line">book = Book.objects.exclude(id__in=[3,5,6,7])</span><br><span class="line"># 查询名称包括大写D的丨</span><br><span class="line">book = Book.objects.filter(name__contains=&#x27;D&#x27;)</span><br><span class="line"># 不区分大小写</span><br><span class="line">book = Book.objects.filter(name__icontains=&#x27;D&#x27;)</span><br><span class="line"># 查询id从1到8的数据，包含1和8</span><br><span class="line">book = Book.objects.filter(id__range=[1,8])</span><br><span class="line"># 查询价格在100-300之间的数据</span><br><span class="line">book = Book.objects.filter(price__range=[100,300])</span><br></pre></td></tr></table></figure>
+<h3 id="三、匹配操作符"><a href="#三、匹配操作符" class="headerlink" title="三、匹配操作符"></a>三、匹配操作符</h3><p>为空 <strong>__isnull</strong><br>匹配开头 <strong>__startswith&amp;nbsp;&amp;nbsp;istartswith</strong><br>匹配结尾 <strong>__endswith&amp;nbsp;&amp;nbsp;iendswith</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 出版日期为空的数据</span><br><span class="line">book = Book.objects.filter(pub_date__isnull=True)</span><br><span class="line"># 名称开头是&quot;阿里云的&quot;数据</span><br><span class="line">book = Book.objects.filter(name__startswith=&#x27;阿里云&#x27;)</span><br><span class="line"># 名称开头是&quot;服务器&quot;数据</span><br><span class="line">book = Book.objects.filter(name__endswith=&#x27;服务器&#x27;)</span><br></pre></td></tr></table></figure>
+<h3 id="四、正则匹配"><a href="#四、正则匹配" class="headerlink" title="四、正则匹配"></a>四、正则匹配</h3><p><strong>__regex</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 查询书名以字母开头的数据</span><br><span class="line">book = Book.objects.filter(name__regex=r&#x27;^\d+&#x27;)</span><br><span class="line"># 查询书名非数字、字母开头的数据</span><br><span class="line">book = Book.objects.filter(name__regex=r&#x27;^[^\dA-Za-z]&#x27;)</span><br></pre></td></tr></table></figure>
+<h3 id="五、日期相关"><a href="#五、日期相关" class="headerlink" title="五、日期相关"></a>五、日期相关</h3><p><strong>__year</strong><br><strong>__month</strong><br><strong>__day</strong><br><strong>__week_day</strong><br><strong>__hour</strong><br><strong>__minute</strong><br><strong>__second</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 查询出版日期年份为2018，日为12的数据</span><br><span class="line">book = Book.objects.filter(pub_date__year=&#x27;2018&#x27;,pub_date__day=&#x27;12&#x27;)</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"># python</a>
+              <a href="/tags/Django/" rel="tag"># Django</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/01/07/Django%E6%A8%A1%E6%9D%BF/" rel="prev" title="Django模板">
+                  <i class="fa fa-chevron-left"></i> Django模板
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/01/12/Django%E4%B9%8BORM%E5%A4%9A%E8%A1%A8%E5%88%9B%E5%BB%BA%E5%8F%8A%E4%BD%BF%E7%94%A8/" rel="next" title="Django之ORM多表创建及使用">
+                  Django之ORM多表创建及使用 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

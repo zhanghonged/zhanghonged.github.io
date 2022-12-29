@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本文主要内容是分析 nginx 日志然后进行可视化图形展示。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ELK处理Nginx日志">
+<meta property="og:url" content="http://zhanghonged.github.io/2018/09/07/ELK%E5%A4%84%E7%90%86Nginx%E6%97%A5%E5%BF%97/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="本文主要内容是分析 nginx 日志然后进行可视化图形展示。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-09-07T02:12:17.000Z">
+<meta property="article:modified_time" content="2020-01-07T09:46:31.875Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="elk">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2018/09/07/ELK%E5%A4%84%E7%90%86Nginx%E6%97%A5%E5%BF%97/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2018/09/07/ELK%E5%A4%84%E7%90%86Nginx%E6%97%A5%E5%BF%97/","path":"2018/09/07/ELK处理Nginx日志/","title":"ELK处理Nginx日志"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>ELK处理Nginx日志 | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86%E9%85%8D%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">一、日志收集配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E5%AE%9A%E4%B9%89nginx%E6%97%A5%E5%BF%97%E6%A0%BC%E5%BC%8F"><span class="nav-number">1.1.</span> <span class="nav-text">1、定义nginx日志格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81grok%E6%AD%A3%E5%88%99%E8%A7%A3%E6%9E%90log%E6%96%87%E4%BB%B6"><span class="nav-number">1.2.</span> <span class="nav-text">2、grok正则解析log文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E5%9C%B0%E7%90%86%E5%9D%90%E6%A0%87%E5%88%86%E6%9E%90-geoip"><span class="nav-number">1.3.</span> <span class="nav-text">3、地理坐标分析-geoip</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81-logstash%E5%AE%8C%E6%95%B4%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">1.4.</span> <span class="nav-text">4、 logstash完整配置文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81Kibana%E5%88%86%E6%9E%90Nginx%E6%97%A5%E5%BF%97%E5%B9%B6%E7%94%9F%E6%88%90%E5%9B%BE%E8%A1%A8"><span class="nav-number">2.</span> <span class="nav-text">二、Kibana分析Nginx日志并生成图表</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2018/09/07/ELK%E5%A4%84%E7%90%86Nginx%E6%97%A5%E5%BF%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="ELK处理Nginx日志 | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ELK处理Nginx日志
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-09-07 10:12:17" itemprop="dateCreated datePublished" datetime="2018-09-07T10:12:17+08:00">2018-09-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2020-01-07 17:46:31" itemprop="dateModified" datetime="2020-01-07T17:46:31+08:00">2020-01-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Elasticsearch/" itemprop="url" rel="index"><span itemprop="name">Elasticsearch</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>本文主要内容是分析 <strong>nginx</strong> 日志然后进行可视化图形展示。</p>
+<span id="more"></span>
+<h2 id="一、日志收集配置"><a href="#一、日志收集配置" class="headerlink" title="一、日志收集配置"></a>一、日志收集配置</h2><h3 id="1、定义nginx日志格式"><a href="#1、定义nginx日志格式" class="headerlink" title="1、定义nginx日志格式"></a>1、定义nginx日志格式</h3><p>修改nginx配置文件 <strong>nginx.conf</strong>:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">log_format  main  &#x27;$remote_addr | $time_local | $request | $uri | &#x27;</span><br><span class="line">                  &#x27;$status | $body_bytes_sent | $bytes_sent | $gzip_ratio | $http_referer | &#x27;</span><br><span class="line">                  &#x27;&quot;$http_user_agent&quot; | $http_x_forwarded_for | $upstream_addr | $upstream_response_time | $upstream_status | $request_time&#x27;;</span><br></pre></td></tr></table></figure>
+<p>定义以上格式后，nginx输出的log就是按照上面格式来进行的:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">27.19.249.25 | 06/Sep/2018:15:37:50 +0800 | POST /yiqun/order/getEOrderDetails/18926?cursor=0&amp;eorderState=1&amp;inviteType=1&amp;keyWord=&amp;offset=25&amp;userId=18926 HTTP/1.1 | /yiqun/order/getEOrderDetails/18926 | 200 | 33 | 427 | - | https://www.5ecat.com/bg/ | &quot;Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36&quot; | - | 172.17.140.115:8080 | 0.012 | 200 | 0.012</span><br></pre></td></tr></table></figure>
+<p>当然上面的格式可以按照自己习惯自定义配置。</p>
+<h3 id="2、grok正则解析log文件"><a href="#2、grok正则解析log文件" class="headerlink" title="2、grok正则解析log文件"></a>2、grok正则解析log文件</h3><p>我们的目的是将nginx的日志文件存入 <strong>elastic</strong> ,在 <strong>Logstash</strong> 中我们使用 <strong>grok</strong> 数据结构化转换工具来进行匹配解析，解析出nginx日志中的各个有用字段。<br>这里可以借助 <strong>grop官网</strong> 的<a target="_blank" rel="noopener" href="https://grokdebug.herokuapp.com/">debugger</a>和<a target="_blank" rel="noopener" href="https://grokdebug.herokuapp.com/patterns">patterns</a>来快速帮助我们写正则表达式。<br>这就是我自定义的 <strong>grop</strong> 正则表达式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&quot;%&#123;IPORHOST:clientip&#125; \| %&#123;HTTPDATE:timestamp&#125; \| (?:%&#123;WORD:verb&#125; %&#123;NOTSPACE:request&#125;(?: HTTP/%&#123;NUMBER:http_version&#125;)?|-) \| %&#123;URIPATH:uripath&#125; \| %&#123;NUMBER:response&#125; \| (?:%&#123;NUMBER:body_bytes_sent&#125;|-) \| (?:%&#123;NUMBER:bytes_sent&#125;|-) \| (?:%&#123;NOTSPACE:gzip_ratio&#125;|-) \| (?:%&#123;NOTSPACE:http_referer&#125;|-) \| (?:%&#123;QS:agent&#125;|-) \| (?:%&#123;QS:http_x_forwarded_for&#125;|-) \| (%&#123;URIHOST:upstream_addr&#125;|-) \| (%&#123;BASE16FLOAT:upstream_response_time&#125;) \| %&#123;NUMBER:upstream_status&#125; \| (%&#123;BASE16FLOAT:request_time&#125;)&quot;</span><br></pre></td></tr></table></figure>
+<p>在<a target="_blank" rel="noopener" href="https://grokdebug.herokuapp.com/"><strong>grop官网</strong>的debugger</a>解析结果如下解析结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;clientip&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;27.19.249.25&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;HOSTNAME&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;27.19.249.25&quot;,</span><br><span class="line">      &quot;172.17.140.115&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;IP&quot;: [</span><br><span class="line">    [</span><br><span class="line">      null,</span><br><span class="line">      null</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;IPV6&quot;: [</span><br><span class="line">    [</span><br><span class="line">      null,</span><br><span class="line">      null</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;IPV4&quot;: [</span><br><span class="line">    [</span><br><span class="line">      null,</span><br><span class="line">      null</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;timestamp&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;06/Sep/2018:15:37:50 +0800&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;MONTHDAY&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;06&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;MONTH&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;Sep&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;YEAR&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;2018&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;TIME&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;15:37:50&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;HOUR&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;15&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;MINUTE&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;37&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;SECOND&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;50&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;INT&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;+0800&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;verb&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;POST&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;request&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;/yiqun/order/getEOrderDetails/18926?cursor=0&amp;eorderState=1&amp;inviteType=1&amp;keyWord=&amp;offset=25&amp;userId=18926&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;http_version&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;1.1&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;BASE10NUM&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;1.1&quot;,</span><br><span class="line">      &quot;200&quot;,</span><br><span class="line">      &quot;33&quot;,</span><br><span class="line">      &quot;427&quot;,</span><br><span class="line">      &quot;200&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;uripath&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;/yiqun/order/getEOrderDetails/18926&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;response&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;200&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;body_bytes_sent&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;33&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;bytes_sent&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;427&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;gzip_ratio&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;-&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;http_referer&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;https://www.5ecat.com/bg/&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;agent&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;&quot;Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36&quot;&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;QUOTEDSTRING&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;&quot;Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36&quot;&quot;,</span><br><span class="line">      null</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;http_x_forwarded_for&quot;: [</span><br><span class="line">    [</span><br><span class="line">      null</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;upstream_addr&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;172.17.140.115:8080&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;IPORHOST&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;172.17.140.115&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;port&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;8080&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;upstream_response_time&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;0.012&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;upstream_status&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;200&quot;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;request_time&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;0.012&quot;</span><br><span class="line">    ]</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3、地理坐标分析-geoip"><a href="#3、地理坐标分析-geoip" class="headerlink" title="3、地理坐标分析-geoip"></a>3、地理坐标分析-geoip</h3><p>在 <strong>logstash</strong> 中配置的 <strong>GeoIP</strong> 的数据库解析ip了，这里是用了开源的ip数据源，用来分析客户端的ip归属地。官网在这里:<a target="_blank" rel="noopener" href="https://dev.maxmind.com/zh-hans/geoip/legacy/geolite/">MAXMIND</a>，下载 <strong>GeoLite City</strong> 库。<br>在 <strong>logstash</strong> 的 <strong>filter</strong> 中配置:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">geoip &#123;</span><br><span class="line">	source =&gt; &quot;clientip&quot;</span><br><span class="line">	##这里指定好解压后GeoIP数据库文件的位置</span><br><span class="line">	database =&gt; &quot;/usr/local/src/logstash-5.5.3/GeoLite2-City.mmdb&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4、-logstash完整配置文件"><a href="#4、-logstash完整配置文件" class="headerlink" title="4、 logstash完整配置文件"></a>4、 logstash完整配置文件</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line">input &#123;</span><br><span class="line">    file &#123;</span><br><span class="line">        path =&gt; [ &quot;/root/yimiao_access.log&quot; ]</span><br><span class="line">        # 从文件的开始读取事件。另外还有end参数</span><br><span class="line">        start_position =&gt; &quot;beginning&quot;</span><br><span class="line">        # 忽略早于24小时（默认值86400）的日志，设为0，即关闭该功能，以防止文件中的事件由于是早期的被logstash所忽略。</span><br><span class="line">        ignore_older =&gt; 0</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">filter &#123;</span><br><span class="line">    # 数据结构化转换工具</span><br><span class="line">    grok &#123;</span><br><span class="line">        # match：匹配条件格式</span><br><span class="line">        match =&gt; [ </span><br><span class="line">		&quot;message&quot; =&gt; &quot;%&#123;IPORHOST:clientip&#125; \| %&#123;HTTPDATE:timestamp&#125; \| (?:%&#123;WORD:verb&#125; %&#123;NOTSPACE:request&#125;(?: HTTP/%&#123;NUMBER:http_version&#125;)?|-) \| %&#123;URIPATH:uripath&#125; \| %&#123;NUMBER:response&#125; \| (?:%&#123;NUMBER:body_bytes_sent&#125;|-) \| (?:%&#123;NUMBER:bytes_sent&#125;|-) \| (?:%&#123;NOTSPACE:gzip_ratio&#125;|-) \| (?:%&#123;NOTSPACE:http_referer&#125;|-) \| (?:%&#123;QS:agent&#125;|-) \| (?:%&#123;QS:http_x_forwarded_for&#125;|-) \| (%&#123;URIHOST:upstream_addr&#125;|-) \| (%&#123;BASE16FLOAT:upstream_response_time&#125;) \| %&#123;NUMBER:upstream_status&#125; \| (%&#123;BASE16FLOAT:request_time&#125;)&quot; </span><br><span class="line">	]</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    # geoip该过滤器从geoip中匹配ip字段，显示该ip的地理位置</span><br><span class="line">    geoip &#123;</span><br><span class="line">      # source：ip来源字段，这里我们选择的是日志文件中的第一个字段</span><br><span class="line">      source =&gt; &quot;clientip&quot;</span><br><span class="line">      # target：指定插入的logstash字断目标存储为geoip</span><br><span class="line">      target =&gt; &quot;geoip&quot;</span><br><span class="line">      # database：geoip数据库的存放路径</span><br><span class="line">      database =&gt; &quot;/usr/local/src/logstash-5.5.3/GeoLite2-City.mmdb&quot;</span><br><span class="line">      # add_field: 增加的字段，坐标经度</span><br><span class="line">      add_field =&gt; [ &quot;[geoip][coordinates]&quot;, &quot;%&#123;[geoip][longitude]&#125;&quot; ]</span><br><span class="line">      # add_field: 增加的字段，坐标纬度</span><br><span class="line">      add_field =&gt; [ &quot;[geoip][coordinates]&quot;, &quot;%&#123;[geoip][latitude]&#125;&quot; ]</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    # mutate： 数据的修改、删除、类型转换</span><br><span class="line">    mutate &#123;</span><br><span class="line">      # convert： 将坐标转为float类型</span><br><span class="line">      convert =&gt; [ &quot;[geoip][coordinates]&quot;, &quot;float&quot; ]</span><br><span class="line">      # convert： http的响应代码字段转换成 int</span><br><span class="line">      convert =&gt; [ &quot;response&quot;,&quot;integer&quot; ]</span><br><span class="line">      # convert： http的传输字节转换成int</span><br><span class="line">      convert =&gt; [ &quot;body_bytes_sent&quot;,&quot;integer&quot; ]</span><br><span class="line">      convert =&gt; [ &quot;bytes_sent&quot;,&quot;integer&quot; ]</span><br><span class="line">      # replace： 替换一个字段</span><br><span class="line">      replace =&gt; &#123; &quot;type&quot; =&gt; &quot;nginx_access&quot; &#125;</span><br><span class="line">      # remove_field： 移除message 的内容，因为数据已经过滤了一份，这里不必在用到该字段了。不然会相当于存两份</span><br><span class="line">      remove_field =&gt; &quot;message&quot;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    # date: 时间处理，该插件很实用，主要是用你日志文件中事件的事件来对timestamp进行转换，导入老的数据必备！</span><br><span class="line">    date &#123;</span><br><span class="line">      # match：匹配到timestamp字段后，修改格式为dd/MMM/yyyy:HH:mm:ss Z</span><br><span class="line">      match =&gt; [ &quot;timestamp&quot;,&quot;dd/MMM/yyyy:HH:mm:ss Z&quot;]</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    # mutate：数据修改</span><br><span class="line">    mutate &#123;</span><br><span class="line">      # remove_field： 移除timestamp字段。</span><br><span class="line">      remove_field =&gt; &quot;timestamp&quot;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">output &#123;</span><br><span class="line">    # elasticsearch：输出到es中</span><br><span class="line">    elasticsearch &#123;</span><br><span class="line">        # host： es的主机ip＋端口或者es 的FQDN＋端口</span><br><span class="line">        hosts =&gt; [&quot;192.168.1.27:9200&quot;]</span><br><span class="line">        # index： 为日志创建索引logstash-nginx-access，这里也就是kibana那里添加索引时的名称</span><br><span class="line">        index =&gt; &quot;logstash-nginx-access&quot;</span><br><span class="line">    &#125;</span><br><span class="line">    stdout &#123;codec =&gt; rubydebug&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p><strong>logstash</strong> 配置完成后通过命令导入log文件到<strong>Elastic</strong>中。</p>
+<h2 id="二、Kibana分析Nginx日志并生成图表"><a href="#二、Kibana分析Nginx日志并生成图表" class="headerlink" title="二、Kibana分析Nginx日志并生成图表"></a>二、Kibana分析Nginx日志并生成图表</h2><p>上一步数据已经导入到了<strong>Elastic</strong> ，我们需要明白每个字段的含义，然后在 <strong>Kibana</strong> 中根据需求自定义生成报表。<br>这里不做过多说明，根据需求生成。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/elk/" rel="tag"># elk</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/07/27/DRF-%E5%AE%9E%E4%BE%8B%E8%A7%A3%E6%9E%90/" rel="prev" title="DRF-实例解析">
+                  <i class="fa fa-chevron-left"></i> DRF-实例解析
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/09/20/%E4%BD%BF%E7%94%A8XtraBackup%E6%81%A2%E5%A4%8D%E9%98%BF%E9%87%8C%E4%BA%91RDS%E8%87%AA%E5%8A%A8%E5%A4%87%E4%BB%BD%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="next" title="使用XtraBackup恢复阿里云RDS自动备份的数据库">
+                  使用XtraBackup恢复阿里云RDS自动备份的数据库 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

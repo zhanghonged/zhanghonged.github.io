@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhanghonged.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.14.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="CSS概述CSS是英文Cascading Style Sheets(层叠样式表)的缩写，CSS语言是一种标记语言，它不需要编译，可以直接由浏览器解释执行(属于浏览器解释型语言)。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSS层叠样式表">
+<meta property="og:url" content="http://zhanghonged.github.io/2017/12/11/CSS%E5%B1%82%E5%8F%A0%E6%A0%B7%E5%BC%8F%E8%A1%A8/index.html">
+<meta property="og:site_name" content="勇敢的心">
+<meta property="og:description" content="CSS概述CSS是英文Cascading Style Sheets(层叠样式表)的缩写，CSS语言是一种标记语言，它不需要编译，可以直接由浏览器解释执行(属于浏览器解释型语言)。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://zhanghonged.github.io/uploads/hezi.png">
+<meta property="article:published_time" content="2017-12-11T06:53:12.000Z">
+<meta property="article:modified_time" content="2017-12-15T09:23:49.010Z">
+<meta property="article:author" content="张大秀">
+<meta property="article:tag" content="web">
+<meta property="article:tag" content="css">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://zhanghonged.github.io/uploads/hezi.png">
+
+
+<link rel="canonical" href="http://zhanghonged.github.io/2017/12/11/CSS%E5%B1%82%E5%8F%A0%E6%A0%B7%E5%BC%8F%E8%A1%A8/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://zhanghonged.github.io/2017/12/11/CSS%E5%B1%82%E5%8F%A0%E6%A0%B7%E5%BC%8F%E8%A1%A8/","path":"2017/12/11/CSS层叠样式表/","title":"CSS层叠样式表"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>CSS层叠样式表 | 勇敢的心</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">勇敢的心</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section">标签</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#CSS%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">CSS概述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CSS%E4%B8%89%E7%A7%8D%E5%BA%94%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="nav-number">1.1.</span> <span class="nav-text">CSS三种应用方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSS%E9%80%89%E6%8B%A9%E5%99%A8"><span class="nav-number">2.</span> <span class="nav-text">CSS选择器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%BC%E5%BC%8F"><span class="nav-number">2.1.</span> <span class="nav-text">格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AB%98%E7%BA%A7%E8%AF%AD%E6%B3%95"><span class="nav-number">2.2.</span> <span class="nav-text">高级语法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSS%E9%A2%9C%E8%89%B2%E5%B1%9E%E6%80%A7"><span class="nav-number">3.</span> <span class="nav-text">CSS颜色属性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#HSL%E9%A2%9C%E8%89%B2"><span class="nav-number">3.1.</span> <span class="nav-text">HSL颜色</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HSLA%E9%A2%9C%E8%89%B2"><span class="nav-number">3.2.</span> <span class="nav-text">HSLA颜色</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RGB%E9%A2%9C%E8%89%B2"><span class="nav-number">3.3.</span> <span class="nav-text">RGB颜色</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RGBA"><span class="nav-number">3.4.</span> <span class="nav-text">RGBA</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%81%E5%85%AD%E8%BF%9B%E5%88%B6%E8%89%B2%E5%BD%A9%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E5%BC%8F"><span class="nav-number">3.5.</span> <span class="nav-text">十六进制色彩的表示方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8B%B1%E6%96%87%E5%8D%95%E8%AF%8D"><span class="nav-number">3.6.</span> <span class="nav-text">英文单词</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSS%E5%AD%97%E4%BD%93%E5%B1%9E%E6%80%A7"><span class="nav-number">4.</span> <span class="nav-text">CSS字体属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSS%E6%96%87%E6%9C%AC%E5%B1%9E%E6%80%A7"><span class="nav-number">5.</span> <span class="nav-text">CSS文本属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSS%E8%BE%B9%E6%A1%86%E5%B1%9E%E6%80%A7"><span class="nav-number">6.</span> <span class="nav-text">CSS边框属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSS%E5%AE%9A%E4%BD%8D%E5%B1%9E%E6%80%A7"><span class="nav-number">7.</span> <span class="nav-text">CSS定位属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSS%E6%B5%AE%E5%8A%A8%E5%B1%9E%E6%80%A7"><span class="nav-number">8.</span> <span class="nav-text">CSS浮动属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSS%E4%BC%AA%E7%B1%BB%E5%85%83%E7%B4%A0"><span class="nav-number">9.</span> <span class="nav-text">CSS伪类元素</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSS%E8%83%8C%E6%99%AF%E5%B1%9E%E6%80%A7"><span class="nav-number">10.</span> <span class="nav-text">CSS背景属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSS%E7%9B%92%E5%AD%90%E6%A8%A1%E5%9E%8B"><span class="nav-number">11.</span> <span class="nav-text">CSS盒子模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E8%A1%A5%E7%99%BD-%E5%86%85%E8%A1%A5%E4%B8%81"><span class="nav-number">11.1.</span> <span class="nav-text">内补白(内补丁)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%96%E8%A1%A5%E7%99%BD-%E5%A4%96%E8%A1%A5%E4%B8%81"><span class="nav-number">11.2.</span> <span class="nav-text">外补白(外补丁)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSS-display%E5%B1%9E%E6%80%A7"><span class="nav-number">12.</span> <span class="nav-text">CSS display属性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81display-none"><span class="nav-number">12.1.</span> <span class="nav-text">1、display:none</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81display-block"><span class="nav-number">12.2.</span> <span class="nav-text">2、display:block</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81display-inline"><span class="nav-number">12.3.</span> <span class="nav-text">3、display:inline</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81display-inline-block"><span class="nav-number">12.4.</span> <span class="nav-text">4、display:inline-block</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5%E3%80%81display-inherit"><span class="nav-number">12.5.</span> <span class="nav-text">5、display:inherit</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="张大秀"
+      src="/uploads/inter.png">
+  <p class="site-author-name" itemprop="name">张大秀</p>
+  <div class="site-description" itemprop="description">富贾，可为吾友乎？</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="http://www.docker.org.cn/" title="docker中文社区 → http:&#x2F;&#x2F;www.docker.org.cn&#x2F;" rel="noopener" target="_blank">docker中文社区</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://man.linuxde.net/" title="Linux命令大全 → http:&#x2F;&#x2F;man.linuxde.net&#x2F;" rel="noopener" target="_blank">Linux命令大全</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.eryajf.net/" title="二丫讲梵 → http:&#x2F;&#x2F;www.eryajf.net&#x2F;" rel="noopener" target="_blank">二丫讲梵</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/vamei/" title="vamei博客 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;vamei&#x2F;" rel="noopener" target="_blank">vamei博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.cnblogs.com/horizonli/" title="my_cool2007 → http:&#x2F;&#x2F;www.cnblogs.com&#x2F;horizonli&#x2F;" rel="noopener" target="_blank">my_cool2007</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://islocal.cc/" title="P&#39;sir → http:&#x2F;&#x2F;islocal.cc" rel="noopener" target="_blank">P'sir</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://iit.im/" title="洁身 → http:&#x2F;&#x2F;iit.im&#x2F;" rel="noopener" target="_blank">洁身</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://zhangguanzhang.github.io/" title="张馆长 → https:&#x2F;&#x2F;zhangguanzhang.github.io&#x2F;" rel="noopener" target="_blank">张馆长</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lework.github.io/" title="lework → https:&#x2F;&#x2F;lework.github.io&#x2F;" rel="noopener" target="_blank">lework</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.ruanyifeng.com/" title="阮一峰 → http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;" rel="noopener" target="_blank">阮一峰</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhanghonged.github.io/2017/12/11/CSS%E5%B1%82%E5%8F%A0%E6%A0%B7%E5%BC%8F%E8%A1%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/inter.png">
+      <meta itemprop="name" content="张大秀">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="勇敢的心">
+      <meta itemprop="description" content="富贾，可为吾友乎？">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="CSS层叠样式表 | 勇敢的心">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CSS层叠样式表
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2017-12-11 14:53:12" itemprop="dateCreated datePublished" datetime="2017-12-11T14:53:12+08:00">2017-12-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2017-12-15 17:23:49" itemprop="dateModified" datetime="2017-12-15T17:23:49+08:00">2017-12-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Web%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">Web前端</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="CSS概述"><a href="#CSS概述" class="headerlink" title="CSS概述"></a>CSS概述</h2><p>CSS是英文Cascading Style Sheets(层叠样式表)的缩写，CSS语言是一种标记语言，它不需要编译，可以直接由浏览器解释执行(属于浏览器解释型语言)。</p>
+<span id="more"></span>
+<p><b>CSS优点：</b></p>
+<ol>
+<li>表现和内容相分离，将设计部分剥离出来放在一个独立样式文件中，HTML文件中只存放文本信息，这样的页面对搜索引擎更加友好。</li>
+<li>提高页面浏览速度，对于同一个页面的视觉效果，采用DIV+CSS重构的页面容量要比TABLE编码的页面文件容量小的多，前者一般只有后者的1&#x2F;2大小，浏览器就不用去编译大量冗长的标签。</li>
+<li>易于维护和改版，只要简单的修改几个CSS文件就可以重新设计整个网站的页面。</li>
+</ol>
+<h3 id="CSS三种应用方式"><a href="#CSS三种应用方式" class="headerlink" title="CSS三种应用方式"></a>CSS三种应用方式</h3><p>1、内联式Inline（也叫行内样式），应用内嵌样式到各个网页元素就是在HTML的标签中使用style属性来设置css样式。<br>特点：仅作用于本标签。<br>例:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;p style=&quot;color:blue;font-family:隶书&quot;&gt;在HTML中如何使用css样式&lt;/p&gt;</span><br></pre></td></tr></table></figure>
+<p>2、嵌入式（也叫内页样式），在网页上创建嵌入的样式表就是在head标签中使用”<style type="text/css">….</style>“标签来设置css样式。<br>特点：作用于当前整个页面。<br>格式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;style type=&quot;text/css&quot;&gt;</span><br><span class="line">	....css样式代码</span><br><span class="line">&lt;/style&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>3、外联式（也叫外部样式），将网页链接到外部样式表(两种方法)，就是在head标签中使用”<link/>“标签导入一个css文件，在作用于本页面，实现css样式设置（推荐使用）。<br>特点：作用于整个网站。<br>格式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;link href=&quot;文件名.css&quot; type=&quot;text/css&quot; rel=&quot;stylesheet&quot;/&gt;</span><br></pre></td></tr></table></figure>
+
+<p><span style="color:red;background:yellow">注意:他们的优先级：内联式 &gt; 嵌入式 &gt; 外联式</span><br>当样式冲突时，就是采用就近原则，是指css属性离被修饰的内容最近的为主。若没有样式冲突则采用叠加效果。</p>
+<h2 id="CSS选择器"><a href="#CSS选择器" class="headerlink" title="CSS选择器"></a>CSS选择器</h2><h3 id="格式"><a href="#格式" class="headerlink" title="格式"></a>格式</h3><p>选择器也叫选择符</p>
+<hr>
+<div style="font-size:14px;font-style:italic;">
+选择器 { 声明 1；
+&emsp;&emsp;&emsp;声明2；
+&emsp;&emsp;&emsp;声明3；
+&emsp;&emsp;&emsp;.....
+&emsp;&emsp;&emsp;声明N;
+}
+</div>
+<hr>
+
+<p>这里的声明是以 <b>“属性:值”</b> 的形式，而且多个声明之间用分号进行分割，即C 语言的语句分隔符。<br>看下面这个例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">h1&#123;</span><br><span class="line">	color:red;</span><br><span class="line">	font-size:14px;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里的 <b>h1</b> 就是选择器，当然这里我们直接用标签当做选择器了，后面的 <b>color</b> 属性取值为 <b>red</b>，而后面的 <b>font-size</b> 属性取值为 14个像素。其中 <b>color：red</b> 就可以理解为一个声明。CSS 由多个这样的规则组成。</p>
+<h3 id="高级语法"><a href="#高级语法" class="headerlink" title="高级语法"></a>高级语法</h3><p><b>选择器分组：</b>多个元素加入同一个样式。<br>标签间使用<span style="color:red;background:yellow;">逗号</span>分隔。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">h1,h2,h3,h4,h5,h6&#123;color:red;&#125;</span><br></pre></td></tr></table></figure>
+<p><b>继承：</b>所有子类都会继承父级元素的css声明效果。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">body&#123;	</span><br><span class="line">	color:red;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><b>派生选择器</b>：根据元素再其位置的上下关系来定义样式，父级元素下的子元素才会生效。<br>层级标签间用<span style="color:red;background:yellow;">空格</span>分隔。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Ul li&#123;	</span><br><span class="line">	color:red;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>ul标签下的li标签才生效，ul下的其他标签并不会生效。</p>
+<h2 id="CSS颜色属性"><a href="#CSS颜色属性" class="headerlink" title="CSS颜色属性"></a>CSS颜色属性</h2><h3 id="HSL颜色"><a href="#HSL颜色" class="headerlink" title="HSL颜色"></a>HSL颜色</h3><p>通过对色调(H)、饱和度(S)、亮度(L)三个颜色通道的变化以及它们相互之间的叠加来得到各式各样的颜色。</p>
+<ul>
+<li>H:Hue(色调)。0(或360)表示红色，120表示绿色，240表示蓝色，也可取其他数值来指定颜色。取值为：0 - 360。</li>
+<li>S:Saturation(饱和度)。取值为：0.0% - 100.0%。</li>
+<li>L:Lightness(亮度)。取值为：0.0% - 100.0%。</li>
+</ul>
+<p>例： color: hsl(240,100%,50%);</p>
+<h3 id="HSLA颜色"><a href="#HSLA颜色" class="headerlink" title="HSLA颜色"></a>HSLA颜色</h3><p>色调(H)、饱和度(S)、亮度(L)、透明度(A)。</p>
+<ul>
+<li>H:Hue(色调)，0(或360)表示红色，120表示绿色，240表示蓝色，也可取其他数值来指定颜色。取值为0 - 360 。</li>
+<li>S:Saturation(饱和度)。取值为：0.0% - 100.0%。</li>
+<li>L:Lightness(亮度)。取值为：0.0% - 100.0%。</li>
+<li>A:Alpha透明度。取值0~1之间。</li>
+</ul>
+<p>此色彩模式与HSL相同，只是在HSL模式上新增了Alpha透明度。<br>例：color:hsla(0,100%,50%,0.2);</p>
+<h3 id="RGB颜色"><a href="#RGB颜色" class="headerlink" title="RGB颜色"></a>RGB颜色</h3><p>红(R)、绿(G)、蓝(B)三个颜色通道的变化。</p>
+<ul>
+<li>R:红色值。正整数 | 百分数</li>
+<li>G:绿色值。正整数 | 百分数</li>
+<li>B:蓝色值。正整数 | 百分数</li>
+</ul>
+<p>以上三个参数，正整数值得取值范围为：0-255，百分比数值的取值范围为：0.0%-100.0%，超出范围的数值将被截至其最接近的取值极限。<br>如：<b>rgb(300,0,0)</b> 会被解析 <b>rgb(255,0,0)</b><br>正整数值255对应百分比数值100%，如：<b>rgb(255,255,255) &#x3D; rgb(100%,100%,100%) &#x3D; #FFFFFF &#x3D; #FFF</b>，RGB色彩是通过对红(R)、绿(G)、蓝(B)三个颜色通道的变化和它们相互之间的叠加来得到各式各样的颜色的。<br>例：color: rgb(200,100,0);</p>
+<h3 id="RGBA"><a href="#RGBA" class="headerlink" title="RGBA"></a>RGBA</h3><p>红(R)、绿(G)、蓝(B)、透明度(A)</p>
+<ul>
+<li>R:红色值。正整数 | 百分数</li>
+<li>G:绿色值。正整数 | 百分数</li>
+<li>B:蓝色值。正整数 | 百分数</li>
+<li>A:Alpha透明度。取值0~1之间</li>
+</ul>
+<p>此色彩模式与RGB相同，只是在RGB模式上新增了Alpha透明度。<br>例： color: rgba(0,0,0,0.5);</p>
+<h3 id="十六进制色彩的表示方式"><a href="#十六进制色彩的表示方式" class="headerlink" title="十六进制色彩的表示方式"></a>十六进制色彩的表示方式</h3><p>颜色构成：红绿蓝<br>取值范围：0-9 a-f</p>
+<h3 id="英文单词"><a href="#英文单词" class="headerlink" title="英文单词"></a>英文单词</h3><p>颜色构成：red&amp;emsp;&amp;emsp;blue&amp;emsp;&amp;emsp;green ….</p>
+<h2 id="CSS字体属性"><a href="#CSS字体属性" class="headerlink" title="CSS字体属性"></a>CSS字体属性</h2><p><b style="font-family:微软雅黑;font-size:18px;">font-size</b><br>设置字体尺寸,字体大小。<br><span style="color:red;">例(常用)：font-size:14px;</span><br><b style="font-family:微软雅黑;font-size:18px;">font-family</b><br>设置文本的字体名称序列，一般字体引用可以不加引号，如果字体名包含了空格、数字或者符号（如连接符）则需加上引号，避免引发错误。<br><span style="color:red;">例(常用)：font-family:宋体;</span><br><b style="font-family:微软雅黑;font-size:18px;">font-style</b><br>设置或检索对象中的文本字体样式。</p>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>normal</td>
+<td>指定文本字体样式为正常的字体。例：font-style:normal;</td>
+</tr>
+<tr>
+<td>italic</td>
+<td>指定文本字体样式为斜体。 例：font-style:italic;</td>
+</tr>
+<tr>
+<td>oblique</td>
+<td>指定文本字体样式为倾斜的字体。</td>
+</tr>
+</tbody></table>
+<p><b style="font-family:微软雅黑;font-size:18px;">font-weight</b><br>设置文本字体的粗细。</p>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>normal</td>
+<td>默认值，定义标准的字符</td>
+</tr>
+<tr>
+<td>bold</td>
+<td>定义粗体字符</td>
+</tr>
+<tr>
+<td>bolder</td>
+<td>定义更粗的字符</td>
+</tr>
+<tr>
+<td>lighter</td>
+<td>定义更细的字符</td>
+</tr>
+<tr>
+<td>100~900</td>
+<td>用数字表示文本字体粗细,400 等同于 normal，而 700 等同于 bold，取值范围：100&amp;emsp;200&amp;emsp;300&amp;emsp;400&amp;emsp;500&amp;emsp;600&amp;emsp;700&amp;emsp;800&amp;emsp;900，例：font-weight:700;</td>
+</tr>
+<tr>
+<td>inherit</td>
+<td>规定应该从父元素继承字体的粗细。</td>
+</tr>
+</tbody></table>
+<p><b style="font-family:微软雅黑;font-size:18px;">font-variant</b><br>设置文本是否为小型的大写字母。</p>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>normal</td>
+<td>正常的字体</td>
+</tr>
+<tr>
+<td>small-caps</td>
+<td>小型的大写字母字体</td>
+</tr>
+</tbody></table>
+<h2 id="CSS文本属性"><a href="#CSS文本属性" class="headerlink" title="CSS文本属性"></a>CSS文本属性</h2><table>
+<thead>
+<tr>
+<th>值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>text-align</td>
+<td><span style="text-align:right;">文本的位置：left center right</span></td>
+</tr>
+<tr>
+<td>text-decoration</td>
+<td>字体画线：none无、underline下画线，line-through贯穿线，<span style="text-shadow:2px 2px 3px #DF2B04;text-decoration:underline;">此声明常用来去除超链接的默认下划线</span></td>
+</tr>
+<tr>
+<td>letter-spacing</td>
+<td><span style="letter-spacing:5px;">文字或字母的间距</span></td>
+</tr>
+<tr>
+<td>word-spacing</td>
+<td>单词间距</td>
+</tr>
+<tr>
+<td>line-height</td>
+<td>行号</td>
+</tr>
+<tr>
+<td>color</td>
+<td>字体颜色</td>
+</tr>
+<tr>
+<td>text-indent</td>
+<td>首行缩进：text-indent:30px;</td>
+</tr>
+<tr>
+<td>direction</td>
+<td>文字流方向。ltr、rtl</td>
+</tr>
+<tr>
+<td>text-shadow</td>
+<td><span style="text-shadow:2px 2px 3px #DF2B04;">文本的文字是否有阴影及模糊效果，第一个参数改变x轴，第二个参数改变Y轴，可以存在负值，第三个参数改变阴影的模糊程度，第四个参数改变阴影的颜色</span></td>
+</tr>
+</tbody></table>
+<h2 id="CSS边框属性"><a href="#CSS边框属性" class="headerlink" title="CSS边框属性"></a>CSS边框属性</h2><p><b style="font-family:微软雅黑;font-size:18px;">border</b></p>
+<blockquote>
+<p>复合属性,设置对象边框的特性, 如使用该复合属性定义其单个参数，则其他参数的默认值将无条件覆盖各自对应的单个属性设置。<br><span style="color:red;">例：border:1px solid red;</span><br>设置或检索对象边框宽度<br>设置或检索对象边框样式<br>设置或检索对象边框颜色</p>
+</blockquote>
+<p><b style="font-family:微软雅黑;font-size:18px;">border-color</b><br>设置或检索对象的边框颜色。</p>
+<p><b style="font-family:微软雅黑;font-size:18px;">border-style</b><br>设置或检索对象的边框样式。</p>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>dotted</td>
+<td>点状轮廓</td>
+</tr>
+<tr>
+<td>dashed</td>
+<td>虚线轮廓</td>
+</tr>
+<tr>
+<td>solid</td>
+<td>实线轮廓</td>
+</tr>
+<tr>
+<td>double</td>
+<td>双线轮廓</td>
+</tr>
+<tr>
+<td>groove</td>
+<td>3D凹槽轮廓</td>
+</tr>
+<tr>
+<td>ridge</td>
+<td>3D凸槽轮廓</td>
+</tr>
+<tr>
+<td>inset</td>
+<td>凹边轮廓</td>
+</tr>
+<tr>
+<td>outset</td>
+<td>3D凸边轮廓</td>
+</tr>
+</tbody></table>
+<p><b style="font-family:微软雅黑;font-size:18px;">border-width</b><br>设置或检索对象的边框宽度。<br><span style="text-shadow:2px 2px 3px #DF2B04;text-decoration:underline;font-size:20px;"><br>其中 <b>border-width&amp;emsp;&amp;emsp;border-style&amp;emsp;&amp;emsp;border-color</b> 属性有以下共同点：</span><br><span style="text-shadow:2px 2px 3px #00FF00;">如果提供全部四个参数值，将按上、右、下、左的顺序作用于四边。<br>如果只提供一个，将用于全部的四边。<br>如果提供两个，第一个用于上、下，第二个用于左、右。<br>如果提供三个，第一个用于上，第二个用于左、右，第三个用于下。<br></span></p>
+<p><b style="font-family:微软雅黑;font-size:18px;">border-radius</b><br>设置或检索对象使用圆角边框。<br>在div宽度和高度相等的情况下，设置 <b>border-radius:300px;</b> 或 <b>border-radius:50%;</b> 会变成圆形。</p>
+<h2 id="CSS定位属性"><a href="#CSS定位属性" class="headerlink" title="CSS定位属性"></a>CSS定位属性</h2><p><b style="font-family:微软雅黑;font-size:18px;">position</b><br>设置定位属性。<br>定位方式有下面几种：</p>
+<ul>
+<li><b>absolute绝对定位：</b>找到的是父元素 并且带有position属性</li>
+<li><b>relative相对定位：</b>相对对位找到离它最近的元素,并且原来在文档流中占有的位置得以保留</li>
+<li><b>fixed固定定位：</b>相对于body元素且位置固定不变</li>
+</ul>
+<p><b style="font-family:微软雅黑;font-size:18px;">top</b><br>检索或设置对象与其最近一个定位的父对象<span style="text-shadow:2px 2px 6px #FFFF00;">顶部</span>相关的位置<br><b style="font-family:微软雅黑;font-size:18px;">left</b><br>检索或设置对象与其最近一个定位的父对象<span style="text-shadow:2px 2px 6px #FF0000;">左边</span>相关的位置<br><b style="font-family:微软雅黑;font-size:18px;">right</b><br>检索或设置对象与其最近一个定位的父对象<span style="text-shadow:2px 2px 6px #0000FF;">右边</span>相关的位置<br><b style="font-family:微软雅黑;font-size:18px;">bottom</b><br>检索或设置对象与其最近一个定位的父对象<span style="text-shadow:2px 2px 6px #00FF00;">底部</span>相关的位置</p>
+<p><b style="font-family:微软雅黑;font-size:18px;">z-index</b><br>层叠顺序，值越大越在上方。</p>
+<h2 id="CSS浮动属性"><a href="#CSS浮动属性" class="headerlink" title="CSS浮动属性"></a>CSS浮动属性</h2><p><b style="font-family:微软雅黑;font-size:18px;">float</b> 属性定义元素在哪个方向浮动，浮动元素会生成一个块级框，而不论它本身是何种元素。<br>假如在一行之上只有极少的空间可供浮动元素，那么这个元素会跳至下一行，这个过程会持续到某一行拥有足够的空间为止。</p>
+<p><b style="font-family:微软雅黑;font-size:18px;">float:left</b>     左浮动<br><b style="font-family:微软雅黑;font-size:18px;">float:right</b>    右浮动</p>
+<p><span style="font-size:16px;font-weight:bolder;font-family:华文新魏;color:red;">float 浮动并不会占用其他div未浮动的位置，其他未浮动div可层叠显示。</span></p>
+<h2 id="CSS伪类元素"><a href="#CSS伪类元素" class="headerlink" title="CSS伪类元素"></a>CSS伪类元素</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">a:link&#123;	</span><br><span class="line">	color:red;/*未访问的链接*/</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">a:hover&#123;	</span><br><span class="line">	color:green;/*鼠标滑过链接*/</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">a:active&#123;	</span><br><span class="line">	color:pink;/*鼠标点击的效果*/</span><br><span class="line">&#125;</span><br><span class="line">a:visited&#123;	</span><br><span class="line">	color:blue;/*访问过的链接*/</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="CSS背景属性"><a href="#CSS背景属性" class="headerlink" title="CSS背景属性"></a>CSS背景属性</h2><p><b style="font-family:微软雅黑;font-size:18px;">background</b><br>简写属性在一个声明中设置所有的背景属性。<br><span style="color:red;">例：background: #00FF00 url(bgimage.gif) no-repeat fixed top;</span><br>通常建议使用这个属性，而不是分别使用单个属性。<br>单个属性包括：</p>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>background-color</td>
+<td>背景颜色</td>
+</tr>
+<tr>
+<td>background-image</td>
+<td>背景图像的URL</td>
+</tr>
+<tr>
+<td>background-repeat</td>
+<td>图片是否平铺，包括 repeat(默认):x轴y轴都平铺,no-repeat:不平铺,repeat-x:x轴平铺,y轴不平铺,repeat-y:y轴平铺,x轴不平铺</td>
+</tr>
+<tr>
+<td>background-position</td>
+<td>背景图像的起始位置</td>
+</tr>
+<tr>
+<td>background-size</td>
+<td>背景图片的尺寸,可以用像素或百分比设置宽度和高度</td>
+</tr>
+<tr>
+<td>background-origin</td>
+<td>背景图片的定位区域</td>
+</tr>
+<tr>
+<td>background-clip</td>
+<td>背景的绘制区域</td>
+</tr>
+<tr>
+<td>background-attachment</td>
+<td>背景图像是否固定或者随着页面的其余部分滚动，scroll(默认值):背景图像会随着页面其余部分的滚动而移动。fixed:当页面的其余部分滚动时，背景图像不会移动。</td>
+</tr>
+</tbody></table>
+<h2 id="CSS盒子模型"><a href="#CSS盒子模型" class="headerlink" title="CSS盒子模型"></a>CSS盒子模型</h2><h3 id="内补白-内补丁"><a href="#内补白-内补丁" class="headerlink" title="内补白(内补丁)"></a>内补白(内补丁)</h3><p><b style="font-family:微软雅黑;font-size:18px;">padding</b><br>简写属性在一个声明中设置所有内边距属性，该属性可以有 1 到 4 个值。<br><span style="color:red;">例：padding:10px 5px 15px 20px;</span>(上右下左)<br><span style="color:red;">例：padding:10px 5px 15px;</span>(上右下)<br><span style="color:red;">例：padding:10px 5px;</span>(上右)<br><span style="color:red;">例：padding:10px;</span>(4个内边距)</p>
+<p><b>也可以单独制定：</b></p>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>padding-top</td>
+<td>检索或设置对象顶边的内部边距</td>
+</tr>
+<tr>
+<td>padding-right</td>
+<td>检索或设置对象右边的内部边距</td>
+</tr>
+<tr>
+<td>padding-bottom</td>
+<td>检索或设置对象下边的内部边距</td>
+</tr>
+<tr>
+<td>padding-left</td>
+<td>检索或设置对象左边的内部边距</td>
+</tr>
+</tbody></table>
+<h3 id="外补白-外补丁"><a href="#外补白-外补丁" class="headerlink" title="外补白(外补丁)"></a>外补白(外补丁)</h3><p><b style="font-family:微软雅黑;font-size:18px;">margin</b><br>简写属性在一个声明中设置所有外边距属性，该属性可以有 1 到 4 个值。<br><span style="color:red;">例：margin:10px 5px 15px 20px;</span>(上右下左)<br><span style="color:red;">例：margin:10px 5px 15px;</span>(上右下)<br><span style="color:red;">例：margin:10px 5px;</span>(上右)<br><span style="color:red;">例：margin:10px;</span>(4个内边距)</p>
+<p><b>也可以单独制定：</b></p>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>margin-top</td>
+<td>检索或设置对象顶边的外延边距</td>
+</tr>
+<tr>
+<td>margin-right</td>
+<td>检索或设置对象右边的外延边距</td>
+</tr>
+<tr>
+<td>margin-bottom</td>
+<td>检索或设置对象下边的外延边距</td>
+</tr>
+<tr>
+<td>margin-left</td>
+<td>检索或设置对象左边的外延边距</td>
+</tr>
+</tbody></table>
+<p><span style="text-shadow:2px 2px 6px #00FF00;">其中 <b style="text-shadow:2px 2px 6px #FF0000;">margin:0 auto;</b> 可以做到水平居中。<br>上下边界为0，左右根据宽度自适应！这就是水平居中的意思。</span></p>
+<p>&amp;emsp;所有HTML元素可以看作盒子，在CSS中，<strong>box model</strong> 这一术语是用来设计和布局时使用。<br>CSS盒模型本质上是一个盒子，封装周围的HTML元素，它包括：边距，边框，填充，和实际内容。<br>盒模型允许我们在其它元素和周围元素边框之间的空间放置元素。<br>下面是百度搜索框的一个盒子：<br><img src="/uploads/hezi.png"></p>
+<ul>
+<li><b>Margin(外边距)</b> - 清除边框外的区域，外边距是透明的。</li>
+<li><b>Border(边框)</b> - 围绕在内边距和内容外的边框。</li>
+<li><b>Padding(内边距)</b> - 清除内容周围的区域，内边距是透明的。</li>
+<li><b>Content(内容)</b> - 盒子的内容，显示文本和图像。</li>
+</ul>
+<p><span style="text-shadow:2px 2px 6px #12FAD0;">盒子模型也可以这样理解：content(内容)就是快递的物品，padding(内边距)是快递盒里面包裹物品的泡沫，border(边框)就是快递的纸盒，margin(外边距)就是快递间的空隙。</span></p>
+<h2 id="CSS-display属性"><a href="#CSS-display属性" class="headerlink" title="CSS display属性"></a>CSS display属性</h2><p>我们先介绍下块级元素和行级元素。<br><b>块级元素特点：</b></p>
+<ul>
+<li>总是以一个块的形式表现出来，占领一整行。若干同级块元素会从上之下依次排列（使用float属性除外）。</li>
+<li>可以设置高度、宽度、各个方向外补丁（margin）以及各个方向的内补丁（padding）。</li>
+<li>当宽度（width）缺省时，它的宽度时其容器的100%，除非我们给它设定了固定的宽度。</li>
+<li>块级元素中可以容纳其他块级元素或行内元素。</li>
+<li>常见的块级元素由<span style="text-shadow:2px 2px 3px #FF0000;">&lt;p&gt;&amp;emsp;&lt;div&gt;&amp;emsp;&lt;h1&gt;&amp;emsp;&lt;li&gt;&amp;emsp;&lt;table&gt;</span>等等。</li>
+<li>块级元素的display属性值默认为block。</li>
+</ul>
+<p><b>行内元素特点：</b></p>
+<ul>
+<li>它不会单独占据一整行，而是只占领自身的宽度和高度所在的空间。若干同级行内元素会从左到右（即某个行内元素可以和其他行内元素共处一行），从上到下依次排列。</li>
+<li>行内元素不可以设置高度、宽度，其高度一般由其字体的大小来决定，其宽度由内容的长度控制。</li>
+<li>行内元素只能设置左右的margin值和左右的padding值，而不能设置上下的margin值和上下的padding值。因此我们可以通过设置左右的padding值来改变行内元素的宽度。</li>
+<li>常见的行内元素有<span style="text-shadow:2px 2px 3px #FF0000;">&lt;a&gt;&amp;emsp;&lt;b&gt;&amp;emsp;&lt;font&gt;&amp;emsp;&lt;em&gt;&amp;emsp;&lt;img&gt;&amp;emsp;&lt;input&gt;&amp;emsp;&lt;span&gt;&amp;emsp;&lt;label&gt;</span>等等。</li>
+<li>行内元素一般不可以包含块级元素。</li>
+<li>行内元素的display属性值默认为inline。</li>
+</ul>
+<p><b>display</b>包括以下属性：</p>
+<ul>
+<li><b>none</b></li>
+<li><b>block</b></li>
+<li><b>inline</b></li>
+<li><b>inline-block</b></li>
+<li><b>inherit</b></li>
+</ul>
+<h3 id="1、display-none"><a href="#1、display-none" class="headerlink" title="1、display:none"></a>1、display:none</h3><p>none这个值表示此元素将不被显示。</p>
+<h3 id="2、display-block"><a href="#2、display-block" class="headerlink" title="2、display:block"></a>2、display:block</h3><p>使用了display：block;之后， 此元素将显示为块级元素，此元素前后会带有换行符。<br>通过对一个行内元素设置display:block;可以将行内元素设置为块级元素，进而设置它的宽高和上下左右的padding和margin。</p>
+<h3 id="3、display-inline"><a href="#3、display-inline" class="headerlink" title="3、display:inline"></a>3、display:inline</h3><p>此元素会被显示为内联元素，元素前后没有换行符。<br>display:inline的作用即可以将一个块级元素转换成行内元素，那么这个块级元素将不能再设置宽和高以及上下方向的margin和padding。</p>
+<h3 id="4、display-inline-block"><a href="#4、display-inline-block" class="headerlink" title="4、display:inline-block"></a>4、display:inline-block</h3><p>它是结合了inline和block的特性于一身。<br>设置了inline-block属性的元素既具有block元素可以设置width和height属性的特性，又保持了inline元素不换行的特性。</p>
+<h3 id="5、display-inherit"><a href="#5、display-inherit" class="headerlink" title="5、display:inherit"></a>5、display:inherit</h3><p>规定应该从父元素继承 display 属性的值。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/web/" rel="tag"># web</a>
+              <a href="/tags/css/" rel="tag"># css</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2017/12/07/Python%E5%9F%BA%E7%A1%80-Xpath%E7%94%A8%E6%B3%95/" rel="prev" title="Python基础-Xpath用法">
+                  <i class="fa fa-chevron-left"></i> Python基础-Xpath用法
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/01/01/jQuery-Ajax/" rel="next" title="jQuery-Ajax">
+                  jQuery-Ajax <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张大秀</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
